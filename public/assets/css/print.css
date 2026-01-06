@@ -1,0 +1,221 @@
+/**
+ * Print Stylesheet
+ */
+
+@media print {
+    /* Reset page */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    @page {
+        size: A4;
+        margin: 2cm;
+    }
+
+    body {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+    }
+
+    /* Hide non-essential elements */
+    .sidebar,
+    .top-header,
+    .page-actions,
+    .btn,
+    .nav-link,
+    .search-form,
+    .pagination,
+    .modal,
+    .modal-overlay,
+    .form-actions,
+    .alert-close,
+    .item-card-favorite,
+    footer,
+    nav {
+        display: none !important;
+    }
+
+    /* Reset main content */
+    .app-wrapper,
+    .main-content {
+        display: block;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-content {
+        padding: 0;
+    }
+
+    /* Headers */
+    h1 {
+        font-size: 24pt;
+        margin-bottom: 0.5cm;
+        border-bottom: 1pt solid #000;
+        padding-bottom: 0.25cm;
+    }
+
+    h2 {
+        font-size: 18pt;
+        margin-top: 0.5cm;
+        margin-bottom: 0.25cm;
+    }
+
+    h3 {
+        font-size: 14pt;
+        margin-top: 0.4cm;
+        margin-bottom: 0.2cm;
+    }
+
+    /* Cards for print */
+    .card,
+    .item-card {
+        box-shadow: none;
+        border: 1pt solid #ccc;
+        page-break-inside: avoid;
+        margin-bottom: 0.5cm;
+    }
+
+    /* Tables */
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .table th,
+    .table td {
+        border: 1pt solid #ccc;
+        padding: 0.2cm 0.3cm;
+    }
+
+    .table th {
+        background: #f5f5f5 !important;
+    }
+
+    /* Images */
+    img {
+        max-width: 100%;
+        page-break-inside: avoid;
+    }
+
+    /* Links */
+    a {
+        color: #000;
+        text-decoration: underline;
+    }
+
+    /* Print specific layout */
+    .print-header {
+        text-align: center;
+        margin-bottom: 1cm;
+        border-bottom: 2pt solid #000;
+        padding-bottom: 0.5cm;
+    }
+
+    .print-logo {
+        max-width: 150px;
+        margin-bottom: 0.5cm;
+    }
+
+    .print-title {
+        font-size: 28pt;
+        margin-bottom: 0.25cm;
+    }
+
+    .print-date {
+        font-size: 10pt;
+        color: #666;
+    }
+
+    .print-section {
+        margin-bottom: 0.75cm;
+    }
+
+    .print-section-title {
+        font-size: 14pt;
+        font-weight: bold;
+        margin-bottom: 0.25cm;
+        border-bottom: 1pt solid #ccc;
+        padding-bottom: 0.1cm;
+    }
+
+    /* Checklist print styles */
+    .print-checklist {
+        list-style: none;
+        padding: 0;
+    }
+
+    .print-checklist li {
+        padding: 0.2cm 0;
+        padding-left: 0.75cm;
+        position: relative;
+        border-bottom: 1pt dotted #ccc;
+    }
+
+    .print-checklist li::before {
+        content: '☐';
+        position: absolute;
+        left: 0;
+        font-size: 14pt;
+    }
+
+    /* Box contents grouped by location */
+    .print-box-group {
+        margin-bottom: 0.5cm;
+        page-break-inside: avoid;
+    }
+
+    .print-box-title {
+        font-weight: bold;
+        background: #f5f5f5;
+        padding: 0.2cm 0.3cm;
+        margin-bottom: 0.2cm;
+    }
+
+    /* Difficulty display */
+    .difficulty-stars {
+        font-family: Arial, sans-serif;
+    }
+
+    /* Page breaks */
+    .page-break {
+        page-break-before: always;
+    }
+
+    .no-break {
+        page-break-inside: avoid;
+    }
+
+    /* Status badges for print */
+    .badge {
+        border: 1pt solid #000;
+        padding: 1pt 4pt;
+        font-size: 9pt;
+    }
+
+    /* Grid for print */
+    .grid {
+        display: block;
+    }
+
+    .grid > * {
+        page-break-inside: avoid;
+        margin-bottom: 0.5cm;
+    }
+
+    /* Footer with page numbers */
+    .print-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 9pt;
+        color: #666;
+    }
+}
