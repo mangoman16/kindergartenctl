@@ -39,6 +39,7 @@ return [
     'POST /games/{id}' => ['GameController', 'update'],
     'POST /games/{id}/delete' => ['GameController', 'delete'],
     'GET /games/{id}/print' => ['GameController', 'print'],
+    'POST /games/{id}/duplicate' => ['GameController', 'duplicate'],
 
     // Materials
     'GET /materials' => ['MaterialController', 'index'],
