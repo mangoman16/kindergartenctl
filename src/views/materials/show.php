@@ -1,0 +1,156 @@
+<div class="page-header">
+    <h1 class="page-title"><?= e($material['name']) ?></h1>
+    <div class="page-actions">
+        <a href="<?= url('/materials/' . $material['id'] . '/print') ?>" class="btn btn-secondary" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <?= __('action.print') ?>
+        </a>
+        <a href="<?= url('/materials/' . $material['id'] . '/edit') ?>" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <?= __('action.edit') ?>
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-3">
+    <!-- Material Details -->
+    <div class="card" style="grid-column: span 2;">
+        <div class="card-header">
+            <h2 class="card-title"><?= __('misc.details') ?></h2>
+        </div>
+        <div class="card-body">
+            <div class="flex gap-6">
+                <?php if ($material['image_path']): ?>
+                    <div style="flex-shrink: 0;">
+                        <img src="<?= upload($material['image_path']) ?>" alt="<?= e($material['name']) ?>"
+                             style="width: 150px; height: 150px; border-radius: var(--radius-lg); object-fit: cover;">
+                    </div>
+                <?php endif; ?>
+
+                <div class="flex-1">
+                    <dl class="detail-list">
+                        <dt><?= __('form.name') ?></dt>
+                        <dd><?= e($material['name']) ?></dd>
+
+                        <?php if ($material['description']): ?>
+                            <dt><?= __('form.description') ?></dt>
+                            <dd><?= nl2br(e($material['description'])) ?></dd>
+                        <?php endif; ?>
+
+                        <dt><?= __('material.quantity') ?></dt>
+                        <dd><?= $material['quantity'] ?: 'Nicht angegeben' ?></dd>
+
+                        <dt><?= __('material.type') ?></dt>
+                        <dd>
+                            <?php if ($material['is_consumable']): ?>
+                                <span class="badge badge-warning">Verbrauchsmaterial</span>
+                            <?php else: ?>
+                                <span class="badge badge-info">Ausrüstung</span>
+                            <?php endif; ?>
+                        </dd>
+
+                        <dt><?= __('nav.games') ?></dt>
+                        <dd><?= $material['game_count'] ?> <?= pluralize($material['game_count'], 'Spiel', 'Spiele') ?></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title"><?= __('misc.actions') ?></h2>
+        </div>
+        <div class="card-body">
+            <div class="flex flex-col gap-2">
+                <a href="<?= url('/materials/' . $material['id'] . '/edit') ?>" class="btn btn-secondary btn-block">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    <?= __('action.edit') ?>
+                </a>
+                <a href="<?= url('/materials/' . $material['id'] . '/print') ?>" class="btn btn-secondary btn-block" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <?= __('action.print') ?>
+                </a>
+                <form action="<?= url('/materials/' . $material['id'] . '/delete') ?>" method="POST"
+                      onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')">
+                    <?= csrfField() ?>
+                    <button type="submit" class="btn btn-danger btn-block">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        <?= __('action.delete') ?>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php if (!empty($games)): ?>
+<!-- Games using this material -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title"><?= __('material.used_in_games') ?></h2>
+    </div>
+    <div class="card-body p-0">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;"></th>
+                    <th><?= __('form.name') ?></th>
+                    <th style="width: 100px; text-align: center;"><?= __('material.quantity') ?></th>
+                    <th style="width: 100px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($games as $game): ?>
+                <tr>
+                    <td>
+                        <?php if ($game['image_path']): ?>
+                            <img src="<?= upload($game['image_path']) ?>" alt="<?= e($game['name']) ?>"
+                                 style="width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover;">
+                        <?php else: ?>
+                            <div style="width: 40px; height: 40px; background: var(--color-gray-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-gray-400);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                </svg>
+                            </div>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <a href="<?= url('/games/' . $game['id']) ?>" class="font-semibold text-primary">
+                            <?= e($game['name']) ?>
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <?= $game['material_quantity'] ?: '1' ?>×
+                    </td>
+                    <td>
+                        <a href="<?= url('/games/' . $game['id']) ?>" class="btn btn-sm btn-secondary">
+                            <?= __('action.view') ?>
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>

@@ -39,6 +39,7 @@ return [
     'POST /games/{id}' => ['GameController', 'update'],
     'POST /games/{id}/delete' => ['GameController', 'delete'],
     'GET /games/{id}/print' => ['GameController', 'print'],
+    'POST /games/{id}/duplicate' => ['GameController', 'duplicate'],
 
     // Materials
     'GET /materials' => ['MaterialController', 'index'],
@@ -106,20 +107,38 @@ return [
     'POST /settings/clear-temp' => ['SettingsController', 'clearTemp'],
 
     // API routes
+    'GET /api/health' => ['ApiController', 'health'],
+
+    // Image upload
     'POST /api/upload-image' => ['ApiController', 'uploadImage'],
-    'POST /api/games/toggle-favorite' => ['ApiController', 'toggleGameFavorite'],
-    'POST /api/materials/toggle-favorite' => ['ApiController', 'toggleMaterialFavorite'],
-    'POST /api/games/check-duplicate' => ['ApiController', 'checkGameDuplicate'],
-    'POST /api/materials/check-duplicate' => ['ApiController', 'checkMaterialDuplicate'],
-    'POST /api/boxes/check-duplicate' => ['ApiController', 'checkBoxDuplicate'],
-    'POST /api/tags/check-duplicate' => ['ApiController', 'checkTagDuplicate'],
+    'POST /api/delete-image' => ['ApiController', 'deleteImage'],
+
+    // Duplicate checking
+    'GET /api/check-duplicate' => ['ApiController', 'checkDuplicate'],
+
+    // Search / autocomplete
+    'GET /api/tags/search' => ['ApiController', 'searchTags'],
+    'GET /api/materials/search' => ['ApiController', 'searchMaterials'],
+    'GET /api/games/search' => ['ApiController', 'searchGames'],
+
+    // Quick create
     'POST /api/tags/quick-create' => ['ApiController', 'quickCreateTag'],
-    'GET /api/search' => ['ApiController', 'search'],
-    'GET /api/games/random' => ['ApiController', 'randomGame'],
-    'GET /api/calendar/events' => ['ApiController', 'getCalendarEvents'],
-    'POST /api/calendar/events' => ['ApiController', 'createCalendarEvent'],
-    'PUT /api/calendar/events/{id}' => ['ApiController', 'updateCalendarEvent'],
-    'DELETE /api/calendar/events/{id}' => ['ApiController', 'deleteCalendarEvent'],
-    'POST /api/groups/add-item' => ['ApiController', 'addGroupItem'],
-    'DELETE /api/groups/remove-item' => ['ApiController', 'removeGroupItem'],
+    'POST /api/materials/quick-create' => ['ApiController', 'quickCreateMaterial'],
+
+    // Dropdown data
+    'GET /api/boxes' => ['ApiController', 'getBoxes'],
+    'GET /api/categories' => ['ApiController', 'getCategories'],
+    'GET /api/tags' => ['ApiController', 'getTags'],
+    'GET /api/materials' => ['ApiController', 'getMaterials'],
+
+    // Entity games
+    'GET /api/boxes/{id}/games' => ['ApiController', 'getBoxGames'],
+    'GET /api/categories/{id}/games' => ['ApiController', 'getCategoryGames'],
+    'GET /api/tags/{id}/games' => ['ApiController', 'getTagGames'],
+
+    // Calendar events
+    'GET /api/calendar/events' => ['CalendarController', 'getEvents'],
+    'POST /api/calendar/events' => ['CalendarController', 'store'],
+    'PUT /api/calendar/events/{id}' => ['CalendarController', 'update'],
+    'DELETE /api/calendar/events/{id}' => ['CalendarController', 'delete'],
 ];
