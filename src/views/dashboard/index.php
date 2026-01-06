@@ -238,6 +238,97 @@
     </div>
 </div>
 
+<!-- Random Game Picker & Favorites Row -->
+<div class="grid grid-cols-2 gap-4 mt-4">
+    <!-- Random Game Picker -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"><?= __('dashboard.random_game') ?></h3>
+        </div>
+        <div class="card-body">
+            <div class="random-picker-filters mb-4">
+                <div class="flex gap-3" style="flex-wrap: wrap;">
+                    <select id="random-category" class="form-select form-select-sm" style="min-width: 150px;">
+                        <option value="">Alle Altersgruppen</option>
+                        <?php foreach ($categories as $category): ?>
+                            <option value="<?= $category['id'] ?>"><?= e($category['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <select id="random-tag" class="form-select form-select-sm" style="min-width: 150px;">
+                        <option value="">Alle Themen</option>
+                        <?php foreach ($tags as $tag): ?>
+                            <option value="<?= $tag['id'] ?>"><?= e($tag['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <button type="button" id="random-game-btn" class="btn btn-primary w-full">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <?= __('dashboard.pick_random') ?>
+            </button>
+            <div id="random-game-result" class="mt-4" style="display: none;">
+                <div class="random-game-card">
+                    <a id="random-game-link" href="#">
+                        <div class="flex gap-4 items-center">
+                            <img id="random-game-image" src="" alt="" style="width: 80px; height: 80px; border-radius: var(--radius-md); object-fit: cover;">
+                            <div>
+                                <h4 id="random-game-name" class="font-medium text-lg"></h4>
+                                <p id="random-game-box" class="text-sm text-muted"></p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <p id="random-game-empty" class="text-muted mt-4" style="display: none;">
+                Kein passendes Spiel gefunden.
+            </p>
+        </div>
+    </div>
+
+    <!-- Favorites Section -->
+    <div class="card">
+        <div class="card-header flex items-center justify-between">
+            <h3 class="card-title"><?= __('dashboard.favorites') ?> (<?= $stats['favorites'] ?>)</h3>
+            <?php if ($stats['favorites'] > 8): ?>
+                <a href="<?= url('/games?favorites=1') ?>" class="text-sm text-primary">Alle anzeigen</a>
+            <?php endif; ?>
+        </div>
+        <?php if (empty($favoriteGames)): ?>
+            <div class="card-body">
+                <p class="text-muted">Noch keine Favoriten. Markieren Sie Spiele als Favorit, um sie hier zu sehen.</p>
+            </div>
+        <?php else: ?>
+            <div class="card-body p-0">
+                <ul class="simple-list">
+                    <?php foreach ($favoriteGames as $game): ?>
+                        <li>
+                            <a href="<?= url('/games/' . $game['id']) ?>" class="flex items-center gap-3">
+                                <?php if ($game['image_path']): ?>
+                                    <img src="<?= upload($game['image_path']) ?>" alt=""
+                                         style="width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover;">
+                                <?php else: ?>
+                                    <div style="width: 40px; height: 40px; background: var(--color-gray-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-warning);">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    </div>
+                                <?php endif; ?>
+                                <div>
+                                    <div class="font-medium"><?= e($game['name']) ?></div>
+                                    <div class="text-sm text-muted"><?= e($game['box_name'] ?? 'Keine Box') ?></div>
+                                </div>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
 <?php if ($stats['games'] === 0): ?>
 <!-- Empty State -->
 <div class="card mt-6">
@@ -262,6 +353,60 @@
     </div>
 </div>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const randomBtn = document.getElementById('random-game-btn');
+    const categorySelect = document.getElementById('random-category');
+    const tagSelect = document.getElementById('random-tag');
+    const resultDiv = document.getElementById('random-game-result');
+    const emptyDiv = document.getElementById('random-game-empty');
+
+    if (randomBtn) {
+        randomBtn.addEventListener('click', function() {
+            const params = new URLSearchParams();
+            if (categorySelect.value) params.append('category_id', categorySelect.value);
+            if (tagSelect.value) params.append('tag_id', tagSelect.value);
+
+            randomBtn.disabled = true;
+            randomBtn.innerHTML = '<span class="spinner-sm"></span> Suche...';
+
+            fetch('<?= url('/api/games/random') ?>?' + params.toString())
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.game) {
+                        document.getElementById('random-game-name').textContent = data.game.name;
+                        document.getElementById('random-game-box').textContent = data.game.box_name ? 'Box: ' + data.game.box_name : '';
+                        document.getElementById('random-game-link').href = '<?= url('/games/') ?>' + data.game.id;
+
+                        const img = document.getElementById('random-game-image');
+                        if (data.game.image_path) {
+                            img.src = data.game.image_path;
+                            img.style.display = 'block';
+                        } else {
+                            img.style.display = 'none';
+                        }
+
+                        resultDiv.style.display = 'block';
+                        emptyDiv.style.display = 'none';
+                    } else {
+                        resultDiv.style.display = 'none';
+                        emptyDiv.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultDiv.style.display = 'none';
+                    emptyDiv.style.display = 'block';
+                })
+                .finally(() => {
+                    randomBtn.disabled = false;
+                    randomBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> <?= __('dashboard.pick_random') ?>';
+                });
+        });
+    }
+});
+</script>
 
 <style>
 .stats-grid {

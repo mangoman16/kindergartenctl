@@ -180,4 +180,44 @@ class Material extends Model
 
         return $stmt->fetchAll();
     }
+
+    /**
+     * Toggle favorite status
+     */
+    public static function toggleFavorite(int $id): bool
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("UPDATE materials SET is_favorite = NOT is_favorite WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+
+        // Return the new favorite status
+        $stmt = $db->prepare("SELECT is_favorite FROM materials WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $result = $stmt->fetch();
+
+        return $result ? (bool)$result['is_favorite'] : false;
+    }
+
+    /**
+     * Get all favorite materials
+     */
+    public static function getFavorites(int $limit = 8): array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            SELECT m.*, COUNT(gm.game_id) as game_count
+            FROM materials m
+            LEFT JOIN game_materials gm ON gm.material_id = m.id
+            WHERE m.is_favorite = 1
+            GROUP BY m.id
+            ORDER BY m.name ASC
+            LIMIT :limit
+        ");
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
 }

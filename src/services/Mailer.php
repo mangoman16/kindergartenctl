@@ -1,0 +1,439 @@
+<?php
+/**
+ * Mailer Service
+ *
+ * Handles SMTP email sending for password resets and other notifications.
+ * Uses native PHP sockets to avoid external dependencies.
+ */
+
+class Mailer
+{
+    private string $host;
+    private int $port;
+    private string $username;
+    private string $password;
+    private string $encryption;
+    private string $fromEmail;
+    private string $fromName;
+    private bool $isConfigured = false;
+    private array $errors = [];
+
+    /**
+     * Create a new Mailer instance
+     */
+    public function __construct()
+    {
+        $this->loadConfig();
+    }
+
+    /**
+     * Load SMTP configuration from storage
+     */
+    private function loadConfig(): void
+    {
+        $configPath = STORAGE_PATH . '/smtp.php';
+
+        if (!file_exists($configPath)) {
+            return;
+        }
+
+        $config = require $configPath;
+
+        if (empty($config['smtp_host']) || empty($config['smtp_from'])) {
+            return;
+        }
+
+        $this->host = $config['smtp_host'];
+        $this->port = (int)($config['smtp_port'] ?? 587);
+        $this->username = $config['smtp_user'] ?? '';
+        $this->password = $config['smtp_pass'] ?? '';
+        $this->encryption = $config['smtp_encryption'] ?? 'tls';
+        $this->fromEmail = $config['smtp_from'];
+        $this->fromName = $config['smtp_from_name'] ?? 'Kindergarten Organizer';
+        $this->isConfigured = true;
+    }
+
+    /**
+     * Check if mailer is configured
+     */
+    public function isConfigured(): bool
+    {
+        return $this->isConfigured;
+    }
+
+    /**
+     * Get last error messages
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+
+    /**
+     * Send an email
+     */
+    public function send(string $to, string $subject, string $body, bool $isHtml = true): bool
+    {
+        if (!$this->isConfigured) {
+            $this->errors[] = 'SMTP ist nicht konfiguriert.';
+            return false;
+        }
+
+        $this->errors = [];
+
+        try {
+            // Build email headers
+            $boundary = md5(time());
+            $headers = $this->buildHeaders($to, $subject, $boundary, $isHtml);
+            $message = $this->buildMessage($body, $boundary, $isHtml);
+
+            // Connect and send
+            return $this->sendViaSMTP($to, $headers, $message);
+
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+            logMessage('Mailer error: ' . $e->getMessage(), 'error');
+            return false;
+        }
+    }
+
+    /**
+     * Send password reset email
+     */
+    public function sendPasswordReset(string $to, string $resetLink): bool
+    {
+        $subject = 'Passwort zurücksetzen';
+
+        $body = $this->renderTemplate('password-reset', [
+            'reset_link' => $resetLink,
+        ]);
+
+        return $this->send($to, $subject, $body);
+    }
+
+    /**
+     * Test SMTP connection
+     */
+    public function testConnection(): bool
+    {
+        if (!$this->isConfigured) {
+            $this->errors[] = 'SMTP ist nicht konfiguriert.';
+            return false;
+        }
+
+        $this->errors = [];
+
+        try {
+            $socket = $this->connect();
+            if ($socket) {
+                $this->quit($socket);
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
+     * Send test email
+     */
+    public function sendTestEmail(string $to): bool
+    {
+        $subject = 'Test-E-Mail - Kindergarten Organizer';
+        $body = '
+            <h2>Test erfolgreich!</h2>
+            <p>Diese Test-E-Mail wurde erfolgreich vom Kindergarten Organizer gesendet.</p>
+            <p>Ihre E-Mail-Einstellungen sind korrekt konfiguriert.</p>
+            <p style="color: #666; font-size: 12px;">Gesendet am: ' . date('d.m.Y H:i:s') . '</p>
+        ';
+
+        return $this->send($to, $subject, $body);
+    }
+
+    /**
+     * Build email headers
+     */
+    private function buildHeaders(string $to, string $subject, string $boundary, bool $isHtml): string
+    {
+        $headers = [];
+        $headers[] = "From: {$this->fromName} <{$this->fromEmail}>";
+        $headers[] = "Reply-To: {$this->fromEmail}";
+        $headers[] = "To: {$to}";
+        $headers[] = "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=";
+        $headers[] = "MIME-Version: 1.0";
+        $headers[] = "Date: " . date('r');
+        $headers[] = "Message-ID: <" . md5(uniqid(time())) . "@" . $this->extractDomain($this->fromEmail) . ">";
+
+        if ($isHtml) {
+            $headers[] = "Content-Type: multipart/alternative; boundary=\"{$boundary}\"";
+        } else {
+            $headers[] = "Content-Type: text/plain; charset=UTF-8";
+            $headers[] = "Content-Transfer-Encoding: base64";
+        }
+
+        return implode("\r\n", $headers);
+    }
+
+    /**
+     * Build email message body
+     */
+    private function buildMessage(string $body, string $boundary, bool $isHtml): string
+    {
+        if (!$isHtml) {
+            return base64_encode($body);
+        }
+
+        $plainText = strip_tags(str_replace(['<br>', '<br/>', '<br />'], "\n", $body));
+
+        $message = [];
+        $message[] = "--{$boundary}";
+        $message[] = "Content-Type: text/plain; charset=UTF-8";
+        $message[] = "Content-Transfer-Encoding: base64";
+        $message[] = "";
+        $message[] = base64_encode($plainText);
+        $message[] = "";
+        $message[] = "--{$boundary}";
+        $message[] = "Content-Type: text/html; charset=UTF-8";
+        $message[] = "Content-Transfer-Encoding: base64";
+        $message[] = "";
+        $message[] = base64_encode($this->wrapHtml($body));
+        $message[] = "";
+        $message[] = "--{$boundary}--";
+
+        return implode("\r\n", $message);
+    }
+
+    /**
+     * Wrap body in HTML template
+     */
+    private function wrapHtml(string $body): string
+    {
+        return '<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kindergarten Organizer</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        h2 { color: #4F46E5; }
+        a { color: #4F46E5; }
+        .button { display: inline-block; padding: 12px 24px; background: #4F46E5; color: white !important; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px; }
+    </style>
+</head>
+<body>
+    ' . $body . '
+    <div class="footer">
+        <p>Diese E-Mail wurde automatisch vom Kindergarten Spiele Organizer gesendet.</p>
+    </div>
+</body>
+</html>';
+    }
+
+    /**
+     * Send email via SMTP
+     */
+    private function sendViaSMTP(string $to, string $headers, string $message): bool
+    {
+        $socket = $this->connect();
+        if (!$socket) {
+            return false;
+        }
+
+        try {
+            // EHLO
+            $this->sendCommand($socket, "EHLO " . gethostname());
+            $this->getResponse($socket);
+
+            // Start TLS if using port 587
+            if ($this->port === 587 || $this->encryption === 'tls') {
+                $this->sendCommand($socket, "STARTTLS");
+                $response = $this->getResponse($socket);
+
+                if (strpos($response, '220') === 0) {
+                    stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+
+                    // Re-send EHLO after TLS
+                    $this->sendCommand($socket, "EHLO " . gethostname());
+                    $this->getResponse($socket);
+                }
+            }
+
+            // AUTH LOGIN
+            if (!empty($this->username) && !empty($this->password)) {
+                $this->sendCommand($socket, "AUTH LOGIN");
+                $response = $this->getResponse($socket);
+
+                if (strpos($response, '334') === 0) {
+                    $this->sendCommand($socket, base64_encode($this->username));
+                    $this->getResponse($socket);
+
+                    $this->sendCommand($socket, base64_encode($this->password));
+                    $response = $this->getResponse($socket);
+
+                    if (strpos($response, '235') !== 0) {
+                        throw new Exception('SMTP Authentifizierung fehlgeschlagen: ' . $response);
+                    }
+                }
+            }
+
+            // MAIL FROM
+            $this->sendCommand($socket, "MAIL FROM:<{$this->fromEmail}>");
+            $response = $this->getResponse($socket);
+            if (strpos($response, '250') !== 0) {
+                throw new Exception('MAIL FROM fehlgeschlagen: ' . $response);
+            }
+
+            // RCPT TO
+            $this->sendCommand($socket, "RCPT TO:<{$to}>");
+            $response = $this->getResponse($socket);
+            if (strpos($response, '250') !== 0) {
+                throw new Exception('RCPT TO fehlgeschlagen: ' . $response);
+            }
+
+            // DATA
+            $this->sendCommand($socket, "DATA");
+            $response = $this->getResponse($socket);
+            if (strpos($response, '354') !== 0) {
+                throw new Exception('DATA fehlgeschlagen: ' . $response);
+            }
+
+            // Send headers and body
+            $this->sendCommand($socket, $headers . "\r\n\r\n" . $message . "\r\n.");
+            $response = $this->getResponse($socket);
+            if (strpos($response, '250') !== 0) {
+                throw new Exception('E-Mail-Versand fehlgeschlagen: ' . $response);
+            }
+
+            // QUIT
+            $this->quit($socket);
+
+            return true;
+
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+            $this->quit($socket);
+            return false;
+        }
+    }
+
+    /**
+     * Connect to SMTP server
+     */
+    private function connect()
+    {
+        $protocol = ($this->port === 465) ? 'ssl://' : '';
+        $socket = @stream_socket_client(
+            $protocol . $this->host . ':' . $this->port,
+            $errno,
+            $errstr,
+            30,
+            STREAM_CLIENT_CONNECT
+        );
+
+        if (!$socket) {
+            $this->errors[] = "Verbindung zu {$this->host}:{$this->port} fehlgeschlagen: {$errstr}";
+            return false;
+        }
+
+        // Get greeting
+        $this->getResponse($socket);
+
+        return $socket;
+    }
+
+    /**
+     * Send SMTP command
+     */
+    private function sendCommand($socket, string $command): void
+    {
+        fwrite($socket, $command . "\r\n");
+    }
+
+    /**
+     * Get SMTP response
+     */
+    private function getResponse($socket): string
+    {
+        $response = '';
+        while ($line = fgets($socket, 515)) {
+            $response .= $line;
+            if (substr($line, 3, 1) === ' ') {
+                break;
+            }
+        }
+        return trim($response);
+    }
+
+    /**
+     * Send QUIT and close connection
+     */
+    private function quit($socket): void
+    {
+        $this->sendCommand($socket, "QUIT");
+        fclose($socket);
+    }
+
+    /**
+     * Extract domain from email
+     */
+    private function extractDomain(string $email): string
+    {
+        $parts = explode('@', $email);
+        return $parts[1] ?? 'localhost';
+    }
+
+    /**
+     * Render email template
+     */
+    private function renderTemplate(string $template, array $data): string
+    {
+        $templatePath = SRC_PATH . '/views/auth/emails/' . $template . '.php';
+
+        if (file_exists($templatePath)) {
+            extract($data);
+            ob_start();
+            include $templatePath;
+            return ob_get_clean();
+        }
+
+        // Fallback for password reset
+        if ($template === 'password-reset') {
+            return $this->getPasswordResetTemplate($data['reset_link']);
+        }
+
+        return '';
+    }
+
+    /**
+     * Get default password reset email template
+     */
+    private function getPasswordResetTemplate(string $resetLink): string
+    {
+        return '
+<h2>Passwort zurücksetzen</h2>
+
+<p>Hallo,</p>
+
+<p>Du hast eine Anfrage zum Zurücksetzen deines Passworts gestellt.</p>
+
+<p>Klicke auf den folgenden Button, um ein neues Passwort zu erstellen:</p>
+
+<p style="text-align: center;">
+    <a href="' . htmlspecialchars($resetLink) . '" class="button">Neues Passwort erstellen</a>
+</p>
+
+<p>Oder kopiere diesen Link in deinen Browser:</p>
+<p style="word-break: break-all; color: #666; font-size: 14px;">' . htmlspecialchars($resetLink) . '</p>
+
+<p><strong>Dieser Link ist 1 Stunde gültig.</strong></p>
+
+<p>Falls du diese Anfrage nicht gestellt hast, kannst du diese E-Mail ignorieren.</p>
+
+<p>Viele Grüße,<br>Kindergarten Spiele Organizer</p>
+';
+    }
+}

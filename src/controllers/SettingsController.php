@@ -171,9 +171,23 @@ class SettingsController extends Controller
         }
 
         // Try to send test email
-        // This would need a mail library like PHPMailer
-        // For now, just show success
-        Session::setFlash('info', 'Test-E-Mail-Funktion ist noch nicht implementiert.');
+        require_once SRC_PATH . '/services/Mailer.php';
+        $mailer = new Mailer();
+
+        if (!$mailer->isConfigured()) {
+            Session::setFlash('error', 'SMTP ist nicht konfiguriert. Bitte speichern Sie zuerst die Einstellungen.');
+            $this->redirect('/settings');
+            return;
+        }
+
+        if ($mailer->sendTestEmail($testEmail)) {
+            Session::setFlash('success', __('settings.smtp_test_success'));
+        } else {
+            $errors = $mailer->getErrors();
+            $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Unbekannter Fehler';
+            Session::setFlash('error', str_replace(':error', $errorMsg, __('settings.smtp_test_failed')));
+        }
+
         $this->redirect('/settings');
     }
 

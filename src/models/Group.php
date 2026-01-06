@@ -205,6 +205,38 @@ class Group extends Model
     }
 
     /**
+     * Add an item to a group (polymorphic)
+     */
+    public static function addItem(int $groupId, string $itemType, int $itemId): bool
+    {
+        if (!in_array($itemType, ['game', 'material'])) {
+            return false;
+        }
+
+        if ($itemType === 'game') {
+            return self::addGame($groupId, $itemId);
+        } else {
+            return self::addMaterial($groupId, $itemId);
+        }
+    }
+
+    /**
+     * Remove an item from a group (polymorphic)
+     */
+    public static function removeItem(int $groupId, string $itemType, int $itemId): bool
+    {
+        if (!in_array($itemType, ['game', 'material'])) {
+            return false;
+        }
+
+        if ($itemType === 'game') {
+            return self::removeGame($groupId, $itemId);
+        } else {
+            return self::removeMaterial($groupId, $itemId);
+        }
+    }
+
+    /**
      * Check if group name exists
      */
     public static function nameExists(string $name, ?int $excludeId = null): bool
