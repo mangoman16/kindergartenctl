@@ -135,4 +135,10 @@ return [
     'GET /api/boxes/{id}/games' => ['ApiController', 'getBoxGames'],
     'GET /api/categories/{id}/games' => ['ApiController', 'getCategoryGames'],
     'GET /api/tags/{id}/games' => ['ApiController', 'getTagGames'],
+
+    // Calendar events
+    'GET /api/calendar/events' => ['CalendarController', 'getEvents'],
+    'POST /api/calendar/events' => ['CalendarController', 'store'],
+    'PUT /api/calendar/events/{id}' => ['CalendarController', 'update'],
+    'DELETE /api/calendar/events/{id}' => ['CalendarController', 'delete'],
 ];
