@@ -1,0 +1,126 @@
+<?php
+/**
+ * Tag Model (Themes)
+ */
+
+class Tag extends Model
+{
+    protected static string $table = 'tags';
+    protected static array $fillable = [
+        'name',
+        'description',
+        'image_path',
+        'color',
+    ];
+
+    /**
+     * Get all tags with game count
+     */
+    public static function allWithGameCount(string $orderBy = 'name', string $direction = 'ASC'): array
+    {
+        $db = self::getDb();
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        $sql = "SELECT t.*, COUNT(gt.game_id) as game_count
+                FROM tags t
+                LEFT JOIN game_tags gt ON gt.tag_id = t.id
+                GROUP BY t.id
+                ORDER BY t.{$orderBy} {$direction}";
+
+        $stmt = $db->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Get tag with game count
+     */
+    public static function findWithGameCount(int $id): ?array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            SELECT t.*, COUNT(gt.game_id) as game_count
+            FROM tags t
+            LEFT JOIN game_tags gt ON gt.tag_id = t.id
+            WHERE t.id = :id
+            GROUP BY t.id
+        ");
+        $stmt->execute(['id' => $id]);
+
+        $result = $stmt->fetch();
+        return $result ?: null;
+    }
+
+    /**
+     * Get games with this tag
+     */
+    public static function getGames(int $tagId, int $limit = 0): array
+    {
+        $db = self::getDb();
+
+        $sql = "SELECT g.* FROM games g
+                INNER JOIN game_tags gt ON gt.game_id = g.id
+                WHERE gt.tag_id = :tag_id
+                ORDER BY g.name ASC";
+
+        if ($limit > 0) {
+            $sql .= " LIMIT {$limit}";
+        }
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['tag_id' => $tagId]);
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Get tags for select dropdown
+     */
+    public static function getForSelect(): array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->query("SELECT id, name, color FROM tags ORDER BY name ASC");
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Check if tag name exists
+     */
+    public static function nameExists(string $name, ?int $excludeId = null): bool
+    {
+        return self::valueExists('name', $name, $excludeId);
+    }
+
+    /**
+     * Quick create a tag (for inline creation in game form)
+     */
+    public static function quickCreate(string $name): ?int
+    {
+        if (self::nameExists($name)) {
+            return null;
+        }
+
+        return self::create([
+            'name' => trim($name),
+        ]);
+    }
+
+    /**
+     * Search tags by name
+     */
+    public static function searchByName(string $query, int $limit = 10): array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            SELECT id, name, color FROM tags
+            WHERE name LIKE :query
+            ORDER BY name ASC
+            LIMIT {$limit}
+        ");
+        $stmt->execute(['query' => '%' . $query . '%']);
+
+        return $stmt->fetchAll();
+    }
+}
