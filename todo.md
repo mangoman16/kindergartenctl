@@ -101,6 +101,14 @@ The project has a solid foundation with most core features implemented. This doc
 - [x] Added `POST /api/groups/add-item` endpoint
 - [x] Added `POST /api/groups/remove-item` endpoint
 
+### Favorites UI - DONE
+- [x] Added favorite toggle button to game detail page
+- [x] Added favorite toggle button to material detail page
+- [x] Added favorites filter checkbox to games list page
+- [x] Added favorites filter and search to materials list page
+- [x] Updated Game model with is_favorite filter support
+- [x] Updated Material model with filters in allWithGameCount
+
 ---
 
 ## Remaining Tasks
@@ -120,11 +128,11 @@ The project has a solid foundation with most core features implemented. This doc
 - [ ] Add "games played this month" statistic
 - [ ] Add "recently played" section from calendar
 
-#### 3. Favorites Functionality - MOSTLY DONE
+#### 3. Favorites Functionality - COMPLETED
 - [x] Add `POST /api/games/toggle-favorite` API endpoint
 - [x] Add `POST /api/materials/toggle-favorite` API endpoint
-- [ ] Add favorite toggle buttons on detail pages
-- [ ] Add favorites filter on list pages
+- [x] Add favorite toggle buttons on detail pages
+- [x] Add favorites filter on list pages
 
 ### Medium Priority
 
