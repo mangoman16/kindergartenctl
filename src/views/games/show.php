@@ -132,6 +132,22 @@
 
     <!-- Sidebar -->
     <div>
+        <!-- Favorite Toggle -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="button" id="favorite-toggle" class="btn btn-block <?= !empty($game['is_favorite']) ? 'btn-warning' : 'btn-secondary' ?>"
+                        data-game-id="<?= $game['id'] ?>" data-is-favorite="<?= !empty($game['is_favorite']) ? '1' : '0' ?>">
+                    <svg id="favorite-icon-filled" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="<?= empty($game['is_favorite']) ? 'display:none;' : '' ?>">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <svg id="favorite-icon-outline" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="<?= !empty($game['is_favorite']) ? 'display:none;' : '' ?>">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span id="favorite-text"><?= !empty($game['is_favorite']) ? 'Favorit entfernen' : 'Als Favorit markieren' ?></span>
+                </button>
+            </div>
+        </div>
+
         <!-- Actions -->
         <div class="card mb-4">
             <div class="card-header">
@@ -251,3 +267,42 @@
     color: var(--color-gray-500);
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('favorite-toggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const gameId = this.dataset.gameId;
+            const isFavorite = this.dataset.isFavorite === '1';
+
+            toggleBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('csrf_token', '<?= csrf() ?>');
+
+            fetch('<?= url('/api/games/') ?>' + gameId + '/toggle-favorite', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newFavorite = data.is_favorite;
+                    toggleBtn.dataset.isFavorite = newFavorite ? '1' : '0';
+                    toggleBtn.className = 'btn btn-block ' + (newFavorite ? 'btn-warning' : 'btn-secondary');
+                    document.getElementById('favorite-icon-filled').style.display = newFavorite ? '' : 'none';
+                    document.getElementById('favorite-icon-outline').style.display = newFavorite ? 'none' : '';
+                    document.getElementById('favorite-text').textContent = newFavorite ? 'Favorit entfernen' : 'Als Favorit markieren';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                toggleBtn.disabled = false;
+            });
+        });
+    }
+});
+</script>

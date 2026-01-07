@@ -26,6 +26,7 @@ class GameController extends Controller
             'tag_id' => $this->getQuery('tag') ?: null,
             'is_outdoor' => $this->getQuery('outdoor') !== null ? (int)$this->getQuery('outdoor') : null,
             'is_active' => $this->getQuery('active') !== null ? (int)$this->getQuery('active') : null,
+            'is_favorite' => $this->getQuery('favorites') !== null ? (int)$this->getQuery('favorites') : null,
             'search' => $this->getQuery('q') ?: null,
         ];
 

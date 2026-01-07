@@ -17,16 +17,22 @@ class MaterialController extends Controller
     {
         require_once SRC_PATH . '/models/Material.php';
 
+        $filters = [
+            'is_favorite' => $this->getQuery('favorites') !== null ? (int)$this->getQuery('favorites') : null,
+            'search' => $this->getQuery('q') ?: null,
+        ];
+
         $sort = $this->getQuery('sort', 'name');
         $order = $this->getQuery('order', 'asc');
 
-        $materials = Material::allWithGameCount($sort, $order);
+        $materials = Material::allWithGameCount($sort, $order, $filters);
 
         $this->setTitle(__('material.title_plural'));
         $this->addBreadcrumb(__('material.title_plural'), url('/materials'));
 
         $this->render('materials/index', [
             'materials' => $materials,
+            'filters' => $filters,
             'currentSort' => $sort,
             'currentOrder' => $order,
         ]);

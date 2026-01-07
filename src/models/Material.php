@@ -17,18 +17,35 @@ class Material extends Model
     /**
      * Get all materials with game count
      */
-    public static function allWithGameCount(string $orderBy = 'name', string $direction = 'ASC'): array
+    public static function allWithGameCount(string $orderBy = 'name', string $direction = 'ASC', array $filters = []): array
     {
         $db = self::getDb();
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
 
+        $where = [];
+        $params = [];
+
+        if (isset($filters['is_favorite']) && $filters['is_favorite'] !== null) {
+            $where[] = 'm.is_favorite = :is_favorite';
+            $params['is_favorite'] = $filters['is_favorite'];
+        }
+
+        if (!empty($filters['search'])) {
+            $where[] = '(m.name LIKE :search OR m.description LIKE :search)';
+            $params['search'] = '%' . $filters['search'] . '%';
+        }
+
+        $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+
         $sql = "SELECT m.*, COUNT(gm.game_id) as game_count
                 FROM materials m
                 LEFT JOIN game_materials gm ON gm.material_id = m.id
+                {$whereClause}
                 GROUP BY m.id
                 ORDER BY m.{$orderBy} {$direction}";
 
-        $stmt = $db->query($sql);
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

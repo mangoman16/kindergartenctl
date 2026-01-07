@@ -57,6 +57,11 @@ class Game extends Model
             $params['is_active'] = $filters['is_active'];
         }
 
+        if (isset($filters['is_favorite']) && $filters['is_favorite'] !== null) {
+            $where[] = 'g.is_favorite = :is_favorite';
+            $params['is_favorite'] = $filters['is_favorite'];
+        }
+
         if (!empty($filters['search'])) {
             $where[] = '(g.name LIKE :search OR g.description LIKE :search)';
             $params['search'] = '%' . $filters['search'] . '%';

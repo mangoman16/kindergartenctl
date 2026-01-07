@@ -64,14 +64,32 @@
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="card">
-        <div class="card-header">
-            <h2 class="card-title"><?= __('misc.actions') ?></h2>
+    <!-- Sidebar -->
+    <div>
+        <!-- Favorite Toggle -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="button" id="favorite-toggle" class="btn btn-block <?= !empty($material['is_favorite']) ? 'btn-warning' : 'btn-secondary' ?>"
+                        data-material-id="<?= $material['id'] ?>" data-is-favorite="<?= !empty($material['is_favorite']) ? '1' : '0' ?>">
+                    <svg id="favorite-icon-filled" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="<?= empty($material['is_favorite']) ? 'display:none;' : '' ?>">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <svg id="favorite-icon-outline" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="<?= !empty($material['is_favorite']) ? 'display:none;' : '' ?>">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span id="favorite-text"><?= !empty($material['is_favorite']) ? 'Favorit entfernen' : 'Als Favorit markieren' ?></span>
+                </button>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="flex flex-col gap-2">
-                <a href="<?= url('/materials/' . $material['id'] . '/edit') ?>" class="btn btn-secondary btn-block">
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><?= __('misc.actions') ?></h2>
+            </div>
+            <div class="card-body">
+                <div class="flex flex-col gap-2">
+                    <a href="<?= url('/materials/' . $material['id'] . '/edit') ?>" class="btn btn-secondary btn-block">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -154,3 +172,42 @@
     </div>
 </div>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('favorite-toggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const materialId = this.dataset.materialId;
+            const isFavorite = this.dataset.isFavorite === '1';
+
+            toggleBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('csrf_token', '<?= csrf() ?>');
+
+            fetch('<?= url('/api/materials/') ?>' + materialId + '/toggle-favorite', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newFavorite = data.is_favorite;
+                    toggleBtn.dataset.isFavorite = newFavorite ? '1' : '0';
+                    toggleBtn.className = 'btn btn-block ' + (newFavorite ? 'btn-warning' : 'btn-secondary');
+                    document.getElementById('favorite-icon-filled').style.display = newFavorite ? '' : 'none';
+                    document.getElementById('favorite-icon-outline').style.display = newFavorite ? 'none' : '';
+                    document.getElementById('favorite-text').textContent = newFavorite ? 'Favorit entfernen' : 'Als Favorit markieren';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                toggleBtn.disabled = false;
+            });
+        });
+    }
+});
+</script>
