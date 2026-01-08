@@ -202,10 +202,12 @@ return [
     'auth.login_to_continue' => 'Bitte melden Sie sich an, um fortzufahren.',
 
     // Search
+    'search.title' => 'Suche',
     'search.placeholder' => 'Suchen...',
     'search.no_results' => 'Keine Ergebnisse gefunden',
     'search.results_for' => 'Ergebnisse für',
     'search.all' => 'Alle',
+    'search.show_all' => 'Alle Ergebnisse anzeigen',
     'search.min_chars' => 'Mindestens 3 Zeichen eingeben',
 
     // Misc

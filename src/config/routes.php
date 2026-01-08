@@ -122,6 +122,7 @@ return [
     'GET /api/check-duplicate' => ['ApiController', 'checkDuplicate'],
 
     // Search / autocomplete
+    'GET /api/search' => ['ApiController', 'liveSearch'],
     'GET /api/tags/search' => ['ApiController', 'searchTags'],
     'GET /api/materials/search' => ['ApiController', 'searchMaterials'],
     'GET /api/games/search' => ['ApiController', 'searchGames'],

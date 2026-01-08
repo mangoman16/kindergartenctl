@@ -116,15 +116,9 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Items per page setting (user-configurable)
 - [x] Default view preference (grid/list toggle)
 
----
-
-## Remaining Tasks
-
-### Low Priority
-
-#### Search Improvements
-- [ ] Live search dropdown in header (currently goes to search page)
-- [ ] Highlight search terms in results
+### Search Improvements
+- [x] Live search dropdown in header
+- [x] Highlight search terms in results
 
 ---
 
