@@ -139,13 +139,12 @@ The project has a comprehensive foundation with most core features implemented. 
 
 ## Technical Debt / Improvements
 
-- [ ] Add unit tests for core functionality
-- [ ] Add input sanitization review
-- [ ] Review CSRF protection coverage
-- [ ] Add rate limiting for API endpoints
-- [ ] Optimize database queries for large datasets
-- [ ] Add database migration system
-- [ ] Consider adding PHPMailer for more robust email handling
+- [x] Add unit tests for core functionality (PHPUnit setup with Validator and Security tests)
+- [x] Input sanitization review (cleanInput, cleanHtml verified across controllers)
+- [x] CSRF protection coverage (verified on all store/update/delete endpoints)
+- [x] Add rate limiting for API endpoints (rateLimit method in ApiController)
+- [x] Optimize database queries for large datasets (migration adds composite indexes)
+- [x] Add database migration system (database/Migration.php + migrate.php CLI)
 
 ---
 

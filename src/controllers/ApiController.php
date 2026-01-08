@@ -35,6 +35,22 @@ class ApiController extends Controller
     }
 
     /**
+     * Apply rate limiting to an endpoint
+     */
+    private function rateLimit(string $endpoint, int $maxAttempts = 60, int $decaySeconds = 60): void
+    {
+        $ip = getClientIp();
+        $key = "api:{$endpoint}:{$ip}";
+
+        if (!checkRateLimit($key, $maxAttempts, $decaySeconds)) {
+            $this->json([
+                'success' => false,
+                'error' => 'Zu viele Anfragen. Bitte warten Sie einen Moment.',
+            ], 429);
+        }
+    }
+
+    /**
      * Health check endpoint
      */
     public function health(): void
@@ -50,6 +66,7 @@ class ApiController extends Controller
      */
     public function uploadImage(): void
     {
+        $this->rateLimit('upload', 30, 60); // 30 uploads per minute
         $this->requireCsrf();
 
         $type = $this->getPost('type', '');
@@ -275,6 +292,7 @@ class ApiController extends Controller
      */
     public function liveSearch(): void
     {
+        $this->rateLimit('search', 120, 60); // 120 searches per minute
         $query = trim($this->getQuery('q', ''));
 
         if (strlen($query) < 2) {

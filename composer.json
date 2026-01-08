@@ -1,0 +1,33 @@
+{
+    "name": "kindergarten/organizer",
+    "description": "Kindergarten Game Organizer - Web application for organizing games and materials",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/core/",
+            "src/models/",
+            "src/controllers/",
+            "src/services/"
+        ],
+        "files": [
+            "src/helpers/functions.php",
+            "src/helpers/security.php",
+            "src/helpers/dates.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}
