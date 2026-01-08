@@ -23,12 +23,25 @@ class Game extends Model
     ];
 
     /**
+     * Allowed columns for ORDER BY (security whitelist)
+     */
+    private static array $allowedOrderColumns = [
+        'name', 'created_at', 'updated_at', 'duration_minutes', 'difficulty',
+        'min_players', 'max_players', 'is_favorite', 'is_outdoor', 'is_active'
+    ];
+
+    /**
      * Get all games with related data
      */
     public static function allWithRelations(array $filters = [], string $orderBy = 'name', string $direction = 'ASC'): array
     {
         $db = self::getDb();
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        // Security: Validate orderBy against whitelist
+        if (!in_array($orderBy, self::$allowedOrderColumns, true)) {
+            $orderBy = 'name';
+        }
 
         $where = [];
         $params = [];

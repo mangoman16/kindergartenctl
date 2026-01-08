@@ -83,9 +83,15 @@ class AuthController extends Controller
 
     /**
      * Handle logout
+     * Requires POST request with CSRF token to prevent CSRF logout attacks
      */
     public function logout(): void
     {
+        // Only allow POST requests with valid CSRF token
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->requireCsrf();
+        }
+
         Auth::logout();
         Session::setFlash('success', 'Sie wurden abgemeldet.');
         $this->redirect('/login');

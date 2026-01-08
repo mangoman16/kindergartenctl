@@ -138,13 +138,33 @@ class ApiController extends Controller
             return;
         }
 
-        // Sanitize path to prevent directory traversal
-        $path = basename(dirname(dirname($path))) . '/' . basename(dirname($path)) . '/' . basename($path);
+        // Security: Validate path matches expected pattern to prevent path traversal
+        // Expected format: type/full/filename.webp (e.g., games/full/20240101_abc123.webp)
+        $allowedTypes = ['games', 'boxes', 'categories', 'tags', 'materials'];
+        $allowedSubdirs = ['full', 'thumbs'];
+
+        if (!preg_match('#^([a-z]+)/(full|thumbs)/([a-zA-Z0-9_]+\.webp)$#', $path, $matches)) {
+            $this->jsonError('Ungültiger Bildpfad.', 400);
+            return;
+        }
+
+        $type = $matches[1];
+        $subdir = $matches[2];
+        $filename = $matches[3];
+
+        // Validate type against whitelist
+        if (!in_array($type, $allowedTypes, true)) {
+            $this->jsonError('Ungültiger Bildtyp.', 400);
+            return;
+        }
+
+        // Reconstruct the safe path
+        $safePath = $type . '/' . $subdir . '/' . $filename;
 
         require_once SRC_PATH . '/services/ImageProcessor.php';
         $processor = new ImageProcessor();
 
-        if ($processor->delete($path)) {
+        if ($processor->delete($safePath)) {
             $this->json(['success' => true]);
         } else {
             $this->jsonError('Fehler beim Löschen des Bildes.', 500);

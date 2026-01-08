@@ -4,10 +4,31 @@
  */
 
 /**
+ * Get list of trusted proxy IP addresses
+ * In production, configure this in config/config.php as 'trusted_proxies'
+ */
+function getTrustedProxies(): array
+{
+    $config = App::config('security', []);
+    return $config['trusted_proxies'] ?? ['127.0.0.1', '::1'];
+}
+
+/**
  * Get the client IP address
+ * Only trusts proxy headers when request comes from a trusted proxy
  */
 function getClientIp(): string
 {
+    $remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    $trustedProxies = getTrustedProxies();
+
+    // Only check proxy headers if the request is from a trusted proxy
+    // This prevents IP spoofing attacks
+    if (!in_array($remoteAddr, $trustedProxies, true)) {
+        return $remoteAddr;
+    }
+
+    // Request is from trusted proxy, check forwarded headers
     $ipKeys = [
         'HTTP_CF_CONNECTING_IP', // Cloudflare
         'HTTP_X_FORWARDED_FOR',
@@ -15,14 +36,13 @@ function getClientIp(): string
         'HTTP_X_CLUSTER_CLIENT_IP',
         'HTTP_FORWARDED_FOR',
         'HTTP_FORWARDED',
-        'REMOTE_ADDR',
     ];
 
     foreach ($ipKeys as $key) {
         if (isset($_SERVER[$key])) {
             $ip = $_SERVER[$key];
 
-            // Handle comma-separated list of IPs
+            // Handle comma-separated list of IPs (take first, client IP)
             if (strpos($ip, ',') !== false) {
                 $ips = explode(',', $ip);
                 $ip = trim($ips[0]);
@@ -35,7 +55,7 @@ function getClientIp(): string
         }
     }
 
-    return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    return $remoteAddr;
 }
 
 /**
@@ -228,12 +248,17 @@ function isSuspiciousFile(string $filepath): bool
 
 /**
  * Clean user input (basic XSS prevention)
+ * @param mixed $input String or array to clean
+ * @return string|array Cleaned input
  */
-function cleanInput($input): string
+function cleanInput($input): string|array
 {
     if (is_array($input)) {
         return array_map('cleanInput', $input);
     }
+
+    // Ensure we're working with a string
+    $input = (string) $input;
 
     // Remove null bytes
     $input = str_replace(chr(0), '', $input);
@@ -249,6 +274,7 @@ function cleanInput($input): string
 
 /**
  * Validate and clean HTML input (for rich text)
+ * Enhanced to cover more XSS attack vectors
  */
 function cleanHtml(string $html): string
 {
@@ -257,12 +283,20 @@ function cleanHtml(string $html): string
     // Strip all tags except allowed
     $html = strip_tags($html, $allowed);
 
-    // Remove dangerous attributes
-    $html = preg_replace('/\s*on\w+="[^"]*"/i', '', $html);
-    $html = preg_replace('/\s*on\w+=\'[^\']*\'/i', '', $html);
+    // Remove all event handlers (onclick, onerror, onload, etc.)
+    // Handle double-quoted attributes
+    $html = preg_replace('/\s+on\w+\s*=\s*"[^"]*"/i', '', $html);
+    // Handle single-quoted attributes
+    $html = preg_replace('/\s+on\w+\s*=\s*\'[^\']*\'/i', '', $html);
+    // Handle unquoted attributes
+    $html = preg_replace('/\s+on\w+\s*=\s*[^\s>]+/i', '', $html);
 
-    // Clean javascript: urls in href
-    $html = preg_replace('/href\s*=\s*["\']javascript:[^"\']*["\']/i', '', $html);
+    // Remove dangerous URL schemes (javascript:, data:, vbscript:)
+    $html = preg_replace('/href\s*=\s*["\']?\s*(javascript|data|vbscript):[^"\'>\s]*/i', 'href="#"', $html);
+
+    // Remove style attributes (can be used for CSS-based attacks)
+    $html = preg_replace('/\s+style\s*=\s*["\'][^"\']*["\']/i', '', $html);
+    $html = preg_replace('/\s+style\s*=\s*[^\s>]+/i', '', $html);
 
     return $html;
 }
@@ -293,28 +327,57 @@ function generateToken(int $length = 32): string
 
 /**
  * Rate limiting check
+ * Uses file locking to prevent race conditions under high concurrency
  */
 function checkRateLimit(string $key, int $maxAttempts, int $decaySeconds): bool
 {
-    $cacheFile = STORAGE_PATH . '/cache/rate_' . md5($key) . '.json';
-
-    $data = [];
-    if (file_exists($cacheFile)) {
-        $data = json_decode(file_get_contents($cacheFile), true) ?: [];
+    $cacheDir = STORAGE_PATH . '/cache';
+    if (!is_dir($cacheDir)) {
+        mkdir($cacheDir, 0755, true);
     }
 
-    // Clean old entries
+    $cacheFile = $cacheDir . '/rate_' . md5($key) . '.json';
     $now = time();
-    $data = array_filter($data, fn($time) => $time > ($now - $decaySeconds));
 
-    // Check limit
-    if (count($data) >= $maxAttempts) {
-        return false;
+    // Open file for reading and writing (create if not exists)
+    $fp = fopen($cacheFile, 'c+');
+    if (!$fp) {
+        // If we can't open the file, fail open (allow the request)
+        return true;
     }
 
-    // Add current attempt
-    $data[] = $now;
-    file_put_contents($cacheFile, json_encode($data));
+    // Acquire exclusive lock to prevent race conditions
+    if (!flock($fp, LOCK_EX)) {
+        fclose($fp);
+        return true;
+    }
 
-    return true;
+    try {
+        // Read existing data
+        $content = stream_get_contents($fp);
+        $data = $content ? (json_decode($content, true) ?: []) : [];
+
+        // Clean old entries
+        $data = array_filter($data, fn($time) => $time > ($now - $decaySeconds));
+        $data = array_values($data); // Re-index array
+
+        // Check limit
+        if (count($data) >= $maxAttempts) {
+            return false;
+        }
+
+        // Add current attempt
+        $data[] = $now;
+
+        // Write updated data
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, json_encode($data));
+
+        return true;
+    } finally {
+        // Always release lock and close file
+        flock($fp, LOCK_UN);
+        fclose($fp);
+    }
 }

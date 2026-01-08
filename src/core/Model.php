@@ -27,6 +27,35 @@ abstract class Model
     }
 
     /**
+     * Validate a column name to prevent SQL injection
+     * Column must be alphanumeric with underscores only
+     */
+    protected static function validateColumn(string $column): bool
+    {
+        // Column must match pattern: letters, numbers, underscores
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+            return false;
+        }
+
+        // If fillable is defined, column must be in fillable or be the primary key
+        if (!empty(static::$fillable)) {
+            return in_array($column, static::$fillable, true) || $column === static::$primaryKey;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate column name and throw exception if invalid
+     */
+    protected static function assertValidColumn(string $column): void
+    {
+        if (!self::validateColumn($column)) {
+            throw new InvalidArgumentException("Invalid column name: {$column}");
+        }
+    }
+
+    /**
      * Find a record by ID
      */
     public static function find(int $id): ?array
@@ -47,6 +76,8 @@ abstract class Model
      */
     public static function findBy(string $column, $value): ?array
     {
+        self::assertValidColumn($column);
+
         $db = self::getDb();
         $table = static::$table;
 
@@ -67,6 +98,7 @@ abstract class Model
 
         $sql = "SELECT * FROM `{$table}`";
         if ($orderBy) {
+            self::assertValidColumn($orderBy);
             $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
             $sql .= " ORDER BY `{$orderBy}` {$direction}";
         }
@@ -93,6 +125,7 @@ abstract class Model
         // Build query
         $sql = "SELECT * FROM `{$table}`";
         if ($orderBy) {
+            self::assertValidColumn($orderBy);
             $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
             $sql .= " ORDER BY `{$orderBy}` {$direction}";
         }
@@ -221,6 +254,8 @@ abstract class Model
      */
     public static function countWhere(string $column, $value): int
     {
+        self::assertValidColumn($column);
+
         $db = self::getDb();
         $table = static::$table;
 
@@ -235,11 +270,14 @@ abstract class Model
      */
     public static function where(string $column, $value, string $orderBy = null, string $direction = 'ASC'): array
     {
+        self::assertValidColumn($column);
+
         $db = self::getDb();
         $table = static::$table;
 
         $sql = "SELECT * FROM `{$table}` WHERE `{$column}` = :value";
         if ($orderBy) {
+            self::assertValidColumn($orderBy);
             $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
             $sql .= " ORDER BY `{$orderBy}` {$direction}";
         }
@@ -255,6 +293,11 @@ abstract class Model
      */
     public static function search(string $query, array $columns, int $limit = 50): array
     {
+        // Validate all column names
+        foreach ($columns as $column) {
+            self::assertValidColumn($column);
+        }
+
         $db = self::getDb();
         $table = static::$table;
 
@@ -298,6 +341,8 @@ abstract class Model
      */
     public static function valueExists(string $column, $value, ?int $excludeId = null): bool
     {
+        self::assertValidColumn($column);
+
         $db = self::getDb();
         $table = static::$table;
         $pk = static::$primaryKey;

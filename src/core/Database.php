@@ -10,10 +10,34 @@ class Database
     private static array $config = [];
 
     /**
+     * Allowed charsets for database creation
+     */
+    private static array $allowedCharsets = ['utf8', 'utf8mb4', 'latin1', 'ascii'];
+
+    /**
+     * Allowed collations for database creation
+     */
+    private static array $allowedCollations = [
+        'utf8_general_ci', 'utf8_unicode_ci',
+        'utf8mb4_general_ci', 'utf8mb4_unicode_ci', 'utf8mb4_0900_ai_ci',
+        'latin1_swedish_ci', 'latin1_general_ci',
+        'ascii_general_ci'
+    ];
+
+    /**
      * Private constructor to prevent direct instantiation
      */
     private function __construct()
     {
+    }
+
+    /**
+     * Validate database name to prevent SQL injection
+     * Only allows alphanumeric characters and underscores
+     */
+    private static function isValidDatabaseName(string $name): bool
+    {
+        return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $name) === 1 && strlen($name) <= 64;
     }
 
     /**
@@ -109,6 +133,11 @@ class Database
 
             // Try to select the database if specified
             if (!empty($config['database'])) {
+                // Security: Validate database name to prevent SQL injection
+                if (!self::isValidDatabaseName($config['database'])) {
+                    error_log('Invalid database name format: ' . $config['database']);
+                    return false;
+                }
                 $pdo->exec("USE `{$config['database']}`");
             }
 
@@ -141,6 +170,24 @@ class Database
             $dbName = $config['database'];
             $charset = $config['charset'] ?? 'utf8mb4';
             $collation = $config['collation'] ?? 'utf8mb4_unicode_ci';
+
+            // Security: Validate database name to prevent SQL injection
+            if (!self::isValidDatabaseName($dbName)) {
+                error_log('Invalid database name format: ' . $dbName);
+                return false;
+            }
+
+            // Security: Validate charset against whitelist
+            if (!in_array($charset, self::$allowedCharsets, true)) {
+                error_log('Invalid charset: ' . $charset);
+                $charset = 'utf8mb4';
+            }
+
+            // Security: Validate collation against whitelist
+            if (!in_array($collation, self::$allowedCollations, true)) {
+                error_log('Invalid collation: ' . $collation);
+                $collation = 'utf8mb4_unicode_ci';
+            }
 
             $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET {$charset} COLLATE {$collation}");
 

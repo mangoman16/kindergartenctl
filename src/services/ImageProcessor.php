@@ -278,14 +278,22 @@ class ImageProcessor
      */
     private function applyCrop(GdImage $image, array $cropData): GdImage
     {
-        $x = (int)$cropData['x'];
-        $y = (int)$cropData['y'];
-        $width = (int)$cropData['width'];
-        $height = (int)$cropData['height'];
+        $sourceWidth = imagesx($image);
+        $sourceHeight = imagesy($image);
+
+        // Ensure coordinates are within bounds
+        $x = max(0, (int)$cropData['x']);
+        $y = max(0, (int)$cropData['y']);
 
         // Ensure dimensions are positive
-        $width = max(1, $width);
-        $height = max(1, $height);
+        $width = max(1, (int)$cropData['width']);
+        $height = max(1, (int)$cropData['height']);
+
+        // Ensure crop region doesn't exceed source image bounds
+        $x = min($x, $sourceWidth - 1);
+        $y = min($y, $sourceHeight - 1);
+        $width = min($width, $sourceWidth - $x);
+        $height = min($height, $sourceHeight - $y);
 
         // Create cropped image
         $cropped = imagecreatetruecolor($width, $height);

@@ -162,6 +162,22 @@ class Validator
     }
 
     /**
+     * Allowed tables for unique validation (security whitelist)
+     */
+    private static array $allowedTables = [
+        'users', 'games', 'materials', 'boxes', 'categories', 'tags', 'groups',
+        'calendar_events', 'settings', 'password_resets', 'ip_bans', 'changelog'
+    ];
+
+    /**
+     * Validate table and column names to prevent SQL injection
+     */
+    private function isValidIdentifier(string $name): bool
+    {
+        return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $name) === 1;
+    }
+
+    /**
      * Unique validation (check database)
      */
     private function validateUnique(string $field, $value, array $params): void
@@ -175,6 +191,18 @@ class Validator
         $excludeId = isset($params[2]) ? (int)$params[2] : null;
 
         if (empty($table)) {
+            return;
+        }
+
+        // Security: Validate table name against whitelist
+        if (!in_array($table, self::$allowedTables, true)) {
+            error_log("Validator: Invalid table name attempted: {$table}");
+            return;
+        }
+
+        // Security: Validate column name format
+        if (!$this->isValidIdentifier($column)) {
+            error_log("Validator: Invalid column name attempted: {$column}");
             return;
         }
 
