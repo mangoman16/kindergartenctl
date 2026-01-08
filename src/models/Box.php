@@ -9,6 +9,7 @@ class Box extends Model
     protected static array $fillable = [
         'name',
         'number',
+        'label',
         'location',
         'description',
         'notes',

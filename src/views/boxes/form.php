@@ -32,6 +32,16 @@
                            value="<?= old('number', $box['number'] ?? '') ?>"
                            maxlength="20" placeholder="z.B. 001">
                 </div>
+
+                <div class="form-group">
+                    <label for="label" class="form-label">
+                        <?= __('box.label') ?>
+                    </label>
+                    <input type="text" id="label" name="label"
+                           class="form-control"
+                           value="<?= old('label', $box['label'] ?? '') ?>"
+                           maxlength="50" placeholder="z.B. Spielkiste A">
+                </div>
             </div>
 
             <div class="form-group">

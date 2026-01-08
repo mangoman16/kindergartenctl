@@ -208,6 +208,7 @@ CREATE TABLE IF NOT EXISTS boxes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     number VARCHAR(20) NULL,
+    label VARCHAR(50) NULL,
     location VARCHAR(255) NULL,
     description TEXT NULL,
     notes TEXT NULL,
@@ -252,24 +253,34 @@ CREATE TABLE IF NOT EXISTS games (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     description TEXT NULL,
-    notes TEXT NULL,
+    instructions TEXT NULL,
+    min_players INT UNSIGNED NULL,
+    max_players INT UNSIGNED NULL,
+    duration_minutes INT UNSIGNED NULL,
     difficulty TINYINT UNSIGNED DEFAULT 1,
     image_path VARCHAR(255) NULL,
     is_favorite BOOLEAN DEFAULT FALSE,
-    status ENUM('active', 'archived', 'needs_materials') DEFAULT 'active',
+    is_outdoor BOOLEAN DEFAULT FALSE,
+    is_active BOOLEAN DEFAULT TRUE,
+    box_id INT UNSIGNED NULL,
+    category_id INT UNSIGNED NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY unique_game_name (name),
-    FULLTEXT INDEX ft_games (name, description, notes),
+    FULLTEXT INDEX ft_games (name, description, instructions),
     INDEX idx_difficulty (difficulty),
     INDEX idx_favorite (is_favorite),
-    INDEX idx_status (status)
+    INDEX idx_active (is_active),
+    INDEX idx_outdoor (is_outdoor),
+    FOREIGN KEY (box_id) REFERENCES boxes(id) ON DELETE SET NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Game Materials junction table
 CREATE TABLE IF NOT EXISTS game_materials (
     game_id INT UNSIGNED NOT NULL,
     material_id INT UNSIGNED NOT NULL,
+    quantity INT UNSIGNED DEFAULT 1,
     PRIMARY KEY (game_id, material_id),
     FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE,
     FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
@@ -304,16 +315,31 @@ CREATE TABLE IF NOT EXISTS `groups` (
     FULLTEXT INDEX ft_groups (name, description)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Group Items junction table (polymorphic)
-CREATE TABLE IF NOT EXISTS group_items (
+-- Group Games junction table
+CREATE TABLE IF NOT EXISTS group_games (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     group_id INT UNSIGNED NOT NULL,
-    item_type ENUM('game', 'material') NOT NULL,
-    item_id INT UNSIGNED NOT NULL,
+    game_id INT UNSIGNED NOT NULL,
+    sort_order INT UNSIGNED DEFAULT 0,
     added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_group_item (group_id, item_type, item_id),
+    UNIQUE KEY unique_group_game (group_id, game_id),
     FOREIGN KEY (group_id) REFERENCES `groups`(id) ON DELETE CASCADE,
-    INDEX idx_item (item_type, item_id)
+    FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE,
+    INDEX idx_sort (group_id, sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Group Materials junction table
+CREATE TABLE IF NOT EXISTS group_materials (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    group_id INT UNSIGNED NOT NULL,
+    material_id INT UNSIGNED NOT NULL,
+    quantity INT UNSIGNED DEFAULT 1,
+    sort_order INT UNSIGNED DEFAULT 0,
+    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_group_material (group_id, material_id),
+    FOREIGN KEY (group_id) REFERENCES `groups`(id) ON DELETE CASCADE,
+    FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE,
+    INDEX idx_sort (group_id, sort_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Calendar Events

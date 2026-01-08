@@ -122,6 +122,21 @@ The project has a comprehensive foundation with most core features implemented. 
 
 ---
 
+## Recently Fixed (January 2026)
+
+### Database Schema Alignment
+- [x] Fixed games table schema - added missing columns: instructions, min_players, max_players, duration_minutes, is_outdoor, is_active, box_id, category_id
+- [x] Added quantity column to game_materials junction table
+- [x] Created proper group_games and group_materials tables (replaced polymorphic group_items)
+- [x] Added label column to boxes table
+- [x] Updated fulltext index on games table to include instructions field
+- [x] Updated Game model fillable array with difficulty and is_favorite
+- [x] Updated Box model fillable array with label field
+- [x] Added missing German translations (game.instructions, game.min_players, etc.)
+- [x] Added label field to box form view
+
+---
+
 ## Technical Debt / Improvements
 
 - [ ] Add unit tests for core functionality

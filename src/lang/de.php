@@ -76,6 +76,13 @@ return [
     'game.same_age_group' => 'Gleiche Altersgruppe',
     'game.similar_tags' => 'Ähnliche Themen',
     'game.same_materials' => 'Gleiches Material',
+    'game.instructions' => 'Spielanleitung',
+    'game.min_players' => 'Min. Spieler',
+    'game.max_players' => 'Max. Spieler',
+    'game.duration' => 'Dauer',
+    'game.is_outdoor' => 'Outdoor-Spiel',
+    'game.is_active' => 'Aktiv',
+    'game.age_group' => 'Altersgruppe',
 
     // Materials
     'material.title' => 'Material',
@@ -96,6 +103,7 @@ return [
     'box.title' => 'Box',
     'box.title_plural' => 'Boxen',
     'box.number' => 'Nummer',
+    'box.label' => 'Bezeichnung',
     'box.location' => 'Standort',
     'box.contents' => 'Inhalt',
     'box.add_new' => 'Neue Box',
