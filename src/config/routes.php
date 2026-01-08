@@ -68,6 +68,7 @@ return [
     'GET /categories/{id}/edit' => ['CategoryController', 'edit'],
     'POST /categories/{id}' => ['CategoryController', 'update'],
     'POST /categories/{id}/delete' => ['CategoryController', 'delete'],
+    'GET /categories/{id}/print' => ['CategoryController', 'print'],
 
     // Tags
     'GET /tags' => ['TagController', 'index'],
@@ -76,6 +77,7 @@ return [
     'GET /tags/{id}/edit' => ['TagController', 'edit'],
     'POST /tags/{id}' => ['TagController', 'update'],
     'POST /tags/{id}/delete' => ['TagController', 'delete'],
+    'GET /tags/{id}/print' => ['TagController', 'print'],
 
     // Groups
     'GET /groups' => ['GroupController', 'index'],
@@ -85,6 +87,8 @@ return [
     'GET /groups/{id}/edit' => ['GroupController', 'edit'],
     'POST /groups/{id}' => ['GroupController', 'update'],
     'POST /groups/{id}/delete' => ['GroupController', 'delete'],
+    'GET /groups/{id}/print' => ['GroupController', 'print'],
+    'GET /groups/{id}/print-checklist' => ['GroupController', 'printChecklist'],
 
     // Calendar
     'GET /calendar' => ['CalendarController', 'index'],
@@ -100,6 +104,7 @@ return [
     'GET /settings' => ['SettingsController', 'index'],
     'POST /settings/password' => ['SettingsController', 'updatePassword'],
     'POST /settings/email' => ['SettingsController', 'updateEmail'],
+    'POST /settings/preferences' => ['SettingsController', 'updatePreferences'],
     'POST /settings/smtp' => ['SettingsController', 'updateSmtp'],
     'POST /settings/smtp/test' => ['SettingsController', 'testSmtp'],
     'POST /settings/unban' => ['SettingsController', 'unbanIp'],

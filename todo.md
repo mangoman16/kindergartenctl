@@ -11,7 +11,7 @@ The project has a comprehensive foundation with most core features implemented. 
 ### Phase 1: Foundation
 - [x] Project structure setup
 - [x] Database connection class (PDO)
-- [x] Basic routing system (155 routes)
+- [x] Basic routing system (107 routes)
 - [x] Base controller and model classes
 - [x] Session management (secure cookies, regeneration)
 - [x] Installation wizard (4 steps)
@@ -106,23 +106,23 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Implement "Add to favorites" bulk action
 - [x] Implement "Remove from favorites" bulk action
 
+### Additional Print Views
+- [x] Category games list print view
+- [x] Tag games list print view
+- [x] Group contents print view
+- [x] Preparation checklist view (materials grouped by box)
+
+### User Preferences
+- [x] Items per page setting (user-configurable)
+- [x] Default view preference (grid/list toggle)
+
 ---
 
 ## Remaining Tasks
 
 ### Low Priority
 
-#### 4. Additional Print Views
-- [ ] Category games list print view
-- [ ] Tag games list print view
-- [ ] Group contents print view
-- [ ] Preparation checklist view (materials grouped by box)
-
-#### 5. User Preferences
-- [ ] Items per page setting (user-configurable)
-- [ ] Default view preference (grid/list toggle)
-
-#### 6. Search Improvements
+#### Search Improvements
 - [ ] Live search dropdown in header (currently goes to search page)
 - [ ] Highlight search terms in results
 

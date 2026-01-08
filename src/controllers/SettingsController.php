@@ -30,6 +30,9 @@ class SettingsController extends Controller
         // Get SMTP settings
         $smtpConfig = $this->getSmtpConfig();
 
+        // Get user preferences
+        $preferences = $this->getUserPreferences();
+
         $this->setTitle(__('settings.title'));
         $this->addBreadcrumb(__('settings.title'));
 
@@ -39,6 +42,7 @@ class SettingsController extends Controller
             'uploadsSize' => $this->formatBytes($uploadsSize),
             'tempSize' => $this->formatBytes($tempSize),
             'smtpConfig' => $smtpConfig,
+            'preferences' => $preferences,
         ]);
     }
 
@@ -61,6 +65,58 @@ class SettingsController extends Controller
             'smtp_from_name' => 'Kindergarten Spiele Organizer',
             'smtp_encryption' => 'tls',
         ];
+    }
+
+    /**
+     * Get user preferences
+     */
+    private function getUserPreferences(): array
+    {
+        $configPath = STORAGE_PATH . '/preferences.php';
+        if (file_exists($configPath)) {
+            return include $configPath;
+        }
+
+        return [
+            'items_per_page' => 24,
+            'default_view' => 'grid',
+        ];
+    }
+
+    /**
+     * Update user preferences
+     */
+    public function updatePreferences(): void
+    {
+        $this->requireCsrf();
+
+        $itemsPerPage = (int)($_POST['items_per_page'] ?? 24);
+        $defaultView = $_POST['default_view'] ?? 'grid';
+
+        // Validate items per page (12, 24, 48, 96)
+        $allowedPerPage = [12, 24, 48, 96];
+        if (!in_array($itemsPerPage, $allowedPerPage)) {
+            $itemsPerPage = 24;
+        }
+
+        // Validate default view
+        $allowedViews = ['grid', 'list'];
+        if (!in_array($defaultView, $allowedViews)) {
+            $defaultView = 'grid';
+        }
+
+        // Save preferences
+        $config = [
+            'items_per_page' => $itemsPerPage,
+            'default_view' => $defaultView,
+        ];
+
+        $configPath = STORAGE_PATH . '/preferences.php';
+        $content = "<?php\nreturn " . var_export($config, true) . ";\n";
+        file_put_contents($configPath, $content);
+
+        Session::setFlash('success', 'Einstellungen wurden gespeichert.');
+        $this->redirect('/settings');
     }
 
     /**

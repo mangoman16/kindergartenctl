@@ -177,6 +177,33 @@ class CategoryController extends Controller
     }
 
     /**
+     * Print category games list
+     */
+    public function print(string $id): void
+    {
+        require_once SRC_PATH . '/models/Category.php';
+        require_once SRC_PATH . '/models/Game.php';
+
+        $category = Category::findWithGameCount((int)$id);
+
+        if (!$category) {
+            Session::setFlash('error', 'Altersgruppe nicht gefunden.');
+            $this->redirect('/categories');
+            return;
+        }
+
+        // Get all games for this category
+        $games = Category::getGames((int)$id);
+
+        $this->setLayout('print');
+        $this->render('categories/print', [
+            'category' => $category,
+            'games' => $games,
+            'printTitle' => 'Spieleliste: ' . $category['name'],
+        ]);
+    }
+
+    /**
      * Delete category
      */
     public function delete(string $id): void

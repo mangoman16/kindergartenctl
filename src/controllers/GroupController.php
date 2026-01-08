@@ -270,6 +270,82 @@ class GroupController extends Controller
     }
 
     /**
+     * Print group contents
+     */
+    public function print(string $id): void
+    {
+        require_once SRC_PATH . '/models/Group.php';
+
+        $group = Group::findWithCounts((int)$id);
+
+        if (!$group) {
+            Session::setFlash('error', 'Gruppe nicht gefunden.');
+            $this->redirect('/groups');
+            return;
+        }
+
+        $games = Group::getGames((int)$id);
+        $materials = Group::getMaterials((int)$id);
+
+        $this->setLayout('print');
+        $this->render('groups/print', [
+            'group' => $group,
+            'games' => $games,
+            'materials' => $materials,
+            'printTitle' => 'Gruppe: ' . $group['name'],
+        ]);
+    }
+
+    /**
+     * Print preparation checklist (materials grouped by box)
+     */
+    public function printChecklist(string $id): void
+    {
+        require_once SRC_PATH . '/models/Group.php';
+
+        $group = Group::findWithCounts((int)$id);
+
+        if (!$group) {
+            Session::setFlash('error', 'Gruppe nicht gefunden.');
+            $this->redirect('/groups');
+            return;
+        }
+
+        $materials = Group::getMaterials((int)$id);
+
+        // Group materials by box
+        $materialsByBox = [];
+        $noBoxMaterials = [];
+
+        foreach ($materials as $material) {
+            if ($material['box_id']) {
+                $boxKey = $material['box_id'];
+                if (!isset($materialsByBox[$boxKey])) {
+                    $materialsByBox[$boxKey] = [
+                        'box_name' => $material['box_name'] ?? 'Unbekannte Box',
+                        'materials' => [],
+                    ];
+                }
+                $materialsByBox[$boxKey]['materials'][] = $material;
+            } else {
+                $noBoxMaterials[] = $material;
+            }
+        }
+
+        // Sort boxes by name
+        uasort($materialsByBox, fn($a, $b) => strcasecmp($a['box_name'], $b['box_name']));
+
+        $this->setLayout('print');
+        $this->render('groups/print-checklist', [
+            'group' => $group,
+            'materialsByBox' => $materialsByBox,
+            'noBoxMaterials' => $noBoxMaterials,
+            'totalMaterials' => count($materials),
+            'printTitle' => 'Vorbereitungsliste: ' . $group['name'],
+        ]);
+    }
+
+    /**
      * Parse materials from form input
      */
     private function parseMaterials(array $materialsInput): array

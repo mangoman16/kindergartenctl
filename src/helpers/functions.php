@@ -329,3 +329,33 @@ function logMessage(string $message, string $level = 'info'): void
 
     file_put_contents($logFile, $formattedMessage, FILE_APPEND | LOCK_EX);
 }
+
+/**
+ * Get user preference value
+ */
+function userPreference(string $key, $default = null)
+{
+    static $preferences = null;
+
+    if ($preferences === null) {
+        $configPath = STORAGE_PATH . '/preferences.php';
+        if (file_exists($configPath)) {
+            $preferences = include $configPath;
+        } else {
+            $preferences = [
+                'items_per_page' => 24,
+                'default_view' => 'grid',
+            ];
+        }
+    }
+
+    return $preferences[$key] ?? $default;
+}
+
+/**
+ * Get items per page preference
+ */
+function getItemsPerPage(): int
+{
+    return (int)userPreference('items_per_page', 24);
+}

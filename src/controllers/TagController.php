@@ -206,6 +206,33 @@ class TagController extends Controller
     }
 
     /**
+     * Print tag games list
+     */
+    public function print(string $id): void
+    {
+        require_once SRC_PATH . '/models/Tag.php';
+        require_once SRC_PATH . '/models/Game.php';
+
+        $tag = Tag::findWithGameCount((int)$id);
+
+        if (!$tag) {
+            Session::setFlash('error', 'Thema nicht gefunden.');
+            $this->redirect('/tags');
+            return;
+        }
+
+        // Get all games for this tag
+        $games = Tag::getGames((int)$id);
+
+        $this->setLayout('print');
+        $this->render('tags/print', [
+            'tag' => $tag,
+            'games' => $games,
+            'printTitle' => 'Spieleliste: ' . $tag['name'],
+        ]);
+    }
+
+    /**
      * Log a change to the changelog
      */
     private function logChange(string $entityType, int $entityId, string $entityName, string $action, array $data): void

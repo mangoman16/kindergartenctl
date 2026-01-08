@@ -111,6 +111,47 @@
     </div>
 </div>
 
+<!-- User Preferences -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title"><?= __('settings.preferences') ?></h2>
+    </div>
+    <div class="card-body">
+        <form action="<?= url('/settings/preferences') ?>" method="POST">
+            <?= csrfField() ?>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="items_per_page" class="form-label"><?= __('settings.items_per_page') ?></label>
+                    <select id="items_per_page" name="items_per_page" class="form-control">
+                        <option value="12" <?= ($preferences['items_per_page'] ?? 24) == 12 ? 'selected' : '' ?>>12</option>
+                        <option value="24" <?= ($preferences['items_per_page'] ?? 24) == 24 ? 'selected' : '' ?>>24</option>
+                        <option value="48" <?= ($preferences['items_per_page'] ?? 24) == 48 ? 'selected' : '' ?>>48</option>
+                        <option value="96" <?= ($preferences['items_per_page'] ?? 24) == 96 ? 'selected' : '' ?>>96</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="default_view" class="form-label"><?= __('settings.default_view') ?></label>
+                    <select id="default_view" name="default_view" class="form-control">
+                        <option value="grid" <?= ($preferences['default_view'] ?? 'grid') === 'grid' ? 'selected' : '' ?>><?= __('settings.view_grid') ?></option>
+                        <option value="list" <?= ($preferences['default_view'] ?? 'grid') === 'list' ? 'selected' : '' ?>><?= __('settings.view_list') ?></option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Speichern
+            </button>
+        </form>
+    </div>
+</div>
+
 <!-- SMTP / Email Settings -->
 <div class="card mt-4">
     <div class="card-header">

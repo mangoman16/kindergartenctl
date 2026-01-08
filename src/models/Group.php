@@ -80,9 +80,10 @@ class Group extends Model
         $db = self::getDb();
 
         $stmt = $db->prepare("
-            SELECT m.*, gm.quantity, gm.sort_order
+            SELECT m.*, gm.quantity, gm.sort_order, b.name as box_name
             FROM materials m
             INNER JOIN group_materials gm ON gm.material_id = m.id
+            LEFT JOIN boxes b ON b.id = m.box_id
             WHERE gm.group_id = :group_id
             ORDER BY gm.sort_order ASC, m.name ASC
         ");
