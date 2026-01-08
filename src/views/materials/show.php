@@ -115,6 +115,16 @@
                         <?= __('action.delete') ?>
                     </button>
                 </form>
+                <?php if (!empty($groups)): ?>
+                <button type="button" class="btn btn-secondary btn-block" onclick="openAddToGroupModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                        <line x1="12" y1="11" x2="12" y2="17"></line>
+                        <line x1="9" y1="14" x2="15" y2="14"></line>
+                    </svg>
+                    Zur Gruppe hinzufügen
+                </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -209,5 +219,149 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Add to group modal functionality
+    const addToGroupForm = document.getElementById('add-to-group-form');
+
+    if (addToGroupForm) {
+        addToGroupForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('csrf_token', '<?= csrf() ?>');
+            formData.append('item_type', 'material');
+            formData.append('item_id', '<?= $material['id'] ?>');
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+
+            fetch('<?= url('/api/groups/add-item') ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeAddToGroupModal();
+                    alert('Material wurde zur Gruppe hinzugefügt!');
+                } else {
+                    alert(data.error || 'Ein Fehler ist aufgetreten.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ein Fehler ist aufgetreten.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+            });
+        });
+    }
 });
+
+function openAddToGroupModal() {
+    const modal = document.getElementById('add-to-group-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeAddToGroupModal() {
+    const modal = document.getElementById('add-to-group-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
 </script>
+
+<?php if (!empty($groups)): ?>
+<!-- Add to Group Modal -->
+<div id="add-to-group-modal" class="modal" style="display: none;">
+    <div class="modal-backdrop" onclick="closeAddToGroupModal()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Zur Gruppe hinzufügen</h3>
+            <button type="button" class="modal-close" onclick="closeAddToGroupModal()">&times;</button>
+        </div>
+        <form id="add-to-group-form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="group_id">Gruppe auswählen</label>
+                    <select name="group_id" id="group_id" class="form-control" required>
+                        <option value="">Bitte wählen...</option>
+                        <?php foreach ($groups as $group): ?>
+                            <option value="<?= $group['id'] ?>"><?= e($group['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddToGroupModal()">Abbrechen</button>
+                <button type="submit" class="btn btn-primary">Hinzufügen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+.modal-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-gray-500);
+    line-height: 1;
+}
+.modal-close:hover {
+    color: var(--color-gray-700);
+}
+.modal-body {
+    padding: 20px;
+}
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 16px 20px;
+    border-top: 1px solid var(--color-gray-200);
+}
+</style>
+<?php endif; ?>

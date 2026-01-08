@@ -111,6 +111,7 @@ class MaterialController extends Controller
     public function show(string $id): void
     {
         require_once SRC_PATH . '/models/Material.php';
+        require_once SRC_PATH . '/models/Group.php';
 
         $material = Material::findWithGameCount((int)$id);
 
@@ -121,6 +122,7 @@ class MaterialController extends Controller
         }
 
         $games = Material::getGames((int)$id);
+        $groups = Group::getForSelect();
 
         $this->setTitle($material['name']);
         $this->addBreadcrumb(__('material.title_plural'), url('/materials'));
@@ -129,6 +131,7 @@ class MaterialController extends Controller
         $this->render('materials/show', [
             'material' => $material,
             'games' => $games,
+            'groups' => $groups,
         ]);
     }
 

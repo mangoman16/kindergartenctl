@@ -151,6 +151,7 @@ class GameController extends Controller
     public function show(string $id): void
     {
         require_once SRC_PATH . '/models/Game.php';
+        require_once SRC_PATH . '/models/Group.php';
 
         $game = Game::findWithRelations((int)$id);
 
@@ -160,12 +161,15 @@ class GameController extends Controller
             return;
         }
 
+        $groups = Group::getForSelect();
+
         $this->setTitle($game['name']);
         $this->addBreadcrumb(__('game.title_plural'), url('/games'));
         $this->addBreadcrumb($game['name']);
 
         $this->render('games/show', [
             'game' => $game,
+            'groups' => $groups,
         ]);
     }
 
