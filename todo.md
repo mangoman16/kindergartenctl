@@ -139,7 +139,7 @@ The project has a solid foundation with most core features implemented. This doc
 #### 4. Group Item Management API - COMPLETED
 - [x] Add `POST /api/groups/add-item` endpoint
 - [x] Add `POST /api/groups/remove-item` endpoint
-- [ ] Add "Add to group" modal on game/material detail pages
+- [x] Add "Add to group" modal on game/material detail pages
 
 #### 5. Bulk Actions
 - [ ] Add bulk selection on games list
@@ -227,7 +227,7 @@ Verify that all tables from specification exist:
 ### Services
 - `ChangelogService.php` - Present
 - `ImageProcessor.php` - Present
-- `Mailer.php` - **MISSING** (needs implementation)
+- `Mailer.php` - Present (native PHP SMTP implementation)
 
 ### Core Classes (All Present)
 - `App.php`
@@ -254,4 +254,4 @@ Verify that all tables from specification exist:
 
 ---
 
-*Last updated: 2026-01-06*
+*Last updated: 2026-01-08*
