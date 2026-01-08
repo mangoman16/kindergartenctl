@@ -558,6 +558,18 @@ class ApiController extends Controller
     }
 
     /**
+     * Get all groups for select dropdown
+     */
+    public function getGroups(): void
+    {
+        require_once SRC_PATH . '/models/Group.php';
+
+        $groups = Group::getForSelect();
+
+        $this->json($groups);
+    }
+
+    /**
      * Add item to group
      */
     public function addItemToGroup(): void

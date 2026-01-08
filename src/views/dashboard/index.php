@@ -81,6 +81,17 @@
         <div class="stat-card-value"><?= $stats['events_this_week'] ?></div>
         <div class="stat-card-label">Termine diese Woche</div>
     </a>
+
+    <a href="<?= url('/calendar') ?>" class="stat-card">
+        <div class="stat-card-icon" style="background: #dcfce7; color: #16a34a;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        <div class="stat-card-value"><?= $stats['games_played_this_month'] ?></div>
+        <div class="stat-card-label">Gespielt diesen Monat</div>
+    </a>
 </div>
 
 <div class="grid grid-cols-2 gap-4 mt-6">
@@ -238,9 +249,49 @@
     </div>
 </div>
 
-<!-- Random Game Picker & Favorites Row -->
 <div class="grid grid-cols-2 gap-4 mt-4">
+    <!-- Recently Played -->
+    <div class="card">
+        <div class="card-header flex items-center justify-between">
+            <h3 class="card-title"><?= __('dashboard.recently_played') ?></h3>
+            <a href="<?= url('/calendar') ?>" class="text-sm text-primary">Zum Kalender →</a>
+        </div>
+        <?php if (empty($recentlyPlayed)): ?>
+            <div class="card-body">
+                <p class="text-muted">Noch keine Spiele gespielt. Fügen Sie Spieltermine im Kalender hinzu.</p>
+            </div>
+        <?php else: ?>
+            <div class="card-body p-0">
+                <ul class="simple-list">
+                    <?php foreach ($recentlyPlayed as $played): ?>
+                        <li>
+                            <a href="<?= url('/games/' . $played['game_id']) ?>" class="flex items-center gap-3">
+                                <?php if ($played['image_path']): ?>
+                                    <img src="<?= upload($played['image_path']) ?>" alt=""
+                                         style="width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover;">
+                                <?php else: ?>
+                                    <div style="width: 40px; height: 40px; background: var(--color-gray-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-success);">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="flex-1">
+                                    <div class="font-medium"><?= e($played['game_name']) ?></div>
+                                    <div class="text-sm text-muted"><?= e($played['box_name'] ?? 'Keine Box') ?></div>
+                                </div>
+                                <span class="text-sm text-muted"><?= formatDate($played['start_date'], 'd.m.') ?></span>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+    </div>
+
     <!-- Random Game Picker -->
+
     <div class="card">
         <div class="card-header">
             <h3 class="card-title"><?= __('dashboard.random_game') ?></h3>
@@ -411,8 +462,13 @@ document.addEventListener('DOMContentLoaded', function() {
 <style>
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     gap: 1rem;
+}
+@media (max-width: 1400px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 .stat-card {
     background: white;

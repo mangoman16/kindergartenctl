@@ -89,24 +89,26 @@ The project has a comprehensive foundation with most core features implemented. 
 
 ---
 
+## Recently Completed (January 2026)
+
+### Dashboard Enhancements
+- [x] Add "games played this month" statistic
+- [x] Add "recently played" section from calendar events
+
+### SMTP Configuration in Settings
+- [x] Add SMTP settings section to settings page
+- [x] Add SMTP test button in settings
+
+### Bulk Actions
+- [x] Add bulk selection checkboxes on games list (with "Mehrfachauswahl" toggle)
+- [x] Add bulk selection checkboxes on materials list
+- [x] Implement "Add to group" bulk action (with group selection modal)
+- [x] Implement "Add to favorites" bulk action
+- [x] Implement "Remove from favorites" bulk action
+
+---
+
 ## Remaining Tasks
-
-### Medium Priority
-
-#### 1. Dashboard Enhancements
-- [ ] Add "games played this month" statistic
-- [ ] Add "recently played" section from calendar
-
-#### 2. SMTP Configuration in Settings
-- [ ] Add SMTP settings section to settings page (currently only in install wizard)
-- [ ] Add SMTP test button in settings
-
-#### 3. Bulk Actions
-- [ ] Add bulk selection checkboxes on games list
-- [ ] Add bulk selection checkboxes on materials list
-- [ ] Implement "Add to group" bulk action
-- [ ] Implement "Add to favorites" bulk action
-- [ ] Implement "Remove from favorites" bulk action
 
 ### Low Priority
 

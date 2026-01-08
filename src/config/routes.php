@@ -150,6 +150,7 @@ return [
     'GET /api/games/random' => ['ApiController', 'getRandomGame'],
 
     // Group items management
+    'GET /api/groups' => ['ApiController', 'getGroups'],
     'POST /api/groups/add-item' => ['ApiController', 'addItemToGroup'],
     'POST /api/groups/remove-item' => ['ApiController', 'removeItemFromGroup'],
 ];

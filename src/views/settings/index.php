@@ -111,6 +111,97 @@
     </div>
 </div>
 
+<!-- SMTP / Email Settings -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="card-title"><?= __('settings.email') ?></h2>
+    </div>
+    <div class="card-body">
+        <form action="<?= url('/settings/smtp') ?>" method="POST">
+            <?= csrfField() ?>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="smtp_host" class="form-label"><?= __('settings.smtp_host') ?></label>
+                    <input type="text" id="smtp_host" name="smtp_host" class="form-control"
+                           value="<?= e($smtpConfig['smtp_host'] ?? '') ?>" placeholder="smtp.example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="smtp_port" class="form-label"><?= __('settings.smtp_port') ?></label>
+                    <input type="number" id="smtp_port" name="smtp_port" class="form-control"
+                           value="<?= e($smtpConfig['smtp_port'] ?? 587) ?>">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="smtp_user" class="form-label"><?= __('settings.smtp_username') ?></label>
+                    <input type="text" id="smtp_user" name="smtp_user" class="form-control"
+                           value="<?= e($smtpConfig['smtp_user'] ?? '') ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="smtp_pass" class="form-label"><?= __('settings.smtp_password') ?></label>
+                    <input type="password" id="smtp_pass" name="smtp_pass" class="form-control"
+                           placeholder="<?= !empty($smtpConfig['smtp_pass']) ? '••••••••' : '' ?>">
+                    <div class="form-hint">Leer lassen um bestehendes Passwort zu behalten</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="smtp_encryption" class="form-label"><?= __('settings.smtp_encryption') ?></label>
+                <select id="smtp_encryption" name="smtp_encryption" class="form-control">
+                    <option value="tls" <?= ($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls' ? 'selected' : '' ?>>TLS</option>
+                    <option value="ssl" <?= ($smtpConfig['smtp_encryption'] ?? '') === 'ssl' ? 'selected' : '' ?>>SSL</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="smtp_from" class="form-label"><?= __('settings.smtp_from_email') ?></label>
+                    <input type="email" id="smtp_from" name="smtp_from" class="form-control"
+                           value="<?= e($smtpConfig['smtp_from'] ?? '') ?>" placeholder="noreply@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="smtp_from_name" class="form-label"><?= __('settings.smtp_from_name') ?></label>
+                    <input type="text" id="smtp_from_name" name="smtp_from_name" class="form-control"
+                           value="<?= e($smtpConfig['smtp_from_name'] ?? 'Kindergarten Spiele Organizer') ?>">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Speichern
+            </button>
+        </form>
+
+        <hr class="my-4">
+
+        <!-- Test SMTP -->
+        <form action="<?= url('/settings/smtp/test') ?>" method="POST" class="flex gap-3 items-end">
+            <?= csrfField() ?>
+            <div class="form-group mb-0 flex-1">
+                <label class="form-label"><?= __('settings.smtp_test') ?></label>
+                <input type="email" name="test_email" class="form-control"
+                       value="<?= e($user['email'] ?? '') ?>" placeholder="test@example.com" required>
+            </div>
+            <button type="submit" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                Test-E-Mail senden
+            </button>
+        </form>
+    </div>
+</div>
+
 <!-- IP Bans -->
 <div class="card mt-4">
     <div class="card-header">

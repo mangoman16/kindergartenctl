@@ -23,12 +23,14 @@ class DashboardController extends Controller
             'groups' => 0,
             'favorites' => 0,
             'events_this_week' => 0,
+            'games_played_this_month' => 0,
         ];
 
         $recentGames = [];
         $recentChanges = [];
         $upcomingEvents = [];
         $favoriteGames = [];
+        $recentlyPlayed = [];
         $categories = [];
         $tags = [];
 
@@ -111,6 +113,13 @@ class DashboardController extends Controller
                 // Tags for random picker filter
                 require_once SRC_PATH . '/models/Tag.php';
                 $tags = Tag::getForSelect();
+
+                // Games played this month (from calendar events)
+                require_once SRC_PATH . '/models/CalendarEvent.php';
+                $stats['games_played_this_month'] = CalendarEvent::getGamesPlayedThisMonthCount();
+
+                // Recently played games (from calendar)
+                $recentlyPlayed = CalendarEvent::getRecentlyPlayed(5);
             }
         } catch (Exception $e) {
             // Ignore errors if tables don't exist yet
@@ -122,6 +131,7 @@ class DashboardController extends Controller
             'recentChanges' => $recentChanges,
             'upcomingEvents' => $upcomingEvents,
             'favoriteGames' => $favoriteGames,
+            'recentlyPlayed' => $recentlyPlayed,
             'categories' => $categories,
             'tags' => $tags,
         ]);
