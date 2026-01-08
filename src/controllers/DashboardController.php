@@ -21,12 +21,16 @@ class DashboardController extends Controller
             'boxes' => 0,
             'tags' => 0,
             'groups' => 0,
+            'favorites' => 0,
             'events_this_week' => 0,
         ];
 
         $recentGames = [];
         $recentChanges = [];
         $upcomingEvents = [];
+        $favoriteGames = [];
+        $categories = [];
+        $tags = [];
 
         // Try to load data if database is configured
         try {
@@ -51,6 +55,10 @@ class DashboardController extends Controller
                 // Groups count
                 $stmt = $db->query("SELECT COUNT(*) FROM groups");
                 $stats['groups'] = (int)$stmt->fetchColumn();
+
+                // Favorites count
+                $stmt = $db->query("SELECT COUNT(*) FROM games WHERE is_favorite = 1 AND is_active = 1");
+                $stats['favorites'] = (int)$stmt->fetchColumn();
 
                 // Events this week
                 $today = date('Y-m-d');
@@ -91,6 +99,18 @@ class DashboardController extends Controller
                 ");
                 $stmt->execute(['today' => $today]);
                 $upcomingEvents = $stmt->fetchAll();
+
+                // Favorite games (for favorites section)
+                require_once SRC_PATH . '/models/Game.php';
+                $favoriteGames = Game::getFavorites(8);
+
+                // Categories for random picker filter
+                require_once SRC_PATH . '/models/Category.php';
+                $categories = Category::getForSelect();
+
+                // Tags for random picker filter
+                require_once SRC_PATH . '/models/Tag.php';
+                $tags = Tag::getForSelect();
             }
         } catch (Exception $e) {
             // Ignore errors if tables don't exist yet
@@ -101,6 +121,9 @@ class DashboardController extends Controller
             'recentGames' => $recentGames,
             'recentChanges' => $recentChanges,
             'upcomingEvents' => $upcomingEvents,
+            'favoriteGames' => $favoriteGames,
+            'categories' => $categories,
+            'tags' => $tags,
         ]);
     }
 }

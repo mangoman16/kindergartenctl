@@ -17,18 +17,35 @@ class Material extends Model
     /**
      * Get all materials with game count
      */
-    public static function allWithGameCount(string $orderBy = 'name', string $direction = 'ASC'): array
+    public static function allWithGameCount(string $orderBy = 'name', string $direction = 'ASC', array $filters = []): array
     {
         $db = self::getDb();
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
 
+        $where = [];
+        $params = [];
+
+        if (isset($filters['is_favorite']) && $filters['is_favorite'] !== null) {
+            $where[] = 'm.is_favorite = :is_favorite';
+            $params['is_favorite'] = $filters['is_favorite'];
+        }
+
+        if (!empty($filters['search'])) {
+            $where[] = '(m.name LIKE :search OR m.description LIKE :search)';
+            $params['search'] = '%' . $filters['search'] . '%';
+        }
+
+        $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+
         $sql = "SELECT m.*, COUNT(gm.game_id) as game_count
                 FROM materials m
                 LEFT JOIN game_materials gm ON gm.material_id = m.id
+                {$whereClause}
                 GROUP BY m.id
                 ORDER BY m.{$orderBy} {$direction}";
 
-        $stmt = $db->query($sql);
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 
@@ -177,6 +194,46 @@ class Material extends Model
             WHERE is_consumable = 0
             ORDER BY name ASC
         ");
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Toggle favorite status
+     */
+    public static function toggleFavorite(int $id): bool
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("UPDATE materials SET is_favorite = NOT is_favorite WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+
+        // Return the new favorite status
+        $stmt = $db->prepare("SELECT is_favorite FROM materials WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $result = $stmt->fetch();
+
+        return $result ? (bool)$result['is_favorite'] : false;
+    }
+
+    /**
+     * Get all favorite materials
+     */
+    public static function getFavorites(int $limit = 8): array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            SELECT m.*, COUNT(gm.game_id) as game_count
+            FROM materials m
+            LEFT JOIN game_materials gm ON gm.material_id = m.id
+            WHERE m.is_favorite = 1
+            GROUP BY m.id
+            ORDER BY m.name ASC
+            LIMIT :limit
+        ");
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }

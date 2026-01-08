@@ -127,14 +127,22 @@ class AuthController extends Controller
         if ($user) {
             // Generate token
             $token = Auth::generatePasswordResetToken($user['id']);
-
-            // TODO: Send email with reset link
-            // For now, we'll just show the success message
-            // In production, use Mailer class to send email
             $resetLink = App::baseUrl() . '/reset-password?token=' . $token;
 
-            // Log the reset link for development
-            logMessage("Password reset link for {$email}: {$resetLink}", 'info');
+            // Try to send email
+            require_once SRC_PATH . '/services/Mailer.php';
+            $mailer = new Mailer();
+
+            if ($mailer->isConfigured()) {
+                $sent = $mailer->sendPasswordReset($email, $resetLink);
+                if (!$sent) {
+                    // Log error but don't expose to user
+                    logMessage("Failed to send password reset email to {$email}: " . implode(', ', $mailer->getErrors()), 'error');
+                }
+            } else {
+                // Log the reset link for development when SMTP is not configured
+                logMessage("Password reset link for {$email}: {$resetLink}", 'info');
+            }
         }
 
         // Always show success message (prevent email enumeration)

@@ -26,6 +26,7 @@ class GameController extends Controller
             'tag_id' => $this->getQuery('tag') ?: null,
             'is_outdoor' => $this->getQuery('outdoor') !== null ? (int)$this->getQuery('outdoor') : null,
             'is_active' => $this->getQuery('active') !== null ? (int)$this->getQuery('active') : null,
+            'is_favorite' => $this->getQuery('favorites') !== null ? (int)$this->getQuery('favorites') : null,
             'search' => $this->getQuery('q') ?: null,
         ];
 
@@ -150,6 +151,7 @@ class GameController extends Controller
     public function show(string $id): void
     {
         require_once SRC_PATH . '/models/Game.php';
+        require_once SRC_PATH . '/models/Group.php';
 
         $game = Game::findWithRelations((int)$id);
 
@@ -159,12 +161,15 @@ class GameController extends Controller
             return;
         }
 
+        $groups = Group::getForSelect();
+
         $this->setTitle($game['name']);
         $this->addBreadcrumb(__('game.title_plural'), url('/games'));
         $this->addBreadcrumb($game['name']);
 
         $this->render('games/show', [
             'game' => $game,
+            'groups' => $groups,
         ]);
     }
 

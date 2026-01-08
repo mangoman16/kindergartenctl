@@ -141,4 +141,15 @@ return [
     'POST /api/calendar/events' => ['CalendarController', 'store'],
     'PUT /api/calendar/events/{id}' => ['CalendarController', 'update'],
     'DELETE /api/calendar/events/{id}' => ['CalendarController', 'delete'],
+
+    // Favorites toggle
+    'POST /api/games/{id}/toggle-favorite' => ['ApiController', 'toggleGameFavorite'],
+    'POST /api/materials/{id}/toggle-favorite' => ['ApiController', 'toggleMaterialFavorite'],
+
+    // Random game
+    'GET /api/games/random' => ['ApiController', 'getRandomGame'],
+
+    // Group items management
+    'POST /api/groups/add-item' => ['ApiController', 'addItemToGroup'],
+    'POST /api/groups/remove-item' => ['ApiController', 'removeItemFromGroup'],
 ];

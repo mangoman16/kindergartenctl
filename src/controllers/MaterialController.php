@@ -17,16 +17,22 @@ class MaterialController extends Controller
     {
         require_once SRC_PATH . '/models/Material.php';
 
+        $filters = [
+            'is_favorite' => $this->getQuery('favorites') !== null ? (int)$this->getQuery('favorites') : null,
+            'search' => $this->getQuery('q') ?: null,
+        ];
+
         $sort = $this->getQuery('sort', 'name');
         $order = $this->getQuery('order', 'asc');
 
-        $materials = Material::allWithGameCount($sort, $order);
+        $materials = Material::allWithGameCount($sort, $order, $filters);
 
         $this->setTitle(__('material.title_plural'));
         $this->addBreadcrumb(__('material.title_plural'), url('/materials'));
 
         $this->render('materials/index', [
             'materials' => $materials,
+            'filters' => $filters,
             'currentSort' => $sort,
             'currentOrder' => $order,
         ]);
@@ -105,6 +111,7 @@ class MaterialController extends Controller
     public function show(string $id): void
     {
         require_once SRC_PATH . '/models/Material.php';
+        require_once SRC_PATH . '/models/Group.php';
 
         $material = Material::findWithGameCount((int)$id);
 
@@ -115,6 +122,7 @@ class MaterialController extends Controller
         }
 
         $games = Material::getGames((int)$id);
+        $groups = Group::getForSelect();
 
         $this->setTitle($material['name']);
         $this->addBreadcrumb(__('material.title_plural'), url('/materials'));
@@ -123,6 +131,7 @@ class MaterialController extends Controller
         $this->render('materials/show', [
             'material' => $material,
             'games' => $games,
+            'groups' => $groups,
         ]);
     }
 

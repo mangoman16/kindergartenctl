@@ -465,6 +465,158 @@ class ApiController extends Controller
     }
 
     /**
+     * Toggle game favorite status
+     */
+    public function toggleGameFavorite(string $gameId): void
+    {
+        $this->requireCsrf();
+
+        require_once SRC_PATH . '/models/Game.php';
+
+        $game = Game::find((int)$gameId);
+        if (!$game) {
+            $this->jsonError('Spiel nicht gefunden.', 404);
+            return;
+        }
+
+        $isFavorite = Game::toggleFavorite((int)$gameId);
+
+        $this->json([
+            'success' => true,
+            'is_favorite' => $isFavorite,
+        ]);
+    }
+
+    /**
+     * Toggle material favorite status
+     */
+    public function toggleMaterialFavorite(string $materialId): void
+    {
+        $this->requireCsrf();
+
+        require_once SRC_PATH . '/models/Material.php';
+
+        $material = Material::find((int)$materialId);
+        if (!$material) {
+            $this->jsonError('Material nicht gefunden.', 404);
+            return;
+        }
+
+        $isFavorite = Material::toggleFavorite((int)$materialId);
+
+        $this->json([
+            'success' => true,
+            'is_favorite' => $isFavorite,
+        ]);
+    }
+
+    /**
+     * Get a random game with optional filters
+     */
+    public function getRandomGame(): void
+    {
+        require_once SRC_PATH . '/models/Game.php';
+
+        $filters = [];
+
+        if (!empty($_GET['category_id'])) {
+            $filters['category_id'] = (int)$_GET['category_id'];
+        }
+
+        if (!empty($_GET['tag_id'])) {
+            $filters['tag_id'] = (int)$_GET['tag_id'];
+        }
+
+        if (isset($_GET['is_outdoor'])) {
+            $filters['is_outdoor'] = (int)$_GET['is_outdoor'];
+        }
+
+        if (!empty($_GET['max_players'])) {
+            $filters['max_players'] = (int)$_GET['max_players'];
+        }
+
+        $game = Game::random($filters);
+
+        if ($game) {
+            $this->json([
+                'success' => true,
+                'game' => [
+                    'id' => $game['id'],
+                    'name' => $game['name'],
+                    'description' => $game['description'],
+                    'image_path' => $game['image_path'] ? upload($game['image_path']) : null,
+                    'box_name' => $game['box_name'] ?? null,
+                    'box_label' => $game['box_label'] ?? null,
+                ],
+            ]);
+        } else {
+            $this->json([
+                'success' => false,
+                'message' => 'Kein passendes Spiel gefunden.',
+            ]);
+        }
+    }
+
+    /**
+     * Add item to group
+     */
+    public function addItemToGroup(): void
+    {
+        $this->requireCsrf();
+
+        require_once SRC_PATH . '/models/Group.php';
+
+        $groupId = (int)$this->getPost('group_id', 0);
+        $itemType = $this->getPost('item_type', '');
+        $itemId = (int)$this->getPost('item_id', 0);
+
+        if (!$groupId || !$itemType || !$itemId) {
+            $this->jsonError('Gruppe, Typ und Element sind erforderlich.', 400);
+            return;
+        }
+
+        if (!in_array($itemType, ['game', 'material'])) {
+            $this->jsonError('Ungültiger Elementtyp.', 400);
+            return;
+        }
+
+        $result = Group::addItem($groupId, $itemType, $itemId);
+
+        if ($result) {
+            $this->json(['success' => true]);
+        } else {
+            $this->jsonError('Element konnte nicht hinzugefügt werden.', 500);
+        }
+    }
+
+    /**
+     * Remove item from group
+     */
+    public function removeItemFromGroup(): void
+    {
+        $this->requireCsrf();
+
+        require_once SRC_PATH . '/models/Group.php';
+
+        $groupId = (int)$this->getPost('group_id', 0);
+        $itemType = $this->getPost('item_type', '');
+        $itemId = (int)$this->getPost('item_id', 0);
+
+        if (!$groupId || !$itemType || !$itemId) {
+            $this->jsonError('Gruppe, Typ und Element sind erforderlich.', 400);
+            return;
+        }
+
+        $result = Group::removeItem($groupId, $itemType, $itemId);
+
+        if ($result) {
+            $this->json(['success' => true]);
+        } else {
+            $this->jsonError('Element konnte nicht entfernt werden.', 500);
+        }
+    }
+
+    /**
      * Send JSON response
      */
     private function json(array $data, int $status = 200): void

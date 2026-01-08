@@ -132,6 +132,22 @@
 
     <!-- Sidebar -->
     <div>
+        <!-- Favorite Toggle -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <button type="button" id="favorite-toggle" class="btn btn-block <?= !empty($game['is_favorite']) ? 'btn-warning' : 'btn-secondary' ?>"
+                        data-game-id="<?= $game['id'] ?>" data-is-favorite="<?= !empty($game['is_favorite']) ? '1' : '0' ?>">
+                    <svg id="favorite-icon-filled" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="<?= empty($game['is_favorite']) ? 'display:none;' : '' ?>">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <svg id="favorite-icon-outline" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="<?= !empty($game['is_favorite']) ? 'display:none;' : '' ?>">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span id="favorite-text"><?= !empty($game['is_favorite']) ? 'Favorit entfernen' : 'Als Favorit markieren' ?></span>
+                </button>
+            </div>
+        </div>
+
         <!-- Actions -->
         <div class="card mb-4">
             <div class="card-header">
@@ -175,6 +191,16 @@
                             <?= __('action.delete') ?>
                         </button>
                     </form>
+                    <?php if (!empty($groups)): ?>
+                    <button type="button" class="btn btn-secondary btn-block" onclick="openAddToGroupModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                            <line x1="12" y1="11" x2="12" y2="17"></line>
+                            <line x1="9" y1="14" x2="15" y2="14"></line>
+                        </svg>
+                        Zur Gruppe hinzufügen
+                    </button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -251,3 +277,187 @@
     color: var(--color-gray-500);
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('favorite-toggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const gameId = this.dataset.gameId;
+            const isFavorite = this.dataset.isFavorite === '1';
+
+            toggleBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('csrf_token', '<?= csrf() ?>');
+
+            fetch('<?= url('/api/games/') ?>' + gameId + '/toggle-favorite', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newFavorite = data.is_favorite;
+                    toggleBtn.dataset.isFavorite = newFavorite ? '1' : '0';
+                    toggleBtn.className = 'btn btn-block ' + (newFavorite ? 'btn-warning' : 'btn-secondary');
+                    document.getElementById('favorite-icon-filled').style.display = newFavorite ? '' : 'none';
+                    document.getElementById('favorite-icon-outline').style.display = newFavorite ? 'none' : '';
+                    document.getElementById('favorite-text').textContent = newFavorite ? 'Favorit entfernen' : 'Als Favorit markieren';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                toggleBtn.disabled = false;
+            });
+        });
+    }
+
+    // Add to group modal functionality
+    const addToGroupModal = document.getElementById('add-to-group-modal');
+    const addToGroupForm = document.getElementById('add-to-group-form');
+
+    if (addToGroupForm) {
+        addToGroupForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('csrf_token', '<?= csrf() ?>');
+            formData.append('item_type', 'game');
+            formData.append('item_id', '<?= $game['id'] ?>');
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+
+            fetch('<?= url('/api/groups/add-item') ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeAddToGroupModal();
+                    alert('Spiel wurde zur Gruppe hinzugefügt!');
+                } else {
+                    alert(data.error || 'Ein Fehler ist aufgetreten.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ein Fehler ist aufgetreten.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+            });
+        });
+    }
+});
+
+function openAddToGroupModal() {
+    const modal = document.getElementById('add-to-group-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeAddToGroupModal() {
+    const modal = document.getElementById('add-to-group-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+
+<?php if (!empty($groups)): ?>
+<!-- Add to Group Modal -->
+<div id="add-to-group-modal" class="modal" style="display: none;">
+    <div class="modal-backdrop" onclick="closeAddToGroupModal()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Zur Gruppe hinzufügen</h3>
+            <button type="button" class="modal-close" onclick="closeAddToGroupModal()">&times;</button>
+        </div>
+        <form id="add-to-group-form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="group_id">Gruppe auswählen</label>
+                    <select name="group_id" id="group_id" class="form-control" required>
+                        <option value="">Bitte wählen...</option>
+                        <?php foreach ($groups as $group): ?>
+                            <option value="<?= $group['id'] ?>"><?= e($group['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddToGroupModal()">Abbrechen</button>
+                <button type="submit" class="btn btn-primary">Hinzufügen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+.modal-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-gray-500);
+    line-height: 1;
+}
+.modal-close:hover {
+    color: var(--color-gray-700);
+}
+.modal-body {
+    padding: 20px;
+}
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 16px 20px;
+    border-top: 1px solid var(--color-gray-200);
+}
+</style>
+<?php endif; ?>

@@ -57,6 +57,11 @@ class Game extends Model
             $params['is_active'] = $filters['is_active'];
         }
 
+        if (isset($filters['is_favorite']) && $filters['is_favorite'] !== null) {
+            $where[] = 'g.is_favorite = :is_favorite';
+            $params['is_favorite'] = $filters['is_favorite'];
+        }
+
         if (!empty($filters['search'])) {
             $where[] = '(g.name LIKE :search OR g.description LIKE :search)';
             $params['search'] = '%' . $filters['search'] . '%';
@@ -396,6 +401,46 @@ class Game extends Model
         $db = self::getDb();
 
         $stmt = $db->query("SELECT id, name FROM games WHERE is_active = 1 ORDER BY name ASC");
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Toggle favorite status
+     */
+    public static function toggleFavorite(int $id): bool
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("UPDATE games SET is_favorite = NOT is_favorite WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+
+        // Return the new favorite status
+        $stmt = $db->prepare("SELECT is_favorite FROM games WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $result = $stmt->fetch();
+
+        return $result ? (bool)$result['is_favorite'] : false;
+    }
+
+    /**
+     * Get all favorite games
+     */
+    public static function getFavorites(int $limit = 8): array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            SELECT g.*, b.name as box_name, c.name as category_name
+            FROM games g
+            LEFT JOIN boxes b ON b.id = g.box_id
+            LEFT JOIN categories c ON c.id = g.category_id
+            WHERE g.is_favorite = 1 AND g.is_active = 1
+            ORDER BY g.name ASC
+            LIMIT :limit
+        ");
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
         return $stmt->fetchAll();
     }
 
