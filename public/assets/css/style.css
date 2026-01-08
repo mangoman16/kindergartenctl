@@ -288,6 +288,112 @@ small {
     outline: none;
 }
 
+/* Search Container & Dropdown */
+.search-container {
+    position: relative;
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    margin-top: var(--spacing-2);
+    z-index: 1000;
+    display: none;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-dropdown.active {
+    display: block;
+}
+
+.search-dropdown-results {
+    padding: var(--spacing-2) 0;
+}
+
+.search-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-4);
+    color: var(--color-gray-700);
+    text-decoration: none;
+    transition: background-color 0.15s;
+}
+
+.search-dropdown-item:hover,
+.search-dropdown-item.active {
+    background: var(--color-gray-50);
+}
+
+.search-item-icon {
+    flex-shrink: 0;
+    color: var(--color-gray-400);
+    display: flex;
+    align-items: center;
+}
+
+.search-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-item-name {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-weight: 500;
+    color: var(--color-gray-900);
+}
+
+.search-item-name mark {
+    background: var(--color-yellow-100);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.search-item-name .color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.search-item-type {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+}
+
+.search-dropdown-more {
+    display: block;
+    padding: var(--spacing-3) var(--spacing-4);
+    text-align: center;
+    color: var(--color-primary);
+    text-decoration: none;
+    border-top: 1px solid var(--color-gray-200);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.search-dropdown-more:hover {
+    background: var(--color-gray-50);
+}
+
+.search-dropdown-empty {
+    padding: var(--spacing-4);
+    text-align: center;
+    color: var(--color-gray-500);
+    font-size: var(--font-size-sm);
+}
+
 .header-actions {
     display: flex;
     align-items: center;

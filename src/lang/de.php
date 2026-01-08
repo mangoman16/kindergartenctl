@@ -202,10 +202,12 @@ return [
     'auth.login_to_continue' => 'Bitte melden Sie sich an, um fortzufahren.',
 
     // Search
+    'search.title' => 'Suche',
     'search.placeholder' => 'Suchen...',
     'search.no_results' => 'Keine Ergebnisse gefunden',
     'search.results_for' => 'Ergebnisse für',
     'search.all' => 'Alle',
+    'search.show_all' => 'Alle Ergebnisse anzeigen',
     'search.min_chars' => 'Mindestens 3 Zeichen eingeben',
 
     // Misc
@@ -266,6 +268,13 @@ return [
     'settings.password_changed' => 'Passwort erfolgreich geändert',
     'settings.email_changed' => 'E-Mail-Adresse erfolgreich geändert',
     'settings.app' => 'Anwendung',
+    'settings.profile' => 'Profil',
+    'settings.change_email' => 'E-Mail ändern',
+    'settings.new_email' => 'Neue E-Mail-Adresse',
+    'settings.confirm_password' => 'Passwort bestätigen',
+    'settings.storage' => 'Speicher',
+    'settings.ip_bans' => 'IP-Sperren',
+    'settings.preferences' => 'Benutzereinstellungen',
     'settings.items_per_page' => 'Einträge pro Seite',
     'settings.default_view' => 'Standardansicht',
     'settings.view_grid' => 'Raster',

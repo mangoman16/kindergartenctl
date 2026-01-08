@@ -27,6 +27,12 @@ class SettingsController extends Controller
         $uploadsSize = $this->getDirectorySize(UPLOADS_PATH);
         $tempSize = $this->getDirectorySize(TEMP_PATH);
 
+        // Get SMTP settings
+        $smtpConfig = $this->getSmtpConfig();
+
+        // Get user preferences
+        $preferences = $this->getUserPreferences();
+
         $this->setTitle(__('settings.title'));
         $this->addBreadcrumb(__('settings.title'));
 
@@ -35,7 +41,82 @@ class SettingsController extends Controller
             'bans' => $bans,
             'uploadsSize' => $this->formatBytes($uploadsSize),
             'tempSize' => $this->formatBytes($tempSize),
+            'smtpConfig' => $smtpConfig,
+            'preferences' => $preferences,
         ]);
+    }
+
+    /**
+     * Get SMTP configuration
+     */
+    private function getSmtpConfig(): array
+    {
+        $configPath = STORAGE_PATH . '/smtp.php';
+        if (file_exists($configPath)) {
+            return include $configPath;
+        }
+
+        return [
+            'smtp_host' => '',
+            'smtp_port' => 587,
+            'smtp_user' => '',
+            'smtp_pass' => '',
+            'smtp_from' => '',
+            'smtp_from_name' => 'Kindergarten Spiele Organizer',
+            'smtp_encryption' => 'tls',
+        ];
+    }
+
+    /**
+     * Get user preferences
+     */
+    private function getUserPreferences(): array
+    {
+        $configPath = STORAGE_PATH . '/preferences.php';
+        if (file_exists($configPath)) {
+            return include $configPath;
+        }
+
+        return [
+            'items_per_page' => 24,
+            'default_view' => 'grid',
+        ];
+    }
+
+    /**
+     * Update user preferences
+     */
+    public function updatePreferences(): void
+    {
+        $this->requireCsrf();
+
+        $itemsPerPage = (int)($_POST['items_per_page'] ?? 24);
+        $defaultView = $_POST['default_view'] ?? 'grid';
+
+        // Validate items per page (12, 24, 48, 96)
+        $allowedPerPage = [12, 24, 48, 96];
+        if (!in_array($itemsPerPage, $allowedPerPage)) {
+            $itemsPerPage = 24;
+        }
+
+        // Validate default view
+        $allowedViews = ['grid', 'list'];
+        if (!in_array($defaultView, $allowedViews)) {
+            $defaultView = 'grid';
+        }
+
+        // Save preferences
+        $config = [
+            'items_per_page' => $itemsPerPage,
+            'default_view' => $defaultView,
+        ];
+
+        $configPath = STORAGE_PATH . '/preferences.php';
+        $content = "<?php\nreturn " . var_export($config, true) . ";\n";
+        file_put_contents($configPath, $content);
+
+        Session::setFlash('success', 'Einstellungen wurden gespeichert.');
+        $this->redirect('/settings');
     }
 
     /**
@@ -137,6 +218,14 @@ class SettingsController extends Controller
         $smtpUser = trim($_POST['smtp_user'] ?? '');
         $smtpPass = $_POST['smtp_pass'] ?? '';
         $smtpFrom = trim($_POST['smtp_from'] ?? '');
+        $smtpFromName = trim($_POST['smtp_from_name'] ?? 'Kindergarten Spiele Organizer');
+        $smtpEncryption = $_POST['smtp_encryption'] ?? 'tls';
+
+        // Load existing config to preserve password if not changed
+        $existingConfig = $this->getSmtpConfig();
+        if (empty($smtpPass) && !empty($existingConfig['smtp_pass'])) {
+            $smtpPass = $existingConfig['smtp_pass'];
+        }
 
         // Save to storage file
         $config = [
@@ -145,6 +234,8 @@ class SettingsController extends Controller
             'smtp_user' => $smtpUser,
             'smtp_pass' => $smtpPass,
             'smtp_from' => $smtpFrom,
+            'smtp_from_name' => $smtpFromName,
+            'smtp_encryption' => $smtpEncryption,
         ];
 
         $configPath = STORAGE_PATH . '/smtp.php';

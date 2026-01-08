@@ -158,4 +158,47 @@ class CalendarEvent extends Model
 
         return (int)$stmt->fetchColumn();
     }
+
+    /**
+     * Get count of games played this month (events with game_id in current month)
+     */
+    public static function getGamesPlayedThisMonthCount(): int
+    {
+        $db = self::getDb();
+
+        $start = date('Y-m-01');
+        $end = date('Y-m-t');
+
+        $stmt = $db->prepare("
+            SELECT COUNT(DISTINCT game_id) FROM calendar_events
+            WHERE game_id IS NOT NULL
+              AND start_date BETWEEN :start AND :end
+        ");
+        $stmt->execute(['start' => $start, 'end' => $end]);
+
+        return (int)$stmt->fetchColumn();
+    }
+
+    /**
+     * Get recently played games from calendar events
+     */
+    public static function getRecentlyPlayed(int $limit = 5): array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            SELECT ce.*, g.name as game_name, g.image_path, b.name as box_name
+            FROM calendar_events ce
+            INNER JOIN games g ON g.id = ce.game_id
+            LEFT JOIN boxes b ON b.id = g.box_id
+            WHERE ce.game_id IS NOT NULL
+              AND ce.start_date <= CURDATE()
+            ORDER BY ce.start_date DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
 }

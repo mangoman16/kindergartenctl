@@ -2,7 +2,7 @@
 
 ## Project Status Summary
 
-The project has a solid foundation with most core features implemented. This document tracks remaining work and improvements needed.
+The project has a comprehensive foundation with most core features implemented. This document tracks remaining work and improvements needed.
 
 ---
 
@@ -11,164 +11,114 @@ The project has a solid foundation with most core features implemented. This doc
 ### Phase 1: Foundation
 - [x] Project structure setup
 - [x] Database connection class (PDO)
-- [x] Basic routing system
+- [x] Basic routing system (107 routes)
 - [x] Base controller and model classes
-- [x] Session management
+- [x] Session management (secure cookies, regeneration)
 - [x] Installation wizard (4 steps)
 - [x] Authentication (login, logout, remember me)
-- [x] IP ban system
+- [x] IP ban system (temporary/permanent)
 - [x] Main layout template
-- [x] CSS framework setup
+- [x] CSS framework setup (custom CSS with variables)
 
 ### Phase 2: Core Entities
 - [x] Boxes CRUD (create, read, update, delete)
 - [x] Categories CRUD
-- [x] Tags CRUD
-- [x] Image upload system with Cropper.js
+- [x] Tags CRUD (with color support)
+- [x] Image upload system with Cropper.js (WebP conversion)
 - [x] List views with pagination
 - [x] Detail views
-- [x] Form validation
-- [x] Duplicate detection
-- [x] Changelog logging
+- [x] Form validation (Validator class)
+- [x] Duplicate detection (API endpoints)
+- [x] Changelog logging (ChangelogService)
 
 ### Phase 3: Materials & Games
 - [x] Materials CRUD
 - [x] Material status management
 - [x] Materials-Boxes relationship
 - [x] Games CRUD
-- [x] Games-Materials relationship (multi-select)
+- [x] Games-Materials relationship (many-to-many)
 - [x] Games-Categories relationship
 - [x] Games-Tags relationship
 - [x] Difficulty selection
 - [x] Related games section
+- [x] Favorites functionality (toggle, filter, API)
 
 ### Phase 4: Search, Filter & Groups
 - [x] Global search (fulltext)
-- [x] Search results page
-- [x] Filter sidebar for games
-- [x] Filter sidebar for materials
+- [x] Search results page (tabbed by entity type)
+- [x] Filter sidebar for games (box, category, tag, outdoor, active, favorites)
+- [x] Filter sidebar for materials (box, status, favorites, search)
 - [x] Groups CRUD
-- [x] Add items to groups (games & materials)
+- [x] Add items to groups (games & materials with quantities)
 - [x] Group detail view
+- [x] Group item management API (add/remove)
+- [x] "Add to group" modal on game/material detail pages
 
 ### Phase 5: Calendar & Dashboard
 - [x] FullCalendar integration
 - [x] German locale setup
+- [x] Austrian holidays (fixed + Easter-dependent)
 - [x] Calendar events CRUD
-- [x] "Played" and "Planned" event types
+- [x] Event types with colors
 - [x] Dashboard layout
-- [x] Statistics cards
+- [x] Statistics cards (games, materials, boxes, tags, groups, favorites, events)
 - [x] Quick action buttons
 - [x] Recently added sections
 - [x] Upcoming events section
+- [x] Favorites section on dashboard
+- [x] Random game picker with category/tag filters
 
 ### Phase 6: Settings & Print
 - [x] Print views (games, materials, boxes)
 - [x] Print CSS
 - [x] Settings page
 - [x] Changelog view with filtering
+- [x] Clear changelog functionality
+- [x] Password change
+- [x] Email change
+- [x] IP ban management (view, add, unban)
+- [x] Storage statistics display
+- [x] Clear temp folder button
+
+### Phase 7: Email & Password Reset
+- [x] Mailer service (native PHP SMTP sockets)
+- [x] Password reset token generation
+- [x] Password reset email template
+- [x] Forgot password flow
+- [x] Reset password form
 
 ---
 
-## Recently Completed (This Session)
+## Recently Completed (January 2026)
 
-### Mailer Service (SMTP) - DONE
-- [x] Created `src/services/Mailer.php` class
-- [x] Implemented SMTP connection using native PHP sockets
-- [x] Added `sendPasswordReset()` method
-- [x] Added `sendTestEmail()` method
-- [x] Added `testConnection()` method
-- [x] Created email template `src/views/auth/emails/password-reset.php`
-- [x] Integrated with AuthController for password reset
-- [x] Integrated with SettingsController for SMTP testing
+### Dashboard Enhancements
+- [x] Add "games played this month" statistic
+- [x] Add "recently played" section from calendar events
 
-### Favorites System - DONE
-- [x] Added `toggleFavorite()` method to Game model
-- [x] Added `toggleFavorite()` method to Material model
-- [x] Added `getFavorites()` method to both models
-- [x] Added API routes for favorites toggle (`POST /api/games/{id}/toggle-favorite`)
-- [x] Added API routes for materials toggle (`POST /api/materials/{id}/toggle-favorite`)
+### SMTP Configuration in Settings
+- [x] Add SMTP settings section to settings page
+- [x] Add SMTP test button in settings
 
-### Dashboard Enhancements - DONE
-- [x] Added random game picker with category/tag filters
-- [x] Added favorites section showing up to 8 favorite games
-- [x] Added favorites count to stats
-- [x] Added `/api/games/random` endpoint
+### Bulk Actions
+- [x] Add bulk selection checkboxes on games list (with "Mehrfachauswahl" toggle)
+- [x] Add bulk selection checkboxes on materials list
+- [x] Implement "Add to group" bulk action (with group selection modal)
+- [x] Implement "Add to favorites" bulk action
+- [x] Implement "Remove from favorites" bulk action
 
-### Group Item Management API - DONE
-- [x] Added `addItem()` method to Group model
-- [x] Added `removeItem()` method to Group model
-- [x] Added `POST /api/groups/add-item` endpoint
-- [x] Added `POST /api/groups/remove-item` endpoint
+### Additional Print Views
+- [x] Category games list print view
+- [x] Tag games list print view
+- [x] Group contents print view
+- [x] Preparation checklist view (materials grouped by box)
 
-### Favorites UI - DONE
-- [x] Added favorite toggle button to game detail page
-- [x] Added favorite toggle button to material detail page
-- [x] Added favorites filter checkbox to games list page
-- [x] Added favorites filter and search to materials list page
-- [x] Updated Game model with is_favorite filter support
-- [x] Updated Material model with filters in allWithGameCount
+### User Preferences
+- [x] Items per page setting (user-configurable)
+- [x] Default view preference (grid/list toggle)
 
----
-
-## Remaining Tasks
-
-### High Priority
-
-#### 1. Mailer Service (SMTP) - COMPLETED
-- [x] Create `src/services/Mailer.php` class
-- [x] Implement SMTP connection using socket or PHPMailer
-- [x] Add `sendPasswordReset()` method
-- [x] Add `testConnection()` method
-- [x] Create email template for password reset (`src/views/auth/emails/password-reset.php`)
-
-#### 2. Dashboard Enhancements - COMPLETED
-- [x] Add random game picker with filters (category, tag)
-- [x] Add favorites section (max 8 favorite games)
-- [ ] Add "games played this month" statistic
-- [ ] Add "recently played" section from calendar
-
-#### 3. Favorites Functionality - COMPLETED
-- [x] Add `POST /api/games/toggle-favorite` API endpoint
-- [x] Add `POST /api/materials/toggle-favorite` API endpoint
-- [x] Add favorite toggle buttons on detail pages
-- [x] Add favorites filter on list pages
-
-### Medium Priority
-
-#### 4. Group Item Management API - COMPLETED
-- [x] Add `POST /api/groups/add-item` endpoint
-- [x] Add `POST /api/groups/remove-item` endpoint
-- [x] Add "Add to group" modal on game/material detail pages
-
-#### 5. Bulk Actions
-- [ ] Add bulk selection on games list
-- [ ] Add bulk selection on materials list
-- [ ] Implement "Add to group" bulk action
-- [ ] Implement "Add to favorites" bulk action
-- [ ] Implement "Remove from favorites" bulk action
-
-#### 6. Austrian Holidays
-- [ ] Add Austrian holidays highlighting on calendar
-- [ ] Create holidays calculation function (Easter-dependent holidays)
-
-### Low Priority
-
-#### 7. Additional Print Views
-- [ ] Category games list print view
-- [ ] Tag games list print view
-- [ ] Group contents print view
-- [ ] Preparation checklist view (materials grouped by box)
-
-#### 8. Settings Enhancements
-- [ ] Clear temp folder button
-- [ ] Storage statistics display
-- [ ] Items per page setting
-- [ ] Default view preference (grid/list)
-
-#### 9. Search Improvements
-- [ ] Live search dropdown in header
-- [ ] Highlight search terms in results
+### Search Improvements
+- [x] Live search dropdown in header
+- [x] Highlight search terms in results
 
 ---
 
@@ -180,13 +130,47 @@ The project has a solid foundation with most core features implemented. This doc
 - [ ] Add rate limiting for API endpoints
 - [ ] Optimize database queries for large datasets
 - [ ] Add database migration system
-- [ ] Add composer.json with PHPMailer dependency
+- [ ] Consider adding PHPMailer for more robust email handling
 
 ---
 
-## Database Schema Verification
+## Architecture Summary
 
-Verify that all tables from specification exist:
+### Controllers (14)
+- AuthController, DashboardController, GameController, MaterialController
+- BoxController, CategoryController, TagController, GroupController
+- CalendarController, ChangelogController, SearchController
+- SettingsController, InstallController, ApiController
+
+### Models (9)
+- Game, Material, Box, Category, Tag, Group
+- CalendarEvent, User, PasswordReset
+
+### Core Classes (8)
+- App, Router, Database, Controller, Model
+- Session, Auth, Validator
+
+### Services (3)
+- ChangelogService (audit logging)
+- ImageProcessor (WebP conversion, thumbnails)
+- Mailer (SMTP email)
+
+### API Endpoints (20+)
+- Image upload/delete
+- Duplicate checking
+- Search/autocomplete (tags, materials, games)
+- Quick-create (tags, materials)
+- Dropdown data (boxes, categories, tags, materials)
+- Favorites toggle
+- Random game picker
+- Group item management
+- Calendar events CRUD
+
+---
+
+## Database Tables
+
+All tables from specification are present:
 - [x] users
 - [x] categories
 - [x] boxes
@@ -197,60 +181,12 @@ Verify that all tables from specification exist:
 - [x] game_categories
 - [x] game_tags
 - [x] groups
-- [x] group_items (or group_games/group_materials)
+- [x] group_games / group_materials
 - [x] calendar_events
 - [x] changelog
 - [x] ip_bans
 - [x] password_resets
 - [x] settings
-
----
-
-## Files Structure Status
-
-### Controllers (All Present)
-- `AuthController.php` - Authentication
-- `DashboardController.php` - Dashboard
-- `GameController.php` - Games CRUD
-- `MaterialController.php` - Materials CRUD
-- `BoxController.php` - Boxes CRUD
-- `CategoryController.php` - Categories CRUD
-- `TagController.php` - Tags CRUD
-- `GroupController.php` - Groups CRUD
-- `CalendarController.php` - Calendar
-- `ChangelogController.php` - Changelog
-- `SearchController.php` - Search
-- `SettingsController.php` - Settings
-- `InstallController.php` - Installation
-- `ApiController.php` - API endpoints
-
-### Services
-- `ChangelogService.php` - Present
-- `ImageProcessor.php` - Present
-- `Mailer.php` - Present (native PHP SMTP implementation)
-
-### Core Classes (All Present)
-- `App.php`
-- `Router.php`
-- `Database.php`
-- `Controller.php`
-- `Model.php`
-- `Session.php`
-- `Auth.php`
-- `Validator.php`
-
----
-
-## Next Steps (Recommended Order)
-
-1. **Implement Mailer service** - Required for password reset functionality
-2. **Add favorites API** - Quick win, improves user experience
-3. **Enhance dashboard** - Random game picker and favorites section
-4. **Add group item API** - Enables "Add to group" from detail pages
-5. **Implement bulk actions** - List page improvements
-6. **Add Austrian holidays** - Calendar enhancement
-7. **Additional print views** - Nice to have
-8. **Settings enhancements** - Polish
 
 ---
 

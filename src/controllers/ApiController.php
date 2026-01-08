@@ -271,6 +271,99 @@ class ApiController extends Controller
     }
 
     /**
+     * Live search (combined results for header dropdown)
+     */
+    public function liveSearch(): void
+    {
+        $query = trim($this->getQuery('q', ''));
+
+        if (strlen($query) < 2) {
+            $this->json(['results' => []]);
+            return;
+        }
+
+        require_once SRC_PATH . '/models/Game.php';
+        require_once SRC_PATH . '/models/Material.php';
+        require_once SRC_PATH . '/models/Box.php';
+        require_once SRC_PATH . '/models/Tag.php';
+        require_once SRC_PATH . '/models/Group.php';
+
+        $results = [];
+        $db = Database::getInstance();
+        $searchTerm = '%' . $query . '%';
+
+        // Search games (limit 5)
+        $games = Game::search($query, 5);
+        foreach ($games as $game) {
+            $results[] = [
+                'type' => 'game',
+                'id' => $game['id'],
+                'name' => $game['name'],
+                'url' => url('/games/' . $game['id']),
+                'image' => $game['image_path'] ? upload($game['image_path']) : null,
+            ];
+        }
+
+        // Search materials (limit 3)
+        $stmt = $db->prepare("SELECT id, name, image_path FROM materials WHERE name LIKE :q ORDER BY name LIMIT 3");
+        $stmt->execute(['q' => $searchTerm]);
+        foreach ($stmt->fetchAll() as $material) {
+            $results[] = [
+                'type' => 'material',
+                'id' => $material['id'],
+                'name' => $material['name'],
+                'url' => url('/materials/' . $material['id']),
+                'image' => $material['image_path'] ? upload($material['image_path']) : null,
+            ];
+        }
+
+        // Search boxes (limit 2)
+        $stmt = $db->prepare("SELECT id, name FROM boxes WHERE name LIKE :q OR label LIKE :q ORDER BY name LIMIT 2");
+        $stmt->execute(['q' => $searchTerm]);
+        foreach ($stmt->fetchAll() as $box) {
+            $results[] = [
+                'type' => 'box',
+                'id' => $box['id'],
+                'name' => $box['name'],
+                'url' => url('/boxes/' . $box['id']),
+                'image' => null,
+            ];
+        }
+
+        // Search tags (limit 2)
+        $tags = Tag::searchByName($query, 2);
+        foreach ($tags as $tag) {
+            $results[] = [
+                'type' => 'tag',
+                'id' => $tag['id'],
+                'name' => $tag['name'],
+                'url' => url('/games?tag=' . $tag['id']),
+                'image' => null,
+                'color' => $tag['color'] ?? null,
+            ];
+        }
+
+        // Search groups (limit 2)
+        $stmt = $db->prepare("SELECT id, name FROM groups WHERE name LIKE :q ORDER BY name LIMIT 2");
+        $stmt->execute(['q' => $searchTerm]);
+        foreach ($stmt->fetchAll() as $group) {
+            $results[] = [
+                'type' => 'group',
+                'id' => $group['id'],
+                'name' => $group['name'],
+                'url' => url('/groups/' . $group['id']),
+                'image' => null,
+            ];
+        }
+
+        $this->json([
+            'results' => $results,
+            'query' => $query,
+            'more_url' => url('/search', ['q' => $query]),
+        ]);
+    }
+
+    /**
      * Quick create a tag
      */
     public function quickCreateTag(): void
@@ -555,6 +648,18 @@ class ApiController extends Controller
                 'message' => 'Kein passendes Spiel gefunden.',
             ]);
         }
+    }
+
+    /**
+     * Get all groups for select dropdown
+     */
+    public function getGroups(): void
+    {
+        require_once SRC_PATH . '/models/Group.php';
+
+        $groups = Group::getForSelect();
+
+        $this->json($groups);
     }
 
     /**
