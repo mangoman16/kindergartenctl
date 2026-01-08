@@ -196,10 +196,23 @@ class Router
 
     /**
      * Redirect back to the previous page
+     * Validates referer to prevent open redirect attacks
      */
     public static function back(): void
     {
         $referer = $_SERVER['HTTP_REFERER'] ?? '/';
+
+        // Validate referer is from the same domain to prevent open redirect
+        $refererHost = parse_url($referer, PHP_URL_HOST);
+        $serverHost = $_SERVER['HTTP_HOST'] ?? '';
+
+        // Strip port from server host for comparison
+        $serverHost = preg_replace('/:\d+$/', '', $serverHost);
+
+        if ($refererHost !== null && $refererHost !== $serverHost) {
+            $referer = '/';
+        }
+
         self::redirect($referer);
     }
 }

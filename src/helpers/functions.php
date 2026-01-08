@@ -177,8 +177,16 @@ function truncate(string $text, int $length = 100, string $suffix = '...'): stri
  */
 function formatFileSize(int $bytes): string
 {
+    // Handle edge cases
+    if ($bytes <= 0) {
+        return '0 B';
+    }
+
     $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
+    $power = floor(log($bytes, 1024));
+
+    // Ensure power doesn't exceed available units
+    $power = min($power, count($units) - 1);
 
     return number_format($bytes / pow(1024, $power), 2, ',', '.') . ' ' . $units[$power];
 }
