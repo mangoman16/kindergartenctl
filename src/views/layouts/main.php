@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="<?= asset('css/print.css') ?>" media="print">
 
     <!-- Cropper.js (for image uploads) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css" integrity="sha384-PgJGpkxMIBLQdGLdWLsAxR8DNjunFr7RHulTxs/bJ/Ej2w3tpKhmv4dkvJVDnMx8" crossorigin="anonymous">
 
     <!-- Choices.js (for multi-selects) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css" integrity="sha384-a6Gc97sfYtY2RLuI0DRdWhlsFWvsFcj/+dCotZRJajCwx8/2cBBqn5k+FaatZ3cL" crossorigin="anonymous">
 
     <meta name="csrf-token" content="<?= e($csrfToken) ?>">
 </head>
@@ -48,8 +48,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js" integrity="sha384-fNwJYJkLg8Rv5cLJMCqvIjVr5lLLrs6GRQj6EZnPh5FrxhYGdBmNK2gE2IYcj7VH" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js" integrity="sha384-5krGxfMNxZFfJ+gaoBjJYe6eUI7j27Qxz5tWkzDbVkKc4O8sNcjH5L16OypC7m9a" crossorigin="anonymous"></script>
     <script src="<?= asset('js/app.js') ?>"></script>
 </body>
 </html>

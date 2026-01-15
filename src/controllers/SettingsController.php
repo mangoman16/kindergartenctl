@@ -135,7 +135,7 @@ class SettingsController extends Controller
         $user = User::find(Auth::id());
 
         // Validate current password
-        if (!password_verify($currentPassword, $user['password'])) {
+        if (!password_verify($currentPassword, $user['password_hash'])) {
             Session::setFlash('error', 'Das aktuelle Passwort ist falsch.');
             $this->redirect('/settings');
             return;
@@ -178,7 +178,7 @@ class SettingsController extends Controller
         $user = User::find(Auth::id());
 
         // Validate password
-        if (!password_verify($password, $user['password'])) {
+        if (!password_verify($password, $user['password_hash'])) {
             Session::setFlash('error', 'Das Passwort ist falsch.');
             $this->redirect('/settings');
             return;
