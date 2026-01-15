@@ -196,7 +196,7 @@ class Router
 
     /**
      * Redirect back to the previous page
-     * Validates referer to prevent open redirect attacks
+     * Security: Validates referer to prevent open redirect attacks
      */
     public static function back(): void
     {

@@ -23,7 +23,7 @@ class Game extends Model
     ];
 
     /**
-     * Allowed columns for ORDER BY (security whitelist)
+     * Allowed columns for ORDER BY (security whitelist to prevent SQL injection)
      */
     private static array $allowedOrderColumns = [
         'name', 'created_at', 'updated_at', 'duration_minutes', 'difficulty',

@@ -11,7 +11,7 @@ return [
         'timezone' => 'Europe/Vienna',
         'locale' => 'de_AT.UTF-8',
         'charset' => 'UTF-8',
-        'debug' => true, // Set to false in production
+        'debug' => false, // Set to true only for development
     ],
 
     // Session settings
