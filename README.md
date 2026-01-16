@@ -63,9 +63,6 @@ A modern web application for kindergarten teachers to organize games, materials,
    chmod -R 775 public/uploads
    chmod -R 775 storage
    chmod -R 775 temp
-
-   # Set correct ownership (adjust www-data to your web server user)
-   sudo chown -R $USER:www-data .
    ```
 
 4. **Open your browser** and navigate to your installation URL
