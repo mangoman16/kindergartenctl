@@ -155,10 +155,8 @@ class SettingsController extends Controller
             return;
         }
 
-        // Update password
-        User::update(Auth::id(), [
-            'password' => password_hash($newPassword, PASSWORD_DEFAULT),
-        ]);
+        // Update password using dedicated method
+        User::updatePassword(Auth::id(), $newPassword);
 
         Session::setFlash('success', 'Passwort wurde geändert.');
         $this->redirect('/settings');
