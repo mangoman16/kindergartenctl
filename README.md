@@ -1,521 +1,84 @@
 # Kindergarten Spiele Organizer
 
-A modern web application for kindergarten teachers to organize games, materials, and resources efficiently.
+A web application for kindergarten teachers to organize games, materials, and resources.
 
-![PHP](https://img.shields.io/badge/PHP-8.0+-777BB4?logo=php&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-8.x-4479A1?logo=mysql&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
+## System Requirements
 
-## Features
-
-- **Game Management** - Organize games with descriptions, images, difficulty levels, and age categories
-- **Material Tracking** - Keep track of all game materials and their condition (complete, incomplete, damaged, missing)
-- **Box Organization** - Organize materials in physical storage boxes with location tracking
-- **Calendar Integration** - Plan game activities and track what was played when
-- **Search & Filtering** - Full-text search across all entities with advanced filtering
-- **Tags & Categories** - Categorize games by age groups and themes
-- **Groups** - Create virtual collections of games and materials
-- **Changelog** - Audit trail of all changes made to the system
-- **Image Upload** - Upload and crop images for games, materials, and boxes
-- **Random Game Picker** - Pick a random game based on filters
-- **Print Views** - Print game details, material checklists, and box contents
-- **German Interface** - Full German language support (Austrian locale)
-
-## Requirements
-
-### Server Requirements
-
-- **PHP 8.0+** with the following extensions:
-  - PDO with MySQL driver (`pdo_mysql`)
-  - GD Library (`gd`) - for image processing
-  - Multibyte String (`mbstring`)
-  - JSON (`json`)
-  - OpenSSL (`openssl`) - for secure token generation
+- **PHP 8.0+** with extensions: `pdo_mysql`, `gd`, `mbstring`, `json`, `openssl`
 - **MySQL 8.x** or MariaDB 10.4+
-- **Apache** with `mod_rewrite` enabled (or nginx with equivalent configuration)
-- **Composer** (optional, for running tests)
-
-### Recommended
-
-- PHP memory limit: 128MB+
-- Max upload size: 10MB+
-- HTTPS enabled for production
+- **Apache** with `mod_rewrite` enabled (or nginx)
 
 ## Installation
 
-### Quick Installation
-
-1. **Download or clone the repository**:
+1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/kindergartenctl.git
    cd kindergartenctl
    ```
 
-2. **Configure your web server** to point to the `public/` directory
-
-3. **Set directory permissions**:
+2. Set directory permissions:
    ```bash
-   # Ensure web server can read all files
    find . -type f -exec chmod 644 {} \;
    find . -type d -exec chmod 755 {} \;
-
-   # Make upload/storage directories writable
-   chmod -R 775 public/uploads
-   chmod -R 775 storage
-   chmod -R 775 temp
+   chmod -R 775 public/uploads storage temp
    ```
 
-4. **Open your browser** and navigate to your installation URL
+3. Configure your web server to point DocumentRoot to the `public/` directory
 
-5. **Follow the installation wizard** (4 steps):
-   - Requirements check
-   - Database configuration
-   - Admin user creation
-   - SMTP configuration (optional)
+4. Open your browser and follow the installation wizard
 
-### Manual Installation
+### Shared Hosting
 
-If you prefer manual installation or the wizard isn't working:
+If you can't change DocumentRoot, upload everything to `public_html/` - the root `.htaccess` will route requests to `public/`.
 
-1. **Create the database**:
-   ```sql
-   CREATE DATABASE kindergarten_organizer
-   CHARACTER SET utf8mb4
-   COLLATE utf8mb4_unicode_ci;
-   ```
+## Updating
 
-2. **Import the schema**:
-   ```bash
-   mysql -u username -p kindergarten_organizer < database/schema.sql
-   ```
-
-3. **Create the database configuration file** at `src/config/database.php`:
-   ```php
-   <?php
-   return [
-       'host' => 'localhost',
-       'port' => 3306,
-       'database' => 'kindergarten_organizer',
-       'username' => 'your_username',
-       'password' => 'your_password',
-   ];
-   ```
-
-4. **Create an admin user** (run this SQL):
-   ```sql
-   INSERT INTO users (username, email, password_hash, created_at)
-   VALUES (
-       'admin',
-       'admin@example.com',
-       '$2y$10$your_bcrypt_hash_here',
-       NOW()
-   );
-   ```
-
-   Generate the password hash with PHP:
-   ```php
-   echo password_hash('YourPassword123', PASSWORD_DEFAULT);
-   ```
-
-5. **Create the lock file** to prevent re-installation:
-   ```bash
-   touch installed.lock
-   ```
-
-### Apache Configuration
-
-Ensure your Apache virtual host is configured correctly:
-
-```apache
-<VirtualHost *:80>
-    ServerName kindergarten.example.com
-    DocumentRoot /path/to/kindergartenctl/public
-
-    <Directory /path/to/kindergartenctl/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    ErrorLog ${APACHE_LOG_DIR}/kindergarten-error.log
-    CustomLog ${APACHE_LOG_DIR}/kindergarten-access.log combined
-</VirtualHost>
-```
-
-### Nginx Configuration
-
-For nginx users:
-
-```nginx
-server {
-    listen 80;
-    server_name kindergarten.example.com;
-    root /path/to/kindergartenctl/public;
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\. {
-        deny all;
-    }
-}
-```
-
-### Shared/Managed Hosting (cPanel, Plesk, etc.)
-
-If you're using shared hosting where you can't modify Apache configuration:
-
-**Option A: Point DocumentRoot to public/ (Recommended)**
-
-Most hosting panels allow you to change the document root for your domain:
-1. In cPanel: Go to "Domains" → select your domain → change "Document Root" to `public_html/kindergartenctl/public`
-2. In Plesk: Go to "Hosting Settings" → change "Document Root"
-
-**Option B: Upload public/ contents to web root**
-
-If you can't change the document root:
-1. Upload the **entire project** to a folder OUTSIDE your web root (e.g., `/home/username/kindergartenctl/`)
-2. Copy or symlink the **contents of `public/`** into your web root (`public_html/`):
-   ```
-   /home/username/
-   ├── kindergartenctl/        ← Full project here (protected)
-   │   ├── src/
-   │   ├── storage/
-   │   ├── public/
-   │   └── ...
-   └── public_html/            ← Your web root
-       ├── index.php           ← Copy from public/
-       ├── .htaccess           ← Copy from public/
-       └── assets/             ← Copy from public/
-   ```
-3. Edit `public_html/index.php` to fix the paths:
-   ```php
-   // Change this line at the top:
-   define('BASE_PATH', dirname(__DIR__) . '/kindergartenctl');
-   ```
-
-**Option C: Upload everything to web root (simplest but less secure)**
-
-1. Upload the entire project to `public_html/`
-2. The root `.htaccess` will route requests to `public/`
-3. Make sure `mod_rewrite` is enabled (most hosts have it enabled by default)
-
-## Configuration
-
-### Main Configuration
-
-The main configuration file is located at `src/config/config.php`. Key settings:
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `app.name` | Kindergarten Spiele Organizer | Application name |
-| `app.debug` | `false` | Enable debug mode (set to `false` in production!) |
-| `app.timezone` | Europe/Vienna | Application timezone |
-| `session.lifetime` | 86400 (24h) | Session lifetime in seconds |
-| `session.remember_lifetime` | 2592000 (30d) | Remember me cookie lifetime |
-| `security.csrf_lifetime` | 3600 (1h) | CSRF token lifetime |
-| `security.password_min_length` | 8 | Minimum password length |
-| `upload.max_size` | 10485760 (10MB) | Maximum upload file size |
-
-### SMTP Configuration
-
-Email settings can be configured during installation or later in Settings:
-
-- **SMTP Host** - e.g., `smtp.gmail.com`
-- **SMTP Port** - e.g., `587` for TLS, `465` for SSL
-- **SMTP Username** - Your email account
-- **SMTP Password** - App password (for Gmail, generate one in account settings)
-- **Encryption** - TLS or SSL
-- **From Email** - Sender email address
-- **From Name** - Sender display name
-
-## Security Features
-
-This application implements comprehensive security measures:
-
-### Authentication & Authorization
-
-- **Password Hashing**: Bcrypt with automatic cost adjustment
-- **Password Complexity**: Minimum 8 characters, requires uppercase, lowercase, and number
-- **Session Security**: HTTPOnly, Secure, SameSite cookies with periodic regeneration
-- **Remember Me**: Secure token-based auto-login with 30-day expiry
-- **IP Banning**: Automatic temporary (5 attempts = 15 min) and permanent (10 attempts) bans
-- **Password Reset**: Secure tokens with 1-hour expiry, single use
-
-### Input/Output Security
-
-- **SQL Injection Prevention**: PDO prepared statements throughout
-- **XSS Prevention**: Output escaping with `htmlspecialchars()`
-- **CSRF Protection**: Token validation on all state-changing operations
-- **HTML Sanitization**: Strips dangerous tags and event handlers from rich text
-- **Open Redirect Prevention**: URL validation on all redirects
-
-### File Upload Security
-
-- **MIME Type Validation**: Server-side detection (not trusting client)
-- **Extension Whitelist**: Only image types allowed (JPEG, PNG, GIF, WebP)
-- **Image Verification**: Validates actual image content
-- **Content Scanning**: Checks for embedded PHP/JavaScript
-- **Image Reprocessing**: Converts to WebP, removes metadata
-
-### Additional Security
-
-- **Rate Limiting**: Configurable rate limits with file locking
-- **Security Headers**: X-Content-Type-Options, X-Frame-Options, CSP, etc.
-- **Debug Protection**: Debug functions disabled in production
-
-## Directory Structure
-
-```
-kindergartenctl/
-├── public/                  # Web root
-│   ├── index.php           # Application entry point
-│   ├── .htaccess           # Apache URL rewriting & security headers
-│   ├── assets/             # Static assets (CSS, JS)
-│   └── uploads/            # User-uploaded images
-│       ├── games/
-│       ├── materials/
-│       ├── boxes/
-│       ├── categories/
-│       ├── tags/
-│       └── groups/
-├── src/                    # Application source code
-│   ├── config/             # Configuration files
-│   ├── controllers/        # Request handlers
-│   ├── models/             # Data models
-│   ├── services/           # Business logic services
-│   ├── core/               # Framework classes
-│   ├── views/              # View templates
-│   ├── helpers/            # Helper functions
-│   └── lang/               # Translations
-├── database/               # Database schema & migrations
-├── storage/                # Logs and cache
-│   ├── logs/
-│   └── cache/
-├── temp/                   # Temporary files
-└── tests/                  # PHPUnit tests
-```
-
-## Database Schema
-
-The application uses the following main tables:
-
-| Table | Purpose |
-|-------|---------|
-| `users` | User accounts and authentication |
-| `games` | Game definitions |
-| `materials` | Physical game materials |
-| `boxes` | Storage containers |
-| `categories` | Age groups |
-| `tags` | Themes/categories for games |
-| `groups` | Virtual collections |
-| `game_materials` | Game-Material relationships |
-| `game_categories` | Game-Category relationships |
-| `game_tags` | Game-Tag relationships |
-| `calendar_events` | Played/planned events |
-| `changelog` | Audit log |
-| `ip_bans` | Brute force protection |
-| `password_resets` | Password reset tokens |
-| `settings` | Application settings |
-
-## API Endpoints
-
-The application provides JSON API endpoints for AJAX functionality:
-
-### Search & Autocomplete
-- `GET /api/search?q={query}` - Global search
-- `GET /api/tags/search?q={query}` - Search tags
-- `GET /api/materials/search?q={query}` - Search materials
-- `GET /api/games/search?q={query}` - Search games
-
-### Data Operations
-- `POST /api/upload-image` - Upload image with crop data
-- `POST /api/delete-image` - Delete uploaded image
-- `GET /api/games/random` - Get random game with filters
-- `POST /api/games/{id}/toggle-favorite` - Toggle favorite status
-
-### Calendar
-- `GET /api/calendar/events` - Get events for date range
-- `POST /api/calendar/events` - Create event
-- `PUT /api/calendar/events/{id}` - Update event
-- `DELETE /api/calendar/events/{id}` - Delete event
-
-### Health Check
-- `GET /api/health` - Application health status
-
-## Testing
-
-Run tests with PHPUnit:
+When the repository has updates:
 
 ```bash
-# Install dependencies
-composer install
+# 1. Backup your data
+mysqldump -u username -p kindergarten_organizer > backup.sql
+cp -r public/uploads uploads_backup
+cp src/config/database.php database.php.backup
 
-# Run all tests
-composer test
+# 2. Pull latest changes
+git pull origin main
 
-# Or directly with PHPUnit
-./vendor/bin/phpunit
+# 3. Restore your config
+cp database.php.backup src/config/database.php
+
+# 4. Check for database migrations
+# Look in database/ folder for new migration files and run them:
+mysql -u username -p kindergarten_organizer < database/migrations/xxx.sql
+
+# 5. Clear cache
+rm -rf storage/cache/*
 ```
+
+### Update Checklist
+
+- [ ] Backup database
+- [ ] Backup uploaded files (`public/uploads/`)
+- [ ] Backup config (`src/config/database.php`)
+- [ ] Pull changes
+- [ ] Run any new database migrations
+- [ ] Clear cache
+- [ ] Test the application
 
 ## Troubleshooting
 
-### Common Issues
-
-**"403 Forbidden"**
-- **Verify `AllowOverride All` is set** in your Apache virtual host configuration:
-  ```apache
-  <Directory /path/to/kindergartenctl/public>
-      AllowOverride All
-      Require all granted
-  </Directory>
-  ```
-  After changing, restart Apache: `sudo systemctl restart apache2`
-- **Enable mod_rewrite** (required for URL routing):
-  ```bash
-  sudo a2enmod rewrite
-  sudo systemctl restart apache2
-  ```
-- **Check directory permissions** - Apache needs read+execute on all directories in the path:
-  ```bash
-  # Ensure the public directory and its contents are readable
-  chmod 755 public
-  chmod 644 public/index.php
-  chmod 644 public/.htaccess
-
-  # Ensure parent directories are traversable
-  chmod 755 /path/to/kindergartenctl
-  ```
-- **Check file ownership** - Apache user (usually `www-data`) must be able to read files:
-  ```bash
-  # Check current ownership
-  ls -la public/
-
-  # Fix ownership if needed (adjust user/group for your system)
-  sudo chown -R www-data:www-data /path/to/kindergartenctl
-  # OR allow read access while keeping your ownership
-  chmod -R o+rX /path/to/kindergartenctl
-  ```
-- **Check SELinux/AppArmor** (on some Linux distros):
-  ```bash
-  # Check if SELinux is blocking (RHEL/CentOS/Fedora)
-  sudo ausearch -m avc -ts recent
-
-  # Allow Apache to read web content
-  sudo chcon -R -t httpd_sys_content_t /path/to/kindergartenctl
-  ```
-- **Verify DocumentRoot** points to the `public/` directory, not the project root
-
-**"500 Internal Server Error"**
-- Check Apache error logs: `tail -f /var/log/apache2/error.log`
-- Verify PHP version is 8.0+
+**403 Forbidden**
 - Ensure `mod_rewrite` is enabled
-- Check file permissions
+- Check file permissions (644 for files, 755 for directories)
+- On shared hosting: verify the root `.htaccess` exists
 
-**"Database connection failed"**
-- Verify database credentials in `src/config/database.php`
-- Ensure MySQL is running
-- Check database user permissions
+**500 Internal Server Error**
+- Check PHP version is 8.0+
+- Check Apache error logs
 
-**"Images not uploading"**
-- Verify `public/uploads` is writable
-- Check PHP `upload_max_filesize` and `post_max_size`
-- Ensure GD library is installed
-
-**"CSRF token mismatch"**
-- Clear browser cookies and try again
-- Check if session is working
-- Verify session save path is writable
-
-**"Emails not sending"**
-- Verify SMTP settings in Settings
-- For Gmail, use app password instead of regular password
-- Check PHP error log for SMTP errors
-
-### Getting Help
-
-- Check the [Issues](https://github.com/yourusername/kindergartenctl/issues) page
-- Review the `storage/logs/` directory for errors
-- Enable debug mode temporarily to see detailed errors
-
-## Development
-
-### Local Development Setup
-
-1. Clone the repository
-2. Configure a local web server (Apache/nginx) or use PHP's built-in server:
-   ```bash
-   cd public
-   php -S localhost:8000
-   ```
-3. Create a local database and run the installation wizard
-4. Enable debug mode in `src/config/config.php` for detailed errors
-
-### Code Style
-
-- PHP: PSR-12 coding standard
-- JavaScript: ES6+ with strict mode
-- CSS: BEM methodology with CSS custom properties
-
-### Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests
-5. Submit a pull request
-
-## Security Audit
-
-This application has undergone comprehensive security auditing. See `SECURITY_AUDIT_2026-01-16.md` for the full audit report.
-
-### Security Checklist
-
-- [x] SQL Injection Prevention
-- [x] XSS Prevention
-- [x] CSRF Protection
-- [x] Authentication Security
-- [x] Session Management
-- [x] Password Security
-- [x] File Upload Validation
-- [x] Path Traversal Prevention
-- [x] Error Handling
-- [x] Security Headers
-- [x] Rate Limiting
-- [x] Input Validation
-
-## Changelog
-
-### v1.0.0 (2026-01-16)
-
-- Initial release
-- Complete game, material, and box management
-- Calendar integration with Austrian holidays
-- Full German language support
-- Comprehensive security implementation
-- Installation wizard
-- SMTP email configuration
-- Image upload with cropping
-- Search and filtering
-- Changelog/audit trail
+**Database connection failed**
+- Verify credentials in `src/config/database.php`
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- [Cropper.js](https://fengyuanchen.github.io/cropperjs/) - Image cropping
-- [FullCalendar](https://fullcalendar.io/) - Calendar UI
-- [Choices.js](https://choices-js.github.io/Choices/) - Multi-select dropdowns
-
----
-
-**Made with care for kindergarten teachers everywhere.**
+MIT License
