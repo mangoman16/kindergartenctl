@@ -187,10 +187,31 @@ class Router
 
     /**
      * Redirect to a URL
+     * Security: Validates URL to prevent open redirect attacks
      */
     public static function redirect(string $url): void
     {
-        header('Location: ' . $url);
+        // If URL is relative (starts with /), allow it
+        if (strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
+            header('Location: ' . $url);
+            exit;
+        }
+
+        // For absolute URLs, validate the host matches our domain
+        $urlHost = parse_url($url, PHP_URL_HOST);
+        $serverHost = $_SERVER['HTTP_HOST'] ?? '';
+
+        // Strip port from server host for comparison
+        $serverHost = preg_replace('/:\d+$/', '', $serverHost);
+
+        // If no host in URL or host matches server, allow redirect
+        if ($urlHost === null || $urlHost === $serverHost) {
+            header('Location: ' . $url);
+            exit;
+        }
+
+        // For external URLs, redirect to home page instead (prevent open redirect)
+        header('Location: /');
         exit;
     }
 

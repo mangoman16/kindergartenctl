@@ -141,15 +141,16 @@ class SettingsController extends Controller
             return;
         }
 
-        // Validate new password
-        if (strlen($newPassword) < 8) {
-            Session::setFlash('error', 'Das neue Passwort muss mindestens 8 Zeichen haben.');
-            $this->redirect('/settings');
-            return;
-        }
+        // Validate new password with complexity requirements
+        $validator = Validator::make(
+            ['new_password' => $newPassword, 'new_password_confirmation' => $confirmPassword],
+            ['new_password' => 'required|password|confirmed']
+        );
 
-        if ($newPassword !== $confirmPassword) {
-            Session::setFlash('error', 'Die Passwörter stimmen nicht überein.');
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $errorMessage = reset($errors)[0] ?? 'Ungültiges Passwort.';
+            Session::setFlash('error', $errorMessage);
             $this->redirect('/settings');
             return;
         }

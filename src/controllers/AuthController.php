@@ -30,6 +30,9 @@ class AuthController extends Controller
      */
     public function login(): void
     {
+        // Validate CSRF token to prevent cross-site request forgery
+        $this->requireCsrf();
+
         // Check IP ban
         $ip = getClientIp();
         $banStatus = isIpBanned($ip);
@@ -111,6 +114,9 @@ class AuthController extends Controller
      */
     public function sendResetLink(): void
     {
+        // Validate CSRF token to prevent cross-site request forgery
+        $this->requireCsrf();
+
         $email = $this->getPost('email');
 
         // Validate
@@ -200,10 +206,10 @@ class AuthController extends Controller
             return;
         }
 
-        // Validate password
+        // Validate password with complexity requirements
         $validator = Validator::make(
             ['password' => $password, 'password_confirmation' => $passwordConfirmation],
-            ['password' => 'required|min:8|confirmed']
+            ['password' => 'required|password|confirmed']
         );
 
         if ($validator->fails()) {

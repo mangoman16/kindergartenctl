@@ -173,11 +173,11 @@ class InstallController extends Controller
             'password_confirmation' => $this->getPost('password_confirmation'),
         ];
 
-        // Validate
+        // Validate with password complexity requirements
         $validator = Validator::make($data, [
             'username' => 'required|min:3|max:50',
             'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|password|confirmed',
         ]);
 
         if ($validator->fails()) {
