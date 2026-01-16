@@ -55,9 +55,17 @@ A modern web application for kindergarten teachers to organize games, materials,
 
 3. **Set directory permissions**:
    ```bash
-   chmod -R 755 public/uploads
-   chmod -R 755 storage
-   chmod -R 755 temp
+   # Ensure web server can read all files
+   find . -type f -exec chmod 644 {} \;
+   find . -type d -exec chmod 755 {} \;
+
+   # Make upload/storage directories writable
+   chmod -R 775 public/uploads
+   chmod -R 775 storage
+   chmod -R 775 temp
+
+   # Set correct ownership (adjust www-data to your web server user)
+   sudo chown -R $USER:www-data .
    ```
 
 4. **Open your browser** and navigate to your installation URL
@@ -325,8 +333,52 @@ composer test
 
 ### Common Issues
 
+**"403 Forbidden"**
+- **Verify `AllowOverride All` is set** in your Apache virtual host configuration:
+  ```apache
+  <Directory /path/to/kindergartenctl/public>
+      AllowOverride All
+      Require all granted
+  </Directory>
+  ```
+  After changing, restart Apache: `sudo systemctl restart apache2`
+- **Enable mod_rewrite** (required for URL routing):
+  ```bash
+  sudo a2enmod rewrite
+  sudo systemctl restart apache2
+  ```
+- **Check directory permissions** - Apache needs read+execute on all directories in the path:
+  ```bash
+  # Ensure the public directory and its contents are readable
+  chmod 755 public
+  chmod 644 public/index.php
+  chmod 644 public/.htaccess
+
+  # Ensure parent directories are traversable
+  chmod 755 /path/to/kindergartenctl
+  ```
+- **Check file ownership** - Apache user (usually `www-data`) must be able to read files:
+  ```bash
+  # Check current ownership
+  ls -la public/
+
+  # Fix ownership if needed (adjust user/group for your system)
+  sudo chown -R www-data:www-data /path/to/kindergartenctl
+  # OR allow read access while keeping your ownership
+  chmod -R o+rX /path/to/kindergartenctl
+  ```
+- **Check SELinux/AppArmor** (on some Linux distros):
+  ```bash
+  # Check if SELinux is blocking (RHEL/CentOS/Fedora)
+  sudo ausearch -m avc -ts recent
+
+  # Allow Apache to read web content
+  sudo chcon -R -t httpd_sys_content_t /path/to/kindergartenctl
+  ```
+- **Verify DocumentRoot** points to the `public/` directory, not the project root
+
 **"500 Internal Server Error"**
-- Check Apache error logs
+- Check Apache error logs: `tail -f /var/log/apache2/error.log`
 - Verify PHP version is 8.0+
 - Ensure `mod_rewrite` is enabled
 - Check file permissions
