@@ -245,7 +245,7 @@ class InstallController extends Controller
             $stmt = $db->prepare("
                 INSERT INTO settings (setting_key, setting_value)
                 VALUES (:key, :value)
-                ON DUPLICATE KEY UPDATE setting_value = :value
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
             ");
             $stmt->execute(['key' => $key, 'value' => $value]);
         }
