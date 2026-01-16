@@ -171,6 +171,45 @@ server {
 }
 ```
 
+### Shared/Managed Hosting (cPanel, Plesk, etc.)
+
+If you're using shared hosting where you can't modify Apache configuration:
+
+**Option A: Point DocumentRoot to public/ (Recommended)**
+
+Most hosting panels allow you to change the document root for your domain:
+1. In cPanel: Go to "Domains" → select your domain → change "Document Root" to `public_html/kindergartenctl/public`
+2. In Plesk: Go to "Hosting Settings" → change "Document Root"
+
+**Option B: Upload public/ contents to web root**
+
+If you can't change the document root:
+1. Upload the **entire project** to a folder OUTSIDE your web root (e.g., `/home/username/kindergartenctl/`)
+2. Copy or symlink the **contents of `public/`** into your web root (`public_html/`):
+   ```
+   /home/username/
+   ├── kindergartenctl/        ← Full project here (protected)
+   │   ├── src/
+   │   ├── storage/
+   │   ├── public/
+   │   └── ...
+   └── public_html/            ← Your web root
+       ├── index.php           ← Copy from public/
+       ├── .htaccess           ← Copy from public/
+       └── assets/             ← Copy from public/
+   ```
+3. Edit `public_html/index.php` to fix the paths:
+   ```php
+   // Change this line at the top:
+   define('BASE_PATH', dirname(__DIR__) . '/kindergartenctl');
+   ```
+
+**Option C: Upload everything to web root (simplest but less secure)**
+
+1. Upload the entire project to `public_html/`
+2. The root `.htaccess` will route requests to `public/`
+3. Make sure `mod_rewrite` is enabled (most hosts have it enabled by default)
+
 ## Configuration
 
 ### Main Configuration
