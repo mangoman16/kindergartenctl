@@ -125,9 +125,16 @@ function getError(string $field, array $errors): string
 
 /**
  * Dump and die (for debugging)
+ * Security: Only outputs in debug mode to prevent information disclosure
  */
 function dd(...$vars): void
 {
+    // Check if debug mode is enabled (prevents info disclosure in production)
+    if (!App::config('app.debug', false)) {
+        error_log('dd() called in production mode - output suppressed');
+        die('Debug output is disabled in production mode.');
+    }
+
     echo '<pre>';
     foreach ($vars as $var) {
         var_dump($var);

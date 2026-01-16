@@ -162,6 +162,44 @@ class Validator
     }
 
     /**
+     * Password complexity validation
+     * Ensures password contains uppercase, lowercase, number, and is minimum 8 chars
+     */
+    private function validatePassword(string $field, $value, array $params): void
+    {
+        if ($value === null || $value === '') {
+            return;
+        }
+
+        $password = (string)$value;
+        $errors = [];
+
+        // Check minimum length
+        if (mb_strlen($password) < 8) {
+            $errors[] = 'mindestens 8 Zeichen';
+        }
+
+        // Check for uppercase letter
+        if (!preg_match('/[A-Z]/', $password)) {
+            $errors[] = 'einen Großbuchstaben';
+        }
+
+        // Check for lowercase letter
+        if (!preg_match('/[a-z]/', $password)) {
+            $errors[] = 'einen Kleinbuchstaben';
+        }
+
+        // Check for number
+        if (!preg_match('/[0-9]/', $password)) {
+            $errors[] = 'eine Zahl';
+        }
+
+        if (!empty($errors)) {
+            $this->addError($field, 'Das Passwort muss enthalten: ' . implode(', ', $errors));
+        }
+    }
+
+    /**
      * Allowed tables for unique validation (security whitelist)
      */
     private static array $allowedTables = [

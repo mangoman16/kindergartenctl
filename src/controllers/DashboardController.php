@@ -6,11 +6,15 @@
 class DashboardController extends Controller
 {
     /**
-     * Show dashboard
+     * Show dashboard (or landing page for unauthenticated users)
      */
     public function index(): void
     {
-        $this->requireAuth();
+        // Show landing page for unauthenticated users
+        if (!Auth::check()) {
+            include SRC_PATH . '/views/landing.php';
+            return;
+        }
 
         $this->setTitle(__('dashboard.title'));
 
