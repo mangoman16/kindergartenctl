@@ -14,7 +14,7 @@ A web application for kindergarten teachers to organize games, materials, and re
 
 1. **Download or clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/kindergartenctl.git
+   git clone https://github.com/mangoman16/kindergartenctl.git
    cd kindergartenctl
    ```
 
