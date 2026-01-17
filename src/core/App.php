@@ -25,6 +25,7 @@ class App
      */
     private function loadCoreClasses(): void
     {
+        require_once SRC_PATH . '/core/Logger.php';
         require_once SRC_PATH . '/core/Database.php';
         require_once SRC_PATH . '/core/Router.php';
         require_once SRC_PATH . '/core/Session.php';

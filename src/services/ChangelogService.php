@@ -54,7 +54,11 @@ class ChangelogService
                 'changes' => json_encode($data, JSON_UNESCAPED_UNICODE),
             ]);
         } catch (Exception $e) {
-            error_log('ChangelogService: Failed to log change - ' . $e->getMessage());
+            Logger::error('ChangelogService: Failed to log change', [
+                'error' => $e->getMessage(),
+                'entity_type' => $entityType,
+                'entity_id' => $entityId
+            ]);
             return false;
         }
     }

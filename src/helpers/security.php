@@ -172,8 +172,30 @@ function resetFailedAttempts(string $ip): void
  */
 function sanitizeFilename(string $filename): string
 {
+    // Dangerous system files that should never be allowed
+    $dangerousFiles = [
+        'passwd', 'shadow', 'group', 'hosts', 'sudoers',
+        '.htaccess', '.htpasswd', 'web.config', '.env',
+        'config.php', 'database.php'
+    ];
+
     // Remove directory traversal attempts
     $filename = basename($filename);
+
+    // Replace HTML tags with underscore before stripping (preserves word boundaries)
+    $filename = preg_replace('/<[^>]*>/', '_', $filename);
+
+    // Strip any remaining tags
+    $filename = strip_tags($filename);
+
+    // Check if the filename (without extension) is a dangerous system file
+    $nameWithoutExt = strtolower(pathinfo($filename, PATHINFO_FILENAME));
+    if (in_array($nameWithoutExt, $dangerousFiles, true)) {
+        Logger::security('Dangerous filename blocked', ['filename' => $filename]);
+        // Return a safe default name with the original extension
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        return $ext ? "file.{$ext}" : 'file.txt';
+    }
 
     // Replace unsafe characters
     $filename = preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);

@@ -234,13 +234,19 @@ class Validator
 
         // Security: Validate table name against whitelist
         if (!in_array($table, self::$allowedTables, true)) {
-            error_log("Validator: Invalid table name attempted: {$table}");
+            Logger::security("Invalid table name attempted in unique validation", [
+                'table' => $table,
+                'column' => $column
+            ]);
             return;
         }
 
         // Security: Validate column name format
         if (!$this->isValidIdentifier($column)) {
-            error_log("Validator: Invalid column name attempted: {$column}");
+            Logger::security("Invalid column name attempted in unique validation", [
+                'table' => $table,
+                'column' => $column
+            ]);
             return;
         }
 

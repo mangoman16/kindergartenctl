@@ -116,7 +116,7 @@ class Router
         $controllerFile = SRC_PATH . '/controllers/' . $controllerName . '.php';
 
         if (!file_exists($controllerFile)) {
-            error_log("Controller not found: {$controllerName}");
+            Logger::error("Controller not found", ['controller' => $controllerName]);
             $this->handleNotFound();
             return;
         }
@@ -124,7 +124,7 @@ class Router
         require_once $controllerFile;
 
         if (!class_exists($controllerName)) {
-            error_log("Controller class not found: {$controllerName}");
+            Logger::error("Controller class not found", ['controller' => $controllerName]);
             $this->handleNotFound();
             return;
         }
@@ -132,7 +132,10 @@ class Router
         $controller = new $controllerName();
 
         if (!method_exists($controller, $actionName)) {
-            error_log("Action not found: {$controllerName}::{$actionName}");
+            Logger::error("Action not found", [
+                'controller' => $controllerName,
+                'action' => $actionName
+            ]);
             $this->handleNotFound();
             return;
         }

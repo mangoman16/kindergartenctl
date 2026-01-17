@@ -55,8 +55,15 @@ try {
     $app = new App();
     $app->run();
 } catch (Exception $e) {
-    // Log error
-    error_log($e->getMessage());
+    // Log error using Logger if available, fallback to error_log
+    if (class_exists('Logger')) {
+        Logger::exception($e, [
+            'uri' => $_SERVER['REQUEST_URI'] ?? 'UNKNOWN',
+            'method' => $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN'
+        ]);
+    } else {
+        error_log($e->getMessage());
+    }
 
     // Show error page in development, generic message in production
     if (ini_get('display_errors')) {

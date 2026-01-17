@@ -106,7 +106,11 @@ class Database
                 ]
             );
         } catch (PDOException $e) {
-            error_log('Database connection failed: ' . $e->getMessage());
+            Logger::error('Database connection failed', [
+                'error' => $e->getMessage(),
+                'host' => $config['host'] ?? 'localhost',
+                'database' => $config['database'] ?? 'UNKNOWN'
+            ]);
             throw new Exception('Datenbankverbindung fehlgeschlagen');
         }
     }
@@ -135,7 +139,9 @@ class Database
             if (!empty($config['database'])) {
                 // Security: Validate database name to prevent SQL injection
                 if (!self::isValidDatabaseName($config['database'])) {
-                    error_log('Invalid database name format: ' . $config['database']);
+                    Logger::security('Invalid database name format attempted in testConnection', [
+                        'database' => $config['database']
+                    ]);
                     return false;
                 }
                 $pdo->exec("USE `{$config['database']}`");
@@ -173,19 +179,25 @@ class Database
 
             // Security: Validate database name to prevent SQL injection
             if (!self::isValidDatabaseName($dbName)) {
-                error_log('Invalid database name format: ' . $dbName);
+                Logger::security('Invalid database name format attempted', ['database' => $dbName]);
                 return false;
             }
 
             // Security: Validate charset against whitelist
             if (!in_array($charset, self::$allowedCharsets, true)) {
-                error_log('Invalid charset: ' . $charset);
+                Logger::warning('Invalid charset specified, using default', [
+                    'requested' => $charset,
+                    'default' => 'utf8mb4'
+                ]);
                 $charset = 'utf8mb4';
             }
 
             // Security: Validate collation against whitelist
             if (!in_array($collation, self::$allowedCollations, true)) {
-                error_log('Invalid collation: ' . $collation);
+                Logger::warning('Invalid collation specified, using default', [
+                    'requested' => $collation,
+                    'default' => 'utf8mb4_unicode_ci'
+                ]);
                 $collation = 'utf8mb4_unicode_ci';
             }
 
@@ -193,7 +205,10 @@ class Database
 
             return true;
         } catch (PDOException $e) {
-            error_log('Failed to create database: ' . $e->getMessage());
+            Logger::error('Failed to create database', [
+                'error' => $e->getMessage(),
+                'database' => $dbName
+            ]);
             return false;
         }
     }
@@ -214,7 +229,7 @@ class Database
             $pdo->exec($schema);
             return true;
         } catch (PDOException $e) {
-            error_log('Schema creation failed: ' . $e->getMessage());
+            Logger::error('Schema creation failed', ['error' => $e->getMessage()]);
             return false;
         }
     }
