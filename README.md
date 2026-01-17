@@ -14,7 +14,7 @@ A web application for kindergarten teachers to organize games, materials, and re
 
 1. **Download or clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/kindergartenctl.git
+   git clone https://github.com/mangoman16/kindergartenctl.git
    cd kindergartenctl
    ```
 
@@ -23,7 +23,6 @@ A web application for kindergarten teachers to organize games, materials, and re
 3. **Set directory permissions**:
    ```bash
    chmod -R 775 public/uploads storage temp
-   sudo chown -R $USER:www-data .
    ```
 
 4. **Open your browser** and navigate to your installation URL
