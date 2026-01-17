@@ -23,7 +23,6 @@ A web application for kindergarten teachers to organize games, materials, and re
 3. **Set directory permissions**:
    ```bash
    chmod -R 775 public/uploads storage temp
-   sudo chown -R $USER:www-data .
    ```
 
 4. **Open your browser** and navigate to your installation URL
