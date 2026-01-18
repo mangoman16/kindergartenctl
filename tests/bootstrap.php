@@ -19,6 +19,7 @@ if (file_exists(SRC_PATH . '/helpers/dates.php')) {
 }
 
 // Load core classes
+require_once SRC_PATH . '/core/Logger.php';
 require_once SRC_PATH . '/core/Database.php';
 require_once SRC_PATH . '/core/Model.php';
 require_once SRC_PATH . '/core/Session.php';

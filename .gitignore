@@ -1,0 +1,39 @@
+# Composer dependencies
+/vendor/
+
+# PHPUnit
+.phpunit.result.cache
+phpunit.xml.dist
+
+# Storage and logs
+/storage/logs/*.log
+/storage/cache/*
+!/storage/logs/.gitkeep
+!/storage/cache/.gitkeep
+
+# Temporary files
+/temp/*
+!/temp/.gitkeep
+
+# Uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Configuration files (generated during installation)
+/src/config/database.php
+/installed.lock
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local

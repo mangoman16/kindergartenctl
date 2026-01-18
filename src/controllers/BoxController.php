@@ -303,7 +303,11 @@ class BoxController extends Controller
             ]);
         } catch (Exception $e) {
             // Log error but don't fail the main operation
-            error_log('Failed to log change: ' . $e->getMessage());
+            Logger::error('Failed to log change', [
+                'error' => $e->getMessage(),
+                'entity_type' => $entityType,
+                'entity_id' => $entityId
+            ]);
         }
     }
 

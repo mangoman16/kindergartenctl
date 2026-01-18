@@ -131,7 +131,7 @@ function dd(...$vars): void
 {
     // Check if debug mode is enabled (prevents info disclosure in production)
     if (!App::config('app.debug', false)) {
-        error_log('dd() called in production mode - output suppressed');
+        Logger::warning('dd() called in production mode - output suppressed');
         die('Debug output is disabled in production mode.');
     }
 

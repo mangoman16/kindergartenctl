@@ -255,7 +255,11 @@ class TagController extends Controller
                 'changes' => json_encode($data, JSON_UNESCAPED_UNICODE),
             ]);
         } catch (Exception $e) {
-            error_log('Failed to log change: ' . $e->getMessage());
+            Logger::error('Failed to log change', [
+                'error' => $e->getMessage(),
+                'entity_type' => $entityType,
+                'entity_id' => $entityId
+            ]);
         }
     }
 
