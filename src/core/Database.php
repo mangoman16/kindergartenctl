@@ -120,6 +120,15 @@ class Database
      */
     public static function testConnection(array $config): bool
     {
+        $result = self::testConnectionWithDetails($config);
+        return $result['success'];
+    }
+
+    /**
+     * Test database connection with given credentials and return detailed result
+     */
+    public static function testConnectionWithDetails(array $config): array
+    {
         try {
             $dsn = sprintf(
                 '%s:host=%s;port=%d',
@@ -142,14 +151,53 @@ class Database
                     Logger::security('Invalid database name format attempted in testConnection', [
                         'database' => $config['database']
                     ]);
-                    return false;
+                    return [
+                        'success' => false,
+                        'message' => 'Ungültiger Datenbankname. Nur Buchstaben, Zahlen und Unterstriche erlaubt.'
+                    ];
                 }
-                $pdo->exec("USE `{$config['database']}`");
+
+                // Check if database exists, if not we'll create it later
+                try {
+                    $pdo->exec("USE `{$config['database']}`");
+                } catch (PDOException $e) {
+                    // Database doesn't exist yet, but connection works
+                    return [
+                        'success' => true,
+                        'message' => 'Verbindung erfolgreich. Datenbank wird bei der Installation erstellt.'
+                    ];
+                }
             }
 
-            return true;
+            return [
+                'success' => true,
+                'message' => 'Datenbankverbindung erfolgreich!'
+            ];
         } catch (PDOException $e) {
-            return false;
+            $errorMessage = $e->getMessage();
+
+            // Provide user-friendly error messages
+            if (str_contains($errorMessage, 'Access denied')) {
+                return [
+                    'success' => false,
+                    'message' => 'Zugriff verweigert. Benutzername oder Passwort falsch.'
+                ];
+            } elseif (str_contains($errorMessage, 'Unknown MySQL server host') || str_contains($errorMessage, 'Connection refused')) {
+                return [
+                    'success' => false,
+                    'message' => 'Server nicht erreichbar. Bitte Host und Port prüfen.'
+                ];
+            } elseif (str_contains($errorMessage, 'Unknown database')) {
+                return [
+                    'success' => true,
+                    'message' => 'Verbindung erfolgreich. Datenbank wird bei der Installation erstellt.'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Verbindung fehlgeschlagen: ' . $errorMessage
+            ];
         }
     }
 
@@ -214,24 +262,77 @@ class Database
     }
 
     /**
-     * Run schema creation SQL
+     * Run schema creation SQL with proper error handling
      */
     public static function runSchema(): bool
     {
         $pdo = self::getInstance();
         if (!$pdo) {
+            Logger::error('Schema creation failed: No database connection');
             return false;
         }
 
-        $schema = self::getSchema();
+        $statements = self::getSchemaStatements();
 
         try {
-            $pdo->exec($schema);
+            // Execute each statement individually for better error reporting
+            foreach ($statements as $statement) {
+                $statement = trim($statement);
+                if (!empty($statement)) {
+                    $pdo->exec($statement);
+                }
+            }
+
+            // Verify all tables were created
+            if (!self::verifySchema($pdo)) {
+                Logger::error('Schema verification failed: Not all tables were created');
+                return false;
+            }
+
             return true;
         } catch (PDOException $e) {
-            Logger::error('Schema creation failed', ['error' => $e->getMessage()]);
+            Logger::error('Schema creation failed', [
+                'error' => $e->getMessage(),
+                'statement' => substr($statement ?? '', 0, 100)
+            ]);
             return false;
         }
+    }
+
+    /**
+     * Verify that all required tables exist
+     */
+    private static function verifySchema(PDO $pdo): bool
+    {
+        $requiredTables = [
+            'users', 'categories', 'boxes', 'tags', 'materials', 'games',
+            'game_materials', 'game_categories', 'game_tags', 'groups',
+            'group_games', 'group_materials', 'calendar_events', 'changelog',
+            'ip_bans', 'password_resets', 'settings', 'transactions'
+        ];
+
+        $stmt = $pdo->query("SHOW TABLES");
+        $existingTables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($requiredTables as $table) {
+            if (!in_array($table, $existingTables)) {
+                Logger::error("Missing table: {$table}");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get schema as array of individual statements
+     */
+    private static function getSchemaStatements(): array
+    {
+        $schema = self::getSchema();
+        // Split by semicolon but not within strings
+        $statements = preg_split('/;(?=([^\']*\'[^\']*\')*[^\']*$)/', $schema);
+        return array_filter(array_map('trim', $statements));
     }
 
     /**
@@ -470,6 +571,27 @@ CREATE TABLE IF NOT EXISTS settings (
     setting_value TEXT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Transactions table for data integrity verification (like online shop transaction log)
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    transaction_id VARCHAR(64) NOT NULL UNIQUE,
+    user_id INT UNSIGNED NULL,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id INT UNSIGNED NULL,
+    operation ENUM('create', 'update', 'delete', 'batch') NOT NULL,
+    data_before JSON NULL,
+    data_after JSON NULL,
+    checksum VARCHAR(64) NOT NULL,
+    status ENUM('pending', 'committed', 'rolled_back', 'verified', 'failed') DEFAULT 'pending',
+    verified_at DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_transaction_id (transaction_id),
+    INDEX idx_entity (entity_type, entity_id),
+    INDEX idx_status (status),
+    INDEX idx_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert default categories (age groups)

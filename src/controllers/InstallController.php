@@ -58,21 +58,22 @@ class InstallController extends Controller
             'password' => $this->getPost('password'),
         ];
 
-        $success = Database::testConnection($config);
+        $result = Database::testConnectionWithDetails($config);
 
+        // Always return JSON for this endpoint (used by AJAX)
         if ($this->isAjax()) {
             $this->json([
-                'success' => $success,
-                'message' => $success
-                    ? __('install.db_connection_success')
-                    : __('install.db_connection_failed'),
+                'success' => $result['success'],
+                'message' => $result['message'],
             ]);
+            return;
         }
 
-        if ($success) {
-            Session::setFlash('success', __('install.db_connection_success'));
+        // Fallback for non-AJAX requests
+        if ($result['success']) {
+            Session::setFlash('success', $result['message']);
         } else {
-            Session::setFlash('error', __('install.db_connection_failed'));
+            Session::setFlash('error', $result['message']);
         }
         $this->redirect('/install/step2');
     }
@@ -285,7 +286,7 @@ class InstallController extends Controller
     }
 
     /**
-     * Check system requirements
+     * Check system requirements and create directories if needed
      */
     private function checkRequirements(): array
     {
@@ -333,9 +334,19 @@ class InstallController extends Controller
             'current' => extension_loaded('json') ? 'Installiert' : 'Fehlt',
         ];
 
-        // Directory permissions
+        // Directory permissions - create if not exists
         $directories = [
             'uploads' => PUBLIC_PATH . '/uploads',
+            'uploads/games/full' => PUBLIC_PATH . '/uploads/games/full',
+            'uploads/games/thumbs' => PUBLIC_PATH . '/uploads/games/thumbs',
+            'uploads/boxes/full' => PUBLIC_PATH . '/uploads/boxes/full',
+            'uploads/boxes/thumbs' => PUBLIC_PATH . '/uploads/boxes/thumbs',
+            'uploads/categories/full' => PUBLIC_PATH . '/uploads/categories/full',
+            'uploads/categories/thumbs' => PUBLIC_PATH . '/uploads/categories/thumbs',
+            'uploads/tags/full' => PUBLIC_PATH . '/uploads/tags/full',
+            'uploads/tags/thumbs' => PUBLIC_PATH . '/uploads/tags/thumbs',
+            'uploads/materials/full' => PUBLIC_PATH . '/uploads/materials/full',
+            'uploads/materials/thumbs' => PUBLIC_PATH . '/uploads/materials/thumbs',
             'temp' => TEMP_PATH,
             'storage/logs' => STORAGE_PATH . '/logs',
             'storage/cache' => STORAGE_PATH . '/cache',
@@ -343,12 +354,21 @@ class InstallController extends Controller
         ];
 
         foreach ($directories as $name => $path) {
+            // Try to create directory if it doesn't exist
+            if (!is_dir($path)) {
+                @mkdir($path, 0755, true);
+            }
+
             $writable = is_dir($path) && is_writable($path);
-            $requirements[] = [
-                'name' => "Verzeichnis '{$name}'",
-                'passed' => $writable,
-                'current' => $writable ? 'Beschreibbar' : 'Nicht beschreibbar',
-            ];
+
+            // Only show main directories in requirements (not all subdirs)
+            if (!str_contains($name, '/') || $name === 'storage/logs' || $name === 'storage/cache' || $name === 'src/config') {
+                $requirements[] = [
+                    'name' => "Verzeichnis '{$name}'",
+                    'passed' => $writable,
+                    'current' => $writable ? 'Beschreibbar' : 'Nicht beschreibbar',
+                ];
+            }
         }
 
         return $requirements;

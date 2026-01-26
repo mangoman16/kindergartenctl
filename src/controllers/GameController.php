@@ -89,6 +89,7 @@ class GameController extends Controller
 
         require_once SRC_PATH . '/models/Game.php';
         require_once SRC_PATH . '/services/ChangelogService.php';
+        require_once SRC_PATH . '/services/TransactionService.php';
 
         $data = [
             'name' => trim($this->getPost('name', '')),
@@ -124,25 +125,35 @@ class GameController extends Controller
             return;
         }
 
-        // Create game
-        $gameId = Game::create($data);
+        // Execute within transaction for data integrity
+        $transaction = TransactionService::getInstance();
 
-        if (!$gameId) {
-            Session::setFlash('error', 'Fehler beim Erstellen des Spiels.');
+        try {
+            $gameId = $transaction->execute('game', 'create', function() use ($data, $tagIds, $materials) {
+                // Create game
+                $gameId = Game::create($data);
+
+                if (!$gameId) {
+                    throw new RuntimeException('Fehler beim Erstellen des Spiels.');
+                }
+
+                // Update tags and materials
+                Game::updateTags($gameId, $tagIds);
+                Game::updateMaterials($gameId, $materials);
+
+                return $gameId;
+            }, null);
+
+            // Log change
+            ChangelogService::getInstance()->logCreate('game', $gameId, $data['name'], $data);
+
+            Session::setFlash('success', __('flash.created', ['item' => __('game.title')]));
+            $this->redirect('/games/' . $gameId);
+        } catch (Exception $e) {
+            Session::setFlash('error', $e->getMessage());
             Session::setOldInput(array_merge($data, ['tags' => $tagIds, 'materials' => $materials]));
             $this->redirect('/games/create');
-            return;
         }
-
-        // Update tags and materials
-        Game::updateTags($gameId, $tagIds);
-        Game::updateMaterials($gameId, $materials);
-
-        // Log change
-        ChangelogService::getInstance()->logCreate('game', $gameId, $data['name'], $data);
-
-        Session::setFlash('success', __('flash.created', ['item' => __('game.title')]));
-        $this->redirect('/games/' . $gameId);
     }
 
     /**
@@ -218,6 +229,7 @@ class GameController extends Controller
 
         require_once SRC_PATH . '/models/Game.php';
         require_once SRC_PATH . '/services/ChangelogService.php';
+        require_once SRC_PATH . '/services/TransactionService.php';
 
         $game = Game::find((int)$id);
 
@@ -268,20 +280,33 @@ class GameController extends Controller
             'duration_minutes', 'is_outdoor', 'is_active', 'image_path', 'box_id', 'category_id'
         ]);
 
-        // Update game
-        Game::update((int)$id, $data);
+        // Execute within transaction for data integrity
+        $transaction = TransactionService::getInstance();
 
-        // Update tags and materials
-        Game::updateTags((int)$id, $tagIds);
-        Game::updateMaterials((int)$id, $materials);
+        try {
+            $transaction->execute('game', 'update', function() use ($id, $data, $tagIds, $materials) {
+                // Update game
+                Game::update((int)$id, $data);
 
-        // Log change
-        if (!empty($changes)) {
-            $changelog->logUpdate('game', (int)$id, $data['name'], $changes);
+                // Update tags and materials
+                Game::updateTags((int)$id, $tagIds);
+                Game::updateMaterials((int)$id, $materials);
+
+                return ['id' => (int)$id];
+            }, $game);
+
+            // Log change
+            if (!empty($changes)) {
+                $changelog->logUpdate('game', (int)$id, $data['name'], $changes);
+            }
+
+            Session::setFlash('success', __('flash.updated', ['item' => __('game.title')]));
+            $this->redirect('/games/' . $id);
+        } catch (Exception $e) {
+            Session::setFlash('error', 'Fehler beim Aktualisieren: ' . $e->getMessage());
+            Session::setOldInput(array_merge($data, ['tags' => $tagIds, 'materials' => $materials]));
+            $this->redirect('/games/' . $id . '/edit');
         }
-
-        Session::setFlash('success', __('flash.updated', ['item' => __('game.title')]));
-        $this->redirect('/games/' . $id);
     }
 
     /**
@@ -294,6 +319,7 @@ class GameController extends Controller
         require_once SRC_PATH . '/models/Game.php';
         require_once SRC_PATH . '/services/ChangelogService.php';
         require_once SRC_PATH . '/services/ImageProcessor.php';
+        require_once SRC_PATH . '/services/TransactionService.php';
 
         $game = Game::find((int)$id);
 
@@ -303,20 +329,32 @@ class GameController extends Controller
             return;
         }
 
-        // Log change before deletion
-        ChangelogService::getInstance()->logDelete('game', (int)$id, $game['name'], $game);
+        // Execute within transaction for data integrity
+        $transaction = TransactionService::getInstance();
 
-        // Delete game (tags and materials entries will be deleted due to foreign key)
-        Game::delete((int)$id);
+        try {
+            $transaction->execute('game', 'delete', function() use ($id, $game) {
+                // Log change before deletion
+                ChangelogService::getInstance()->logDelete('game', (int)$id, $game['name'], $game);
 
-        // Delete image if exists
-        if ($game['image_path']) {
-            $processor = new ImageProcessor();
-            $processor->delete($game['image_path']);
+                // Delete game (tags and materials entries will be deleted due to foreign key)
+                Game::delete((int)$id);
+
+                // Delete image if exists
+                if ($game['image_path']) {
+                    $processor = new ImageProcessor();
+                    $processor->delete($game['image_path']);
+                }
+
+                return ['id' => (int)$id, 'deleted' => true];
+            }, $game);
+
+            Session::setFlash('success', __('flash.deleted', ['item' => __('game.title')]));
+            $this->redirect('/games');
+        } catch (Exception $e) {
+            Session::setFlash('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            $this->redirect('/games/' . $id);
         }
-
-        Session::setFlash('success', __('flash.deleted', ['item' => __('game.title')]));
-        $this->redirect('/games');
     }
 
     /**
@@ -351,6 +389,7 @@ class GameController extends Controller
 
         require_once SRC_PATH . '/models/Game.php';
         require_once SRC_PATH . '/services/ChangelogService.php';
+        require_once SRC_PATH . '/services/TransactionService.php';
 
         $game = Game::find((int)$id);
 
@@ -360,16 +399,27 @@ class GameController extends Controller
             return;
         }
 
-        $newGameId = Game::duplicate((int)$id);
+        // Execute within transaction for data integrity
+        $transaction = TransactionService::getInstance();
 
-        if ($newGameId) {
-            $newGame = Game::find($newGameId);
-            ChangelogService::getInstance()->logCreate('game', $newGameId, $newGame['name'], ['duplicated_from' => $game['name']]);
+        try {
+            $newGameId = $transaction->execute('game', 'create', function() use ($id, $game) {
+                $newGameId = Game::duplicate((int)$id);
+
+                if (!$newGameId) {
+                    throw new RuntimeException('Fehler beim Duplizieren des Spiels.');
+                }
+
+                $newGame = Game::find($newGameId);
+                ChangelogService::getInstance()->logCreate('game', $newGameId, $newGame['name'], ['duplicated_from' => $game['name']]);
+
+                return $newGameId;
+            }, $game);
 
             Session::setFlash('success', 'Spiel wurde dupliziert.');
             $this->redirect('/games/' . $newGameId . '/edit');
-        } else {
-            Session::setFlash('error', 'Fehler beim Duplizieren des Spiels.');
+        } catch (Exception $e) {
+            Session::setFlash('error', $e->getMessage());
             $this->redirect('/games/' . $id);
         }
     }

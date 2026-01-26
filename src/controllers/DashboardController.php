@@ -6,13 +6,13 @@
 class DashboardController extends Controller
 {
     /**
-     * Show dashboard (or landing page for unauthenticated users)
+     * Show dashboard - requires authentication
      */
     public function index(): void
     {
-        // Show landing page for unauthenticated users
+        // Redirect to login for unauthenticated users (internal software - no landing page)
         if (!Auth::check()) {
-            include SRC_PATH . '/views/landing.php';
+            $this->redirect('/login');
             return;
         }
 
@@ -69,7 +69,7 @@ class DashboardController extends Controller
                 // Events this week
                 $today = date('Y-m-d');
                 $nextWeek = date('Y-m-d', strtotime('+7 days'));
-                $stmt = $db->prepare("SELECT COUNT(*) FROM calendar_events WHERE start_date BETWEEN :today AND :next_week");
+                $stmt = $db->prepare("SELECT COUNT(*) FROM calendar_events WHERE event_date BETWEEN :today AND :next_week");
                 $stmt->execute(['today' => $today, 'next_week' => $nextWeek]);
                 $stats['events_this_week'] = (int)$stmt->fetchColumn();
 
@@ -86,7 +86,7 @@ class DashboardController extends Controller
 
                 // Recent changes
                 $stmt = $db->query("
-                    SELECT c.*, u.name as user_name
+                    SELECT c.*, u.username as user_name
                     FROM changelog c
                     LEFT JOIN users u ON u.id = c.user_id
                     ORDER BY c.created_at DESC
@@ -99,8 +99,8 @@ class DashboardController extends Controller
                     SELECT ce.*, g.name as game_name
                     FROM calendar_events ce
                     LEFT JOIN games g ON g.id = ce.game_id
-                    WHERE ce.start_date >= :today
-                    ORDER BY ce.start_date ASC
+                    WHERE ce.event_date >= :today
+                    ORDER BY ce.event_date ASC
                     LIMIT 5
                 ");
                 $stmt->execute(['today' => $today]);

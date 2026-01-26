@@ -94,7 +94,10 @@ document.getElementById('testConnection').addEventListener('click', function() {
 
     fetch('<?= url('/install/step2') ?>', {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
     })
     .then(response => response.json())
     .then(data => {
@@ -102,7 +105,7 @@ document.getElementById('testConnection').addEventListener('click', function() {
         resultSpan.style.color = data.success ? 'var(--color-success)' : 'var(--color-danger)';
     })
     .catch(error => {
-        resultSpan.textContent = 'Fehler beim Testen';
+        resultSpan.textContent = 'Fehler beim Testen der Verbindung';
         resultSpan.style.color = 'var(--color-danger)';
     });
 });
