@@ -61,6 +61,18 @@ class CalendarController extends Controller
         $start = $_GET['start'] ?? date('Y-m-01');
         $end = $_GET['end'] ?? date('Y-m-t');
 
+        // Validate date formats to prevent injection
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}/', $start)) {
+            $start = date('Y-m-01');
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}/', $end)) {
+            $end = date('Y-m-t');
+        }
+
+        // Extract just the date part (FullCalendar may send full ISO timestamp)
+        $start = substr($start, 0, 10);
+        $end = substr($end, 0, 10);
+
         $events = CalendarEvent::getForRange($start, $end);
         $formattedEvents = array_map([CalendarEvent::class, 'formatForCalendar'], $events);
 
@@ -96,9 +108,42 @@ class CalendarController extends Controller
             return;
         }
 
+        if (mb_strlen($eventData['title']) > 255) {
+            $this->jsonError('Titel darf maximal 255 Zeichen lang sein.', 400);
+            return;
+        }
+
+        if (mb_strlen($eventData['description']) > 5000) {
+            $this->jsonError('Beschreibung darf maximal 5000 Zeichen lang sein.', 400);
+            return;
+        }
+
         if (empty($eventData['start_date'])) {
             $this->jsonError('Startdatum ist erforderlich.', 400);
             return;
+        }
+
+        // Validate date format (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{2}:\d{2}(:\d{2})?)?$/', $eventData['start_date'])) {
+            $this->jsonError('Ungültiges Datumsformat.', 400);
+            return;
+        }
+
+        // Validate end_date format and that it's >= start_date
+        if (!empty($eventData['end_date'])) {
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{2}:\d{2}(:\d{2})?)?$/', $eventData['end_date'])) {
+                $this->jsonError('Ungültiges Enddatumsformat.', 400);
+                return;
+            }
+            if ($eventData['end_date'] < $eventData['start_date']) {
+                $this->jsonError('Enddatum muss nach dem Startdatum liegen.', 400);
+                return;
+            }
+        }
+
+        // Validate color format (hex color)
+        if (!empty($eventData['color']) && !preg_match('/^#[0-9A-Fa-f]{6}$/', $eventData['color'])) {
+            $eventData['color'] = null; // Reset invalid color
         }
 
         // Create event

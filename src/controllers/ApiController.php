@@ -315,6 +315,11 @@ class ApiController extends Controller
         $this->rateLimit('search', 120, 60); // 120 searches per minute
         $query = trim($this->getQuery('q', ''));
 
+        // Limit query length to prevent abuse
+        if (strlen($query) > 100) {
+            $query = substr($query, 0, 100);
+        }
+
         if (strlen($query) < 2) {
             $this->json(['results' => []]);
             return;

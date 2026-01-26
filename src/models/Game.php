@@ -462,48 +462,91 @@ class Game extends Model
     }
 
     /**
-     * Duplicate a game
+     * Duplicate a game (transactional)
      */
     public static function duplicate(int $id): ?int
     {
+        $db = self::getDb();
+
         $game = self::findWithRelations($id);
         if (!$game) {
             return null;
         }
 
-        // Generate a new name
-        $newName = $game['name'] . ' (Kopie)';
-        $counter = 1;
-        while (self::nameExists($newName)) {
-            $counter++;
-            $newName = $game['name'] . ' (Kopie ' . $counter . ')';
-        }
+        try {
+            $db->beginTransaction();
 
-        // Create new game
-        $newGameId = self::create([
-            'name' => $newName,
-            'description' => $game['description'],
-            'instructions' => $game['instructions'],
-            'min_players' => $game['min_players'],
-            'max_players' => $game['max_players'],
-            'duration_minutes' => $game['duration_minutes'],
-            'is_outdoor' => $game['is_outdoor'],
-            'is_active' => $game['is_active'],
-            'image_path' => null, // Don't copy image
-            'box_id' => $game['box_id'],
-            'category_id' => $game['category_id'],
-        ]);
+            // Generate a new name with limit on attempts
+            $newName = $game['name'] . ' (Kopie)';
+            $counter = 1;
+            $maxAttempts = 100;
+            while (self::nameExists($newName) && $counter < $maxAttempts) {
+                $counter++;
+                $newName = $game['name'] . ' (Kopie ' . $counter . ')';
+            }
 
-        if ($newGameId) {
+            if ($counter >= $maxAttempts) {
+                $db->rollBack();
+                Logger::error('Failed to generate unique name for game duplicate', ['id' => $id]);
+                return null;
+            }
+
+            // Create new game directly in transaction
+            $stmt = $db->prepare("
+                INSERT INTO games (name, description, instructions, min_players, max_players,
+                                   duration_minutes, is_outdoor, is_active, image_path, box_id, category_id)
+                VALUES (:name, :description, :instructions, :min_players, :max_players,
+                        :duration_minutes, :is_outdoor, :is_active, :image_path, :box_id, :category_id)
+            ");
+            $stmt->execute([
+                'name' => $newName,
+                'description' => $game['description'],
+                'instructions' => $game['instructions'],
+                'min_players' => $game['min_players'],
+                'max_players' => $game['max_players'],
+                'duration_minutes' => $game['duration_minutes'],
+                'is_outdoor' => $game['is_outdoor'],
+                'is_active' => $game['is_active'],
+                'image_path' => null, // Don't copy image
+                'box_id' => $game['box_id'],
+                'category_id' => $game['category_id'],
+            ]);
+            $newGameId = (int)$db->lastInsertId();
+
+            if (!$newGameId) {
+                $db->rollBack();
+                return null;
+            }
+
             // Copy tags
-            $tagIds = array_column($game['tags'], 'id');
-            self::updateTags($newGameId, $tagIds);
+            if (!empty($game['tags'])) {
+                $tagStmt = $db->prepare("INSERT INTO game_tags (game_id, tag_id) VALUES (:game_id, :tag_id)");
+                foreach ($game['tags'] as $tag) {
+                    $tagStmt->execute(['game_id' => $newGameId, 'tag_id' => $tag['id']]);
+                }
+            }
 
             // Copy materials
-            $materials = array_map(fn($m) => ['id' => $m['id'], 'quantity' => $m['quantity']], $game['materials']);
-            self::updateMaterials($newGameId, $materials);
-        }
+            if (!empty($game['materials'])) {
+                $materialStmt = $db->prepare("INSERT INTO game_materials (game_id, material_id, quantity) VALUES (:game_id, :material_id, :quantity)");
+                foreach ($game['materials'] as $material) {
+                    $materialStmt->execute([
+                        'game_id' => $newGameId,
+                        'material_id' => $material['id'],
+                        'quantity' => $material['quantity'] ?? 1
+                    ]);
+                }
+            }
 
-        return $newGameId;
+            $db->commit();
+            return $newGameId;
+        } catch (PDOException $e) {
+            $db->rollBack();
+            Logger::error('Failed to duplicate game', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            return null;
+        }
     }
 }

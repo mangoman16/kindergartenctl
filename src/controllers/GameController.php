@@ -111,7 +111,19 @@ class GameController extends Controller
         // Validate
         $validator = Validator::make($data, [
             'name' => 'required|max:255',
+            'description' => 'max:10000',
+            'instructions' => 'max:50000',
+            'min_players' => 'integer|minValue:1|maxValue:999',
+            'max_players' => 'integer|minValue:1|maxValue:999',
+            'duration_minutes' => 'integer|minValue:1|maxValue:9999',
         ]);
+
+        // Additional validation: max_players should be >= min_players
+        if ($data['min_players'] !== null && $data['max_players'] !== null) {
+            if ($data['max_players'] < $data['min_players']) {
+                $validator->addError('max_players', 'Maximale Spieleranzahl muss größer oder gleich der minimalen Anzahl sein');
+            }
+        }
 
         // Check duplicate name
         if (!empty($data['name']) && Game::nameExists($data['name'])) {
@@ -259,7 +271,19 @@ class GameController extends Controller
         // Validate
         $validator = Validator::make($data, [
             'name' => 'required|max:255',
+            'description' => 'max:10000',
+            'instructions' => 'max:50000',
+            'min_players' => 'integer|minValue:1|maxValue:999',
+            'max_players' => 'integer|minValue:1|maxValue:999',
+            'duration_minutes' => 'integer|minValue:1|maxValue:9999',
         ]);
+
+        // Additional validation: max_players should be >= min_players
+        if ($data['min_players'] !== null && $data['max_players'] !== null) {
+            if ($data['max_players'] < $data['min_players']) {
+                $validator->addError('max_players', 'Maximale Spieleranzahl muss größer oder gleich der minimalen Anzahl sein');
+            }
+        }
 
         // Check duplicate name (excluding current)
         if (!empty($data['name']) && Game::nameExists($data['name'], (int)$id)) {

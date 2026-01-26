@@ -99,21 +99,38 @@ class Group extends Model
     {
         $db = self::getDb();
 
-        // Check if already exists
-        $stmt = $db->prepare("SELECT id FROM group_games WHERE group_id = :group_id AND game_id = :game_id");
-        $stmt->execute(['group_id' => $groupId, 'game_id' => $gameId]);
-        if ($stmt->fetch()) {
-            return false; // Already exists
+        try {
+            $db->beginTransaction();
+
+            // Check if already exists (use INSERT IGNORE for race condition safety)
+            $stmt = $db->prepare("SELECT id FROM group_games WHERE group_id = :group_id AND game_id = :game_id FOR UPDATE");
+            $stmt->execute(['group_id' => $groupId, 'game_id' => $gameId]);
+            if ($stmt->fetch()) {
+                $db->rollBack();
+                return false; // Already exists
+            }
+
+            // Get next sort order with safe fallback
+            $stmt = $db->prepare("SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM group_games WHERE group_id = :group_id");
+            $stmt->execute(['group_id' => $groupId]);
+            $result = $stmt->fetch();
+            $nextOrder = $result ? (int)$result['next_order'] : 1;
+
+            // Insert
+            $stmt = $db->prepare("INSERT INTO group_games (group_id, game_id, sort_order) VALUES (:group_id, :game_id, :sort_order)");
+            $success = $stmt->execute(['group_id' => $groupId, 'game_id' => $gameId, 'sort_order' => $nextOrder]);
+
+            $db->commit();
+            return $success;
+        } catch (PDOException $e) {
+            $db->rollBack();
+            Logger::error('Failed to add game to group', [
+                'group_id' => $groupId,
+                'game_id' => $gameId,
+                'error' => $e->getMessage()
+            ]);
+            return false;
         }
-
-        // Get next sort order
-        $stmt = $db->prepare("SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM group_games WHERE group_id = :group_id");
-        $stmt->execute(['group_id' => $groupId]);
-        $nextOrder = $stmt->fetch()['next_order'];
-
-        // Insert
-        $stmt = $db->prepare("INSERT INTO group_games (group_id, game_id, sort_order) VALUES (:group_id, :game_id, :sort_order)");
-        return $stmt->execute(['group_id' => $groupId, 'game_id' => $gameId, 'sort_order' => $nextOrder]);
     }
 
     /**
@@ -134,23 +151,44 @@ class Group extends Model
     {
         $db = self::getDb();
 
-        // Check if already exists
-        $stmt = $db->prepare("SELECT id FROM group_materials WHERE group_id = :group_id AND material_id = :material_id");
-        $stmt->execute(['group_id' => $groupId, 'material_id' => $materialId]);
-        if ($stmt->fetch()) {
-            // Update quantity instead
-            $stmt = $db->prepare("UPDATE group_materials SET quantity = quantity + :quantity WHERE group_id = :group_id AND material_id = :material_id");
-            return $stmt->execute(['group_id' => $groupId, 'material_id' => $materialId, 'quantity' => $quantity]);
+        // Validate quantity
+        $quantity = max(1, (int)$quantity);
+
+        try {
+            $db->beginTransaction();
+
+            // Check if already exists with row locking
+            $stmt = $db->prepare("SELECT id FROM group_materials WHERE group_id = :group_id AND material_id = :material_id FOR UPDATE");
+            $stmt->execute(['group_id' => $groupId, 'material_id' => $materialId]);
+            if ($stmt->fetch()) {
+                // Update quantity instead
+                $stmt = $db->prepare("UPDATE group_materials SET quantity = quantity + :quantity WHERE group_id = :group_id AND material_id = :material_id");
+                $success = $stmt->execute(['group_id' => $groupId, 'material_id' => $materialId, 'quantity' => $quantity]);
+                $db->commit();
+                return $success;
+            }
+
+            // Get next sort order with safe fallback
+            $stmt = $db->prepare("SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM group_materials WHERE group_id = :group_id");
+            $stmt->execute(['group_id' => $groupId]);
+            $result = $stmt->fetch();
+            $nextOrder = $result ? (int)$result['next_order'] : 1;
+
+            // Insert
+            $stmt = $db->prepare("INSERT INTO group_materials (group_id, material_id, quantity, sort_order) VALUES (:group_id, :material_id, :quantity, :sort_order)");
+            $success = $stmt->execute(['group_id' => $groupId, 'material_id' => $materialId, 'quantity' => $quantity, 'sort_order' => $nextOrder]);
+
+            $db->commit();
+            return $success;
+        } catch (PDOException $e) {
+            $db->rollBack();
+            Logger::error('Failed to add material to group', [
+                'group_id' => $groupId,
+                'material_id' => $materialId,
+                'error' => $e->getMessage()
+            ]);
+            return false;
         }
-
-        // Get next sort order
-        $stmt = $db->prepare("SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM group_materials WHERE group_id = :group_id");
-        $stmt->execute(['group_id' => $groupId]);
-        $nextOrder = $stmt->fetch()['next_order'];
-
-        // Insert
-        $stmt = $db->prepare("INSERT INTO group_materials (group_id, material_id, quantity, sort_order) VALUES (:group_id, :material_id, :quantity, :sort_order)");
-        return $stmt->execute(['group_id' => $groupId, 'material_id' => $materialId, 'quantity' => $quantity, 'sort_order' => $nextOrder]);
     }
 
     /**
@@ -171,14 +209,31 @@ class Group extends Model
     {
         $db = self::getDb();
 
-        // Delete existing
-        $stmt = $db->prepare("DELETE FROM group_games WHERE group_id = :group_id");
-        $stmt->execute(['group_id' => $groupId]);
+        try {
+            $db->beginTransaction();
 
-        // Insert new
-        $stmt = $db->prepare("INSERT INTO group_games (group_id, game_id, sort_order) VALUES (:group_id, :game_id, :sort_order)");
-        foreach ($gameIds as $order => $gameId) {
-            $stmt->execute(['group_id' => $groupId, 'game_id' => $gameId, 'sort_order' => $order]);
+            // Delete existing
+            $stmt = $db->prepare("DELETE FROM group_games WHERE group_id = :group_id");
+            $stmt->execute(['group_id' => $groupId]);
+
+            // Insert new with validation
+            $stmt = $db->prepare("INSERT INTO group_games (group_id, game_id, sort_order) VALUES (:group_id, :game_id, :sort_order)");
+            foreach ($gameIds as $order => $gameId) {
+                // Validate gameId is numeric
+                if (!is_numeric($gameId)) {
+                    continue;
+                }
+                $stmt->execute(['group_id' => $groupId, 'game_id' => (int)$gameId, 'sort_order' => (int)$order]);
+            }
+
+            $db->commit();
+        } catch (PDOException $e) {
+            $db->rollBack();
+            Logger::error('Failed to update group games', [
+                'group_id' => $groupId,
+                'error' => $e->getMessage()
+            ]);
+            throw new RuntimeException('Fehler beim Aktualisieren der Spiele');
         }
     }
 
@@ -189,19 +244,36 @@ class Group extends Model
     {
         $db = self::getDb();
 
-        // Delete existing
-        $stmt = $db->prepare("DELETE FROM group_materials WHERE group_id = :group_id");
-        $stmt->execute(['group_id' => $groupId]);
+        try {
+            $db->beginTransaction();
 
-        // Insert new
-        $stmt = $db->prepare("INSERT INTO group_materials (group_id, material_id, quantity, sort_order) VALUES (:group_id, :material_id, :quantity, :sort_order)");
-        foreach ($materials as $order => $material) {
-            $stmt->execute([
+            // Delete existing
+            $stmt = $db->prepare("DELETE FROM group_materials WHERE group_id = :group_id");
+            $stmt->execute(['group_id' => $groupId]);
+
+            // Insert new with validation
+            $stmt = $db->prepare("INSERT INTO group_materials (group_id, material_id, quantity, sort_order) VALUES (:group_id, :material_id, :quantity, :sort_order)");
+            foreach ($materials as $order => $material) {
+                // Skip invalid entries
+                if (!is_array($material) || !isset($material['id'])) {
+                    continue;
+                }
+                $stmt->execute([
+                    'group_id' => $groupId,
+                    'material_id' => (int)$material['id'],
+                    'quantity' => max(1, (int)($material['quantity'] ?? 1)),
+                    'sort_order' => (int)$order
+                ]);
+            }
+
+            $db->commit();
+        } catch (PDOException $e) {
+            $db->rollBack();
+            Logger::error('Failed to update group materials', [
                 'group_id' => $groupId,
-                'material_id' => $material['id'],
-                'quantity' => $material['quantity'] ?? 1,
-                'sort_order' => $order
+                'error' => $e->getMessage()
             ]);
+            throw new RuntimeException('Fehler beim Aktualisieren der Materialien');
         }
     }
 
@@ -257,42 +329,85 @@ class Group extends Model
     }
 
     /**
-     * Duplicate a group with all its items
+     * Duplicate a group with all its items (transactional)
      */
     public static function duplicate(int $id): ?int
     {
+        $db = self::getDb();
+
         $group = self::findWithCounts($id);
         if (!$group) {
             return null;
         }
 
-        // Generate a new name
-        $newName = $group['name'] . ' (Kopie)';
-        $counter = 1;
-        while (self::nameExists($newName)) {
-            $counter++;
-            $newName = $group['name'] . ' (Kopie ' . $counter . ')';
-        }
+        try {
+            $db->beginTransaction();
 
-        // Create new group
-        $newGroupId = self::create([
-            'name' => $newName,
-            'description' => $group['description'],
-            'image_path' => null, // Don't copy image
-        ]);
+            // Generate a new name with limit on attempts
+            $newName = $group['name'] . ' (Kopie)';
+            $counter = 1;
+            $maxAttempts = 100;
+            while (self::nameExists($newName) && $counter < $maxAttempts) {
+                $counter++;
+                $newName = $group['name'] . ' (Kopie ' . $counter . ')';
+            }
 
-        if ($newGroupId) {
+            if ($counter >= $maxAttempts) {
+                $db->rollBack();
+                Logger::error('Failed to generate unique name for group duplicate', ['id' => $id]);
+                return null;
+            }
+
+            // Create new group directly in transaction
+            $stmt = $db->prepare("INSERT INTO `groups` (name, description, image_path) VALUES (:name, :description, :image_path)");
+            $stmt->execute([
+                'name' => $newName,
+                'description' => $group['description'],
+                'image_path' => null, // Don't copy image
+            ]);
+            $newGroupId = (int)$db->lastInsertId();
+
+            if (!$newGroupId) {
+                $db->rollBack();
+                return null;
+            }
+
             // Copy games
             $games = self::getGames($id);
-            $gameIds = array_column($games, 'id');
-            self::updateGames($newGroupId, $gameIds);
+            if (!empty($games)) {
+                $insertStmt = $db->prepare("INSERT INTO group_games (group_id, game_id, sort_order) VALUES (:group_id, :game_id, :sort_order)");
+                foreach ($games as $index => $game) {
+                    $insertStmt->execute([
+                        'group_id' => $newGroupId,
+                        'game_id' => $game['id'],
+                        'sort_order' => $game['sort_order'] ?? $index
+                    ]);
+                }
+            }
 
             // Copy materials
             $materials = self::getMaterials($id);
-            $materialData = array_map(fn($m) => ['id' => $m['id'], 'quantity' => $m['quantity']], $materials);
-            self::updateMaterials($newGroupId, $materialData);
-        }
+            if (!empty($materials)) {
+                $insertStmt = $db->prepare("INSERT INTO group_materials (group_id, material_id, quantity, sort_order) VALUES (:group_id, :material_id, :quantity, :sort_order)");
+                foreach ($materials as $index => $material) {
+                    $insertStmt->execute([
+                        'group_id' => $newGroupId,
+                        'material_id' => $material['id'],
+                        'quantity' => $material['quantity'] ?? 1,
+                        'sort_order' => $material['sort_order'] ?? $index
+                    ]);
+                }
+            }
 
-        return $newGroupId;
+            $db->commit();
+            return $newGroupId;
+        } catch (PDOException $e) {
+            $db->rollBack();
+            Logger::error('Failed to duplicate group', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            return null;
+        }
     }
 }

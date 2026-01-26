@@ -90,10 +90,18 @@ class AuthController extends Controller
      */
     public function logout(): void
     {
-        // Only allow POST requests with valid CSRF token
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->requireCsrf();
+        // Strictly require POST request with valid CSRF token
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            // GET requests should redirect to home - don't logout
+            Logger::warning('Logout attempted via GET request', [
+                'ip' => getClientIp(),
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+            ]);
+            $this->redirect('/');
+            return;
         }
+
+        $this->requireCsrf();
 
         Auth::logout();
         Session::setFlash('success', 'Sie wurden abgemeldet.');
@@ -193,6 +201,9 @@ class AuthController extends Controller
      */
     public function resetPassword(): void
     {
+        // Require CSRF for password reset
+        $this->requireCsrf();
+
         $token = $this->getPost('token');
         $password = $this->getPost('password');
         $passwordConfirmation = $this->getPost('password_confirmation');
