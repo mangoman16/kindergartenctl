@@ -401,6 +401,8 @@ CREATE TABLE IF NOT EXISTS materials (
     description TEXT NULL,
     notes TEXT NULL,
     box_id INT UNSIGNED NULL,
+    quantity INT UNSIGNED DEFAULT 0,
+    is_consumable BOOLEAN DEFAULT FALSE,
     status ENUM('complete', 'incomplete', 'damaged', 'missing') DEFAULT 'complete',
     image_path VARCHAR(255) NULL,
     is_favorite BOOLEAN DEFAULT FALSE,
@@ -408,7 +410,8 @@ CREATE TABLE IF NOT EXISTS materials (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY unique_material_name (name),
     FOREIGN KEY (box_id) REFERENCES boxes(id) ON DELETE SET NULL,
-    FULLTEXT INDEX ft_materials (name, description, notes)
+    FULLTEXT INDEX ft_materials (name, description, notes),
+    INDEX idx_consumable (is_consumable)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Games
@@ -509,15 +512,21 @@ CREATE TABLE IF NOT EXISTS group_materials (
 CREATE TABLE IF NOT EXISTS calendar_events (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     game_id INT UNSIGNED NULL,
+    group_id INT UNSIGNED NULL,
     title VARCHAR(200) NOT NULL,
     description TEXT NULL,
-    event_date DATE NOT NULL,
-    event_type ENUM('played', 'planned') NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NULL,
+    all_day BOOLEAN DEFAULT TRUE,
+    color VARCHAR(7) NULL,
+    event_type ENUM('played', 'planned') DEFAULT 'planned',
     notes TEXT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE SET NULL,
-    INDEX idx_date (event_date),
+    FOREIGN KEY (group_id) REFERENCES `groups`(id) ON DELETE SET NULL,
+    INDEX idx_start_date (start_date),
+    INDEX idx_end_date (end_date),
     INDEX idx_type (event_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -129,9 +129,12 @@ abstract class Model
             $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
             $sql .= " ORDER BY `{$orderBy}` {$direction}";
         }
-        $sql .= " LIMIT {$perPage} OFFSET {$offset}";
+        $sql .= " LIMIT :limit OFFSET :offset";
 
-        $stmt = $db->query($sql);
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         $items = $stmt->fetchAll();
 
         return [
@@ -307,10 +310,12 @@ abstract class Model
                 FROM `{$table}`
                 WHERE MATCH({$columnList}) AGAINST(:query IN BOOLEAN MODE)
                 ORDER BY relevance DESC
-                LIMIT {$limit}";
+                LIMIT :limit";
 
         $stmt = $db->prepare($sql);
-        $stmt->execute(['query' => $query . '*']);
+        $stmt->bindValue('query', $query . '*', PDO::PARAM_STR);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }

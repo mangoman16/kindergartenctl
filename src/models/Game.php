@@ -230,9 +230,11 @@ class Game extends Model
             SELECT id, name, image_path FROM games
             WHERE name LIKE :query OR description LIKE :query
             ORDER BY name ASC
-            LIMIT {$limit}
+            LIMIT :limit
         ");
-        $stmt->execute(['query' => '%' . $query . '%']);
+        $stmt->bindValue('query', '%' . $query . '%', PDO::PARAM_STR);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }

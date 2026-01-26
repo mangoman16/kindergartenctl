@@ -14,12 +14,22 @@ class Tag extends Model
     ];
 
     /**
+     * Allowed columns for ordering
+     */
+    private static array $allowedOrderColumns = ['name', 'color', 'created_at', 'updated_at'];
+
+    /**
      * Get all tags with game count
      */
     public static function allWithGameCount(string $orderBy = 'name', string $direction = 'ASC'): array
     {
         $db = self::getDb();
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        // Validate orderBy column to prevent SQL injection
+        if (!in_array($orderBy, self::$allowedOrderColumns, true)) {
+            $orderBy = 'name';
+        }
 
         $sql = "SELECT t.*, COUNT(gt.game_id) as game_count
                 FROM tags t
@@ -64,11 +74,15 @@ class Tag extends Model
                 ORDER BY g.name ASC";
 
         if ($limit > 0) {
-            $sql .= " LIMIT {$limit}";
+            $sql .= " LIMIT :limit";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue('tag_id', $tagId, PDO::PARAM_INT);
+            $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+        } else {
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['tag_id' => $tagId]);
         }
-
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['tag_id' => $tagId]);
 
         return $stmt->fetchAll();
     }
@@ -117,9 +131,11 @@ class Tag extends Model
             SELECT id, name, color FROM tags
             WHERE name LIKE :query
             ORDER BY name ASC
-            LIMIT {$limit}
+            LIMIT :limit
         ");
-        $stmt->execute(['query' => '%' . $query . '%']);
+        $stmt->bindValue('query', '%' . $query . '%', PDO::PARAM_STR);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }
