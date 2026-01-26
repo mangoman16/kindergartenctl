@@ -9,10 +9,19 @@ class Material extends Model
     protected static array $fillable = [
         'name',
         'description',
-        'image_path',
+        'notes',
+        'box_id',
         'quantity',
         'is_consumable',
+        'status',
+        'image_path',
+        'is_favorite',
     ];
+
+    /**
+     * Allowed columns for ordering
+     */
+    private static array $allowedOrderColumns = ['name', 'quantity', 'status', 'is_consumable', 'is_favorite', 'created_at', 'updated_at'];
 
     /**
      * Get all materials with game count
@@ -21,6 +30,11 @@ class Material extends Model
     {
         $db = self::getDb();
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        // Validate orderBy column to prevent SQL injection
+        if (!in_array($orderBy, self::$allowedOrderColumns, true)) {
+            $orderBy = 'name';
+        }
 
         $where = [];
         $params = [];
@@ -83,11 +97,15 @@ class Material extends Model
                 ORDER BY g.name ASC";
 
         if ($limit > 0) {
-            $sql .= " LIMIT {$limit}";
+            $sql .= " LIMIT :limit";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue('material_id', $materialId, PDO::PARAM_INT);
+            $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+        } else {
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['material_id' => $materialId]);
         }
-
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['material_id' => $materialId]);
 
         return $stmt->fetchAll();
     }
@@ -136,9 +154,11 @@ class Material extends Model
             SELECT id, name FROM materials
             WHERE name LIKE :query
             ORDER BY name ASC
-            LIMIT {$limit}
+            LIMIT :limit
         ");
-        $stmt->execute(['query' => '%' . $query . '%']);
+        $stmt->bindValue('query', '%' . $query . '%', PDO::PARAM_STR);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }

@@ -6,13 +6,13 @@
 class DashboardController extends Controller
 {
     /**
-     * Show dashboard (or landing page for unauthenticated users)
+     * Show dashboard - requires authentication
      */
     public function index(): void
     {
-        // Show landing page for unauthenticated users
+        // Redirect to login for unauthenticated users (internal software - no landing page)
         if (!Auth::check()) {
-            include SRC_PATH . '/views/landing.php';
+            $this->redirect('/login');
             return;
         }
 
@@ -86,7 +86,7 @@ class DashboardController extends Controller
 
                 // Recent changes
                 $stmt = $db->query("
-                    SELECT c.*, u.name as user_name
+                    SELECT c.*, u.username as user_name
                     FROM changelog c
                     LEFT JOIN users u ON u.id = c.user_id
                     ORDER BY c.created_at DESC

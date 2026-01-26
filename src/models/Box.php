@@ -17,12 +17,22 @@ class Box extends Model
     ];
 
     /**
+     * Allowed columns for ordering
+     */
+    private static array $allowedOrderColumns = ['name', 'number', 'label', 'location', 'created_at', 'updated_at'];
+
+    /**
      * Get all boxes with material count
      */
     public static function allWithMaterialCount(string $orderBy = 'name', string $direction = 'ASC'): array
     {
         $db = self::getDb();
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        // Validate orderBy column to prevent SQL injection
+        if (!in_array($orderBy, self::$allowedOrderColumns, true)) {
+            $orderBy = 'name';
+        }
 
         $sql = "SELECT b.*, COUNT(m.id) as material_count
                 FROM boxes b

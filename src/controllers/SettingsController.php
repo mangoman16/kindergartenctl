@@ -18,6 +18,11 @@ class SettingsController extends Controller
         require_once SRC_PATH . '/models/User.php';
 
         $user = User::find(Auth::id());
+        if (!$user) {
+            Session::setFlash('error', 'Benutzer nicht gefunden.');
+            $this->redirect('/login');
+            return;
+        }
 
         // Get IP bans
         $db = Database::getInstance();
@@ -113,7 +118,13 @@ class SettingsController extends Controller
 
         $configPath = STORAGE_PATH . '/preferences.php';
         $content = "<?php\nreturn " . var_export($config, true) . ";\n";
-        file_put_contents($configPath, $content);
+
+        if (file_put_contents($configPath, $content) === false) {
+            Logger::error('Failed to save preferences', ['path' => $configPath]);
+            Session::setFlash('error', 'Einstellungen konnten nicht gespeichert werden.');
+            $this->redirect('/settings');
+            return;
+        }
 
         Session::setFlash('success', 'Einstellungen wurden gespeichert.');
         $this->redirect('/settings');
@@ -133,6 +144,11 @@ class SettingsController extends Controller
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
         $user = User::find(Auth::id());
+        if (!$user) {
+            Session::setFlash('error', 'Benutzer nicht gefunden.');
+            $this->redirect('/login');
+            return;
+        }
 
         // Validate current password
         if (!password_verify($currentPassword, $user['password_hash'])) {
@@ -175,6 +191,11 @@ class SettingsController extends Controller
         $password = $_POST['password'] ?? '';
 
         $user = User::find(Auth::id());
+        if (!$user) {
+            Session::setFlash('error', 'Benutzer nicht gefunden.');
+            $this->redirect('/login');
+            return;
+        }
 
         // Validate password
         if (!password_verify($password, $user['password_hash'])) {
@@ -220,6 +241,24 @@ class SettingsController extends Controller
         $smtpFromName = trim($_POST['smtp_from_name'] ?? 'Kindergarten Spiele Organizer');
         $smtpEncryption = $_POST['smtp_encryption'] ?? 'tls';
 
+        // Validate SMTP port (1-65535)
+        if ($smtpPort < 1 || $smtpPort > 65535) {
+            $smtpPort = 587;
+        }
+
+        // Validate encryption type
+        $allowedEncryption = ['tls', 'ssl', 'none', ''];
+        if (!in_array($smtpEncryption, $allowedEncryption, true)) {
+            $smtpEncryption = 'tls';
+        }
+
+        // Validate email format for from address if provided
+        if (!empty($smtpFrom) && !filter_var($smtpFrom, FILTER_VALIDATE_EMAIL)) {
+            Session::setFlash('error', 'Ungültige Absender-E-Mail-Adresse.');
+            $this->redirect('/settings');
+            return;
+        }
+
         // Load existing config to preserve password if not changed
         $existingConfig = $this->getSmtpConfig();
         if (empty($smtpPass) && !empty($existingConfig['smtp_pass'])) {
@@ -239,7 +278,13 @@ class SettingsController extends Controller
 
         $configPath = STORAGE_PATH . '/smtp.php';
         $content = "<?php\nreturn " . var_export($config, true) . ";\n";
-        file_put_contents($configPath, $content);
+
+        if (file_put_contents($configPath, $content) === false) {
+            Logger::error('Failed to save SMTP config', ['path' => $configPath]);
+            Session::setFlash('error', 'E-Mail-Einstellungen konnten nicht gespeichert werden.');
+            $this->redirect('/settings');
+            return;
+        }
 
         Session::setFlash('success', 'E-Mail-Einstellungen wurden gespeichert.');
         $this->redirect('/settings');

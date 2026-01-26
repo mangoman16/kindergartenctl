@@ -129,9 +129,12 @@ abstract class Model
             $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
             $sql .= " ORDER BY `{$orderBy}` {$direction}";
         }
-        $sql .= " LIMIT {$perPage} OFFSET {$offset}";
+        $sql .= " LIMIT :limit OFFSET :offset";
 
-        $stmt = $db->query($sql);
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         $items = $stmt->fetchAll();
 
         return [
@@ -145,6 +148,7 @@ abstract class Model
 
     /**
      * Create a new record
+     * Returns the new ID on success, null on failure (including duplicate key violations)
      */
     public static function create(array $data): ?int
     {
@@ -170,14 +174,27 @@ abstract class Model
             implode(', ', $placeholders)
         );
 
-        $stmt = $db->prepare($sql);
-        $stmt->execute($data);
-
-        return (int)$db->lastInsertId();
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->execute($data);
+            return (int)$db->lastInsertId();
+        } catch (PDOException $e) {
+            // Handle duplicate key violation (MySQL error 1062)
+            if ($e->errorInfo[1] === 1062) {
+                Logger::warning('Duplicate key violation in create', [
+                    'table' => $table,
+                    'error' => $e->getMessage()
+                ]);
+                return null;
+            }
+            // Re-throw other exceptions
+            throw $e;
+        }
     }
 
     /**
      * Update a record
+     * Returns true on success, false on failure (including duplicate key violations)
      */
     public static function update(int $id, array $data): bool
     {
@@ -205,8 +222,22 @@ abstract class Model
             $pk
         );
 
-        $stmt = $db->prepare($sql);
-        return $stmt->execute($data);
+        try {
+            $stmt = $db->prepare($sql);
+            return $stmt->execute($data);
+        } catch (PDOException $e) {
+            // Handle duplicate key violation (MySQL error 1062)
+            if ($e->errorInfo[1] === 1062) {
+                Logger::warning('Duplicate key violation in update', [
+                    'table' => $table,
+                    'id' => $id,
+                    'error' => $e->getMessage()
+                ]);
+                return false;
+            }
+            // Re-throw other exceptions
+            throw $e;
+        }
     }
 
     /**
@@ -307,10 +338,12 @@ abstract class Model
                 FROM `{$table}`
                 WHERE MATCH({$columnList}) AGAINST(:query IN BOOLEAN MODE)
                 ORDER BY relevance DESC
-                LIMIT {$limit}";
+                LIMIT :limit";
 
         $stmt = $db->prepare($sql);
-        $stmt->execute(['query' => $query . '*']);
+        $stmt->bindValue('query', $query . '*', PDO::PARAM_STR);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }

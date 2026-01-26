@@ -14,12 +14,22 @@ class Category extends Model
     ];
 
     /**
+     * Allowed columns for ordering
+     */
+    private static array $allowedOrderColumns = ['name', 'sort_order', 'created_at', 'updated_at'];
+
+    /**
      * Get all categories with game count
      */
     public static function allWithGameCount(string $orderBy = 'sort_order', string $direction = 'ASC'): array
     {
         $db = self::getDb();
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        // Validate orderBy column to prevent SQL injection
+        if (!in_array($orderBy, self::$allowedOrderColumns, true)) {
+            $orderBy = 'sort_order';
+        }
 
         $sql = "SELECT c.*, COUNT(gc.game_id) as game_count
                 FROM categories c
@@ -64,11 +74,15 @@ class Category extends Model
                 ORDER BY g.name ASC";
 
         if ($limit > 0) {
-            $sql .= " LIMIT {$limit}";
+            $sql .= " LIMIT :limit";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue('category_id', $categoryId, PDO::PARAM_INT);
+            $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+        } else {
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['category_id' => $categoryId]);
         }
-
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['category_id' => $categoryId]);
 
         return $stmt->fetchAll();
     }
