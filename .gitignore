@@ -21,6 +21,7 @@ phpunit.xml.dist
 
 # Configuration files (generated during installation)
 /src/config/database.php
+/src/config/config.local.php
 /installed.lock
 
 # IDE files
