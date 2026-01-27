@@ -62,6 +62,28 @@ class App
         if (file_exists($configFile)) {
             self::$config = require $configFile;
         }
+
+        // Load local config overrides if exists (for development/debugging)
+        $localConfigFile = SRC_PATH . '/config/config.local.php';
+        if (file_exists($localConfigFile)) {
+            $localConfig = require $localConfigFile;
+            self::$config = $this->mergeConfigRecursive(self::$config, $localConfig);
+        }
+    }
+
+    /**
+     * Recursively merge configuration arrays
+     */
+    private function mergeConfigRecursive(array $base, array $override): array
+    {
+        foreach ($override as $key => $value) {
+            if (isset($base[$key]) && is_array($base[$key]) && is_array($value)) {
+                $base[$key] = $this->mergeConfigRecursive($base[$key], $value);
+            } else {
+                $base[$key] = $value;
+            }
+        }
+        return $base;
     }
 
     /**
