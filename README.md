@@ -4,36 +4,55 @@ A web application for kindergarten teachers to organize games, materials, and re
 
 ## Requirements
 
-- PHP 8.0+ with extensions: `pdo_mysql`, `gd`, `mbstring`, `json`, `openssl`
-- MySQL 8.x or MariaDB 10.4+
-- Apache with `mod_rewrite` enabled (or nginx)
+- **PHP 8.0+** with extensions: `pdo_mysql`, `gd`, `mbstring`, `json`, `openssl`
+- **MySQL 8.x** or **MariaDB 10.4+**
+- **Apache** with `mod_rewrite` enabled (or nginx with equivalent config)
+
+> **Note:** This application requires **no build tools**. No `composer install`, `npm install`, or `make` commands are needed. All dependencies are bundled or loaded via CDN.
+
+---
 
 ## Installation
 
-### Quick Installation
+### Step 1: Download and Configure Web Server
 
-1. **Download or clone the repository**:
+1. **Clone or download the repository**:
    ```bash
    git clone https://github.com/mangoman16/kindergartenctl.git
    cd kindergartenctl
    ```
 
-2. **Configure your web server** to point to the `public/` directory
+2. **Configure your web server** to point the document root to the `public/` directory.
 
-3. **Set directory permissions**:
-   ```bash
-   chmod -R 775 public/uploads storage temp
-   ```
+### Step 2: Set Directory Permissions
 
-4. **Open your browser** and navigate to your installation URL
+```bash
+# Create directories and set permissions
+chmod -R 750 public/uploads storage temp src/config
+chown -R www-data:www-data public/uploads storage temp src/config
+```
 
-5. **Follow the installation wizard** (4 steps):
-   - Requirements check
-   - Database configuration
-   - Admin user creation
-   - SMTP configuration (optional)
+> Replace `www-data` with your web server user (e.g., `apache`, `nginx`, `_www` on macOS).
 
-### Apache Configuration
+### Step 3: Run the Installation Wizard
+
+1. **Open your browser** and navigate to your installation URL (e.g., `http://localhost/` or your domain)
+
+2. You will be automatically redirected to the **5-step installation wizard**:
+
+   | Step | Description |
+   |------|-------------|
+   | **Step 1** | System requirements check (PHP version, extensions, directory permissions) |
+   | **Step 2** | Database configuration (host, port, database name, username, password) |
+   | **Step 3** | Admin user creation (username, email, password) |
+   | **Step 4** | Email/SMTP configuration (optional - can be skipped) |
+   | **Step 5** | Installation complete - redirects to login |
+
+3. **Login** with the admin credentials you created in Step 3.
+
+### Web Server Configuration Examples
+
+#### Apache Virtual Host
 
 ```apache
 <VirtualHost *:80>
@@ -44,10 +63,18 @@ A web application for kindergarten teachers to organize games, materials, and re
         AllowOverride All
         Require all granted
     </Directory>
+
+    # Recommended: Deny access to sensitive directories
+    <Directory /path/to/kindergartenctl/src>
+        Require all denied
+    </Directory>
+    <Directory /path/to/kindergartenctl/storage>
+        Require all denied
+    </Directory>
 </VirtualHost>
 ```
 
-### Nginx Configuration
+#### Nginx Configuration
 
 ```nginx
 server {
@@ -66,34 +93,159 @@ server {
         include fastcgi_params;
     }
 
+    # Deny access to hidden files
     location ~ /\. {
+        deny all;
+    }
+
+    # Deny access to sensitive directories
+    location ~ ^/(src|storage|temp|database)/ {
         deny all;
     }
 }
 ```
 
-## Update
+---
 
-1. **Backup your data**:
+## Updating
+
+### Before You Update
+
+1. **Create a backup** of your database and uploads:
    ```bash
-   mysqldump -u username -p kindergarten_organizer > backup.sql
-   cp -r public/uploads uploads_backup
+   # Backup database
+   mysqldump -u username -p kindergarten_organizer > backup_$(date +%Y%m%d).sql
+
+   # Backup uploaded files
+   cp -r public/uploads uploads_backup_$(date +%Y%m%d)
+
+   # Backup configuration (optional)
+   cp src/config/database.php database.php.backup
    ```
 
-2. **Pull the latest changes**:
+### Update Process
+
+1. **Pull the latest changes**:
    ```bash
    git pull origin main
    ```
 
-3. **Run database migrations** (if any):
+2. **Run database migrations** (if any):
    ```bash
    php database/migrate.php
    ```
 
-4. **Clear cache**:
+3. **Clear cache** (if applicable):
    ```bash
    rm -rf storage/cache/*
    ```
+
+4. **Verify permissions** are still correct:
+   ```bash
+   chmod -R 750 public/uploads storage temp src/config
+   ```
+
+### Rollback (if needed)
+
+If something goes wrong:
+
+1. **Restore the database**:
+   ```bash
+   mysql -u username -p kindergarten_organizer < backup_YYYYMMDD.sql
+   ```
+
+2. **Restore uploaded files**:
+   ```bash
+   rm -rf public/uploads
+   cp -r uploads_backup_YYYYMMDD public/uploads
+   ```
+
+3. **Revert code changes**:
+   ```bash
+   git checkout <previous-commit-hash>
+   ```
+
+---
+
+## Troubleshooting
+
+### Installation Issues
+
+| Problem | Solution |
+|---------|----------|
+| **Blank page / 500 error** | Check PHP error logs. Ensure PHP 8.0+ is installed. |
+| **404 on all routes** | Enable `mod_rewrite` (Apache) or check nginx `try_files` config. |
+| **"Directory not writable"** | Run `chmod -R 750` and `chown` commands from Step 2. |
+| **Database connection failed** | Verify MySQL is running and credentials are correct. |
+| **Config file not writable** | Ensure `src/config/` directory is writable by web server. |
+
+### Common Runtime Issues
+
+| Problem | Solution |
+|---------|----------|
+| **Session errors** | Check `storage/` directory permissions. |
+| **Image upload fails** | Verify `public/uploads/` is writable and GD extension is installed. |
+| **Email not sending** | Configure SMTP settings in Settings > Email Configuration. |
+
+### Checking PHP Requirements
+
+```bash
+# Check PHP version
+php -v
+
+# Check installed extensions
+php -m | grep -E 'pdo_mysql|gd|mbstring|json|openssl'
+```
+
+---
+
+## Directory Structure
+
+```
+kindergartenctl/
+├── public/              # Web-accessible files (document root)
+│   ├── index.php        # Application entry point
+│   ├── assets/          # CSS, JavaScript, images
+│   └── uploads/         # User-uploaded files
+├── src/
+│   ├── config/          # Configuration files (generated during install)
+│   ├── controllers/     # Application controllers
+│   ├── core/            # Core framework classes
+│   ├── helpers/         # Helper functions
+│   ├── models/          # Database models
+│   └── views/           # View templates
+├── storage/
+│   ├── cache/           # Application cache
+│   └── logs/            # Log files
+├── database/            # Database migrations
+├── temp/                # Temporary files
+└── installed.lock       # Created after successful installation
+```
+
+---
+
+## Re-installation
+
+To completely reinstall the application:
+
+1. **Delete the lock file**:
+   ```bash
+   rm installed.lock
+   ```
+
+2. **Drop the database** (optional - for clean install):
+   ```bash
+   mysql -u username -p -e "DROP DATABASE kindergarten_organizer;"
+   ```
+
+3. **Delete configuration** (optional):
+   ```bash
+   rm src/config/database.php
+   ```
+
+4. **Open the application** in your browser to restart the installation wizard.
+
+---
 
 ## License
 
