@@ -1,6 +1,94 @@
 <?php
 /**
- * Base Model Class
+ * =====================================================================================
+ * BASE MODEL - Active Record Pattern Implementation
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * This abstract class provides a base implementation for all database models using
+ * the Active Record pattern. It handles common CRUD operations, validation, and
+ * SQL injection prevention.
+ *
+ * EXTENDING THIS CLASS:
+ * ```php
+ * class Game extends Model
+ * {
+ *     protected static string $table = 'games';        // Database table name
+ *     protected static array $fillable = [             // Allowed fields for mass assignment
+ *         'name', 'description', 'is_active'
+ *     ];
+ * }
+ * ```
+ *
+ * BASIC USAGE:
+ * ```php
+ * // Find by ID
+ * $game = Game::find(123);
+ *
+ * // Find by column
+ * $game = Game::findBy('name', 'Memory');
+ *
+ * // Get all with ordering
+ * $games = Game::all('name', 'ASC');
+ *
+ * // Create new record
+ * $id = Game::create(['name' => 'New Game', 'is_active' => 1]);
+ *
+ * // Update record
+ * Game::update(123, ['name' => 'Updated Name']);
+ *
+ * // Delete record
+ * Game::delete(123);
+ *
+ * // Check for duplicates
+ * if (!Game::valueExists('name', 'Memory', $excludeId)) { ... }
+ * ```
+ *
+ * SECURITY FEATURES:
+ * - All queries use PDO prepared statements (prevents SQL injection)
+ * - Column names are validated via validateColumn() before interpolation
+ * - $fillable array restricts which fields can be mass-assigned
+ * - Duplicate key violations are caught and handled gracefully
+ *
+ * PAGINATION:
+ * ```php
+ * $result = Game::paginate($page, $perPage, 'name', 'ASC');
+ * // Returns: ['items' => [...], 'total' => 100, 'page' => 1, 'perPage' => 24, 'totalPages' => 5]
+ * ```
+ *
+ * TRANSACTIONS:
+ * ```php
+ * Model::beginTransaction();
+ * try {
+ *     Game::create([...]);
+ *     Material::update(1, [...]);
+ *     Model::commit();
+ * } catch (Exception $e) {
+ *     Model::rollback();
+ *     throw $e;
+ * }
+ * ```
+ *
+ * CHILD CLASSES (MODELS):
+ * - Game.php - Games with tags, materials, categories
+ * - Material.php - Materials used in games
+ * - Box.php - Storage boxes for materials
+ * - Category.php - Age groups for games
+ * - Tag.php - Themes/tags for games
+ * - Group.php - Collections of games and materials
+ * - User.php - User accounts
+ * - CalendarEvent.php - Calendar events
+ *
+ * AI NOTES:
+ * - Static properties ($table, $fillable) must be redeclared in child classes
+ * - getDb() returns singleton PDO instance from Database class
+ * - Column validation regex: /^[a-zA-Z_][a-zA-Z0-9_]*$/
+ * - MySQL error 1062 = duplicate key violation (handled in create/update)
+ * - All methods are static for convenience (no need to instantiate models)
+ *
+ * @package KindergartenOrganizer\Core
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 abstract class Model

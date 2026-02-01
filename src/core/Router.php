@@ -1,7 +1,67 @@
 <?php
 /**
- * Router Class
- * Handles URL routing and dispatching to controllers
+ * =====================================================================================
+ * ROUTER - URL Routing and Controller Dispatch
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * This class handles URL routing - matching incoming HTTP requests to controller actions.
+ * It supports both exact URL matches and pattern matching with named parameters.
+ *
+ * ROUTE DEFINITION FORMAT:
+ * Routes are defined in src/config/routes.php as an associative array:
+ * ```php
+ * return [
+ *     'GET /games' => ['GameController', 'index'],
+ *     'GET /games/{id}' => ['GameController', 'show'],
+ *     'POST /games/{id}' => ['GameController', 'update'],
+ * ];
+ * ```
+ *
+ * URL PATTERN MATCHING:
+ * - {id} becomes a named capture group matching any non-slash characters
+ * - Parameters are passed to controller methods in order
+ * - Example: GET /games/123 → GameController::show('123')
+ *
+ * REQUEST FLOW:
+ * ```
+ * Router::dispatch($method, $uri)
+ *     ↓
+ * match() - Find matching route
+ *     ↓
+ * Load controller file from src/controllers/
+ *     ↓
+ * Create controller instance
+ *     ↓
+ * Call action method with parameters
+ * ```
+ *
+ * SECURITY FEATURES:
+ * - redirect() validates URLs to prevent open redirect attacks
+ * - back() validates HTTP referer before redirecting
+ * - Both methods only allow same-domain redirects
+ *
+ * KEY METHODS:
+ * - dispatch($method, $uri) - Main entry point, routes request to controller
+ * - match($method, $uri) - Find matching route and extract parameters
+ * - Router::url('/path', ['id' => 123]) - Generate URL with parameters
+ * - Router::redirect('/path') - Safe redirect (validates URL)
+ * - Router::back() - Redirect to HTTP referer (validated)
+ *
+ * RELATED FILES:
+ * - src/config/routes.php - Route definitions
+ * - src/controllers/*.php - Controller classes
+ * - src/views/errors/404.php - Not found page
+ *
+ * AI NOTES:
+ * - Route patterns use {param} syntax converted to regex named groups
+ * - Controller action parameters are passed as strings (cast to int in controller)
+ * - 404 errors are logged via Logger::error()
+ * - Query strings are automatically stripped from URIs before matching
+ *
+ * @package KindergartenOrganizer\Core
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class Router

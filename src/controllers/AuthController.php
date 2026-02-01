@@ -104,7 +104,7 @@ class AuthController extends Controller
         $this->requireCsrf();
 
         Auth::logout();
-        Session::setFlash('success', 'Sie wurden abgemeldet.');
+        Session::setFlash('success', __('auth.logout'));
         $this->redirect('/login');
     }
 
