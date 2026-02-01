@@ -74,10 +74,10 @@ class DashboardController extends Controller
                 $stats['events_this_week'] = (int)$stmt->fetchColumn();
 
                 // Recent games
+                // AI NOTE: Games don't have box_id - they have materials which belong to boxes
                 $stmt = $db->query("
-                    SELECT g.*, b.name as box_name
+                    SELECT g.*
                     FROM games g
-                    LEFT JOIN boxes b ON b.id = g.box_id
                     WHERE g.is_active = 1
                     ORDER BY g.created_at DESC
                     LIMIT 5
