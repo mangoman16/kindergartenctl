@@ -117,13 +117,9 @@ class App
      */
     public function run(): void
     {
-        // Start session if not in install mode
-        $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
-        $isInstallRoute = strpos($requestUri, '/install') === 0;
-
-        if (!$isInstallRoute && file_exists(ROOT_PATH . '/installed.lock')) {
-            Session::start();
-        }
+        // Always start session - needed for flash messages, form validation, etc.
+        // Session works regardless of installation status
+        Session::start();
 
         // Get request method and URI
         $method = $_SERVER['REQUEST_METHOD'];

@@ -122,8 +122,9 @@ class InstallController extends Controller
         }
 
         // Save configuration
-        if (!Database::saveConfig($config)) {
-            Session::setFlash('error', 'Konfiguration konnte nicht gespeichert werden.');
+        $saveResult = Database::saveConfig($config);
+        if (!$saveResult['success']) {
+            Session::setFlash('error', $saveResult['message']);
             Session::setOldInput($config);
             $this->redirect('/install/step2');
             return;
@@ -267,9 +268,30 @@ class InstallController extends Controller
      */
     private function finishInstallation(): void
     {
-        // Create installed.lock file
-        file_put_contents(ROOT_PATH . '/installed.lock', date('Y-m-d H:i:s'));
+        $lockFile = ROOT_PATH . '/installed.lock';
 
+        // Create installed.lock file with error handling
+        $lockContent = json_encode([
+            'installed_at' => date('Y-m-d H:i:s'),
+            'php_version' => PHP_VERSION,
+            'app_version' => '1.0.0'
+        ], JSON_PRETTY_PRINT);
+
+        $bytesWritten = @file_put_contents($lockFile, $lockContent, LOCK_EX);
+
+        if ($bytesWritten === false) {
+            $error = error_get_last();
+            $errorMsg = $error['message'] ?? 'Unbekannter Fehler';
+            Logger::error('Failed to create installed.lock file', [
+                'path' => $lockFile,
+                'error' => $errorMsg
+            ]);
+            Session::setFlash('error', 'Installation konnte nicht abgeschlossen werden: Lock-Datei konnte nicht erstellt werden. Prüfen Sie die Schreibrechte für das Hauptverzeichnis.');
+            $this->redirect('/install/step4');
+            return;
+        }
+
+        Logger::info('Installation completed successfully', ['lock_file' => $lockFile]);
         Session::setFlash('success', __('install.complete_title'));
         $this->redirect('/install/complete');
     }

@@ -14,7 +14,7 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Basic routing system (107 routes)
 - [x] Base controller and model classes
 - [x] Session management (secure cookies, regeneration)
-- [x] Installation wizard (4 steps)
+- [x] Installation wizard (5 steps: Requirements, Database, Admin, SMTP, Complete)
 - [x] Authentication (login, logout, remember me)
 - [x] IP ban system (temporary/permanent)
 - [x] Main layout template
@@ -122,7 +122,22 @@ The project has a comprehensive foundation with most core features implemented. 
 
 ---
 
-## Recently Fixed (January 2026)
+## Recently Fixed (February 2026)
+
+### Bug Fixes
+- [x] Fixed ChangelogService.php - Changed u.name to u.username (users table has username, not name)
+- [x] Fixed Database::saveConfig() - Added comprehensive error handling with detailed messages
+- [x] Fixed finishInstallation() - Added error handling for installed.lock file creation
+- [x] Fixed App.php - Sessions now start for all routes including /install/* for flash messages
+
+### Documentation Updates
+- [x] Updated README.md - Complete rewrite with proper 5-step installation guide
+- [x] Added comprehensive AI-friendly comments to ChangelogService.php
+- [x] Updated SECURITY_AUDIT.md - Marked password field bug as fixed
+
+---
+
+## Previously Fixed (January 2026)
 
 ### Database Schema Alignment
 - [x] Fixed games table schema - added missing columns: instructions, min_players, max_players, duration_minutes, is_outdoor, is_active, box_id, category_id
@@ -204,4 +219,4 @@ All tables from specification are present:
 
 ---
 
-*Last updated: 2026-01-08*
+*Last updated: 2026-02-01*

@@ -29,23 +29,23 @@ The application demonstrates good security practices in several areas but has vu
 
 ## Critical Vulnerabilities
 
-### 1. Password Field Name Mismatch (HIGH SEVERITY)
+### 1. ~~Password Field Name Mismatch~~ (FIXED - 2026-02-01)
 
-**Location:** `src/controllers/SettingsController.php:138, 181`
+**Location:** `src/controllers/SettingsController.php:154, 201`
 
-**Issue:** The password verification logic references `$user['password']` but the database column is `password_hash`.
+**Status:** RESOLVED
+
+The password verification logic now correctly uses `$user['password_hash']`:
 
 ```php
-// Line 138 - BUG: Field is 'password_hash', not 'password'
-if (!password_verify($currentPassword, $user['password'])) {
+// Line 154 - FIXED
+if (!password_verify($currentPassword, $user['password_hash'])) {
 
-// Line 181 - Same bug
-if (!password_verify($password, $user['password'])) {
+// Line 201 - FIXED
+if (!password_verify($password, $user['password_hash'])) {
 ```
 
-**Impact:** Password update and email change features will fail because they reference a non-existent field. This causes an undefined array key warning and the password verification will fail.
-
-**Recommendation:** Change `$user['password']` to `$user['password_hash']`.
+Password update and email change features now work correctly.
 
 ---
 

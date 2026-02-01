@@ -619,9 +619,44 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
 
     /**
      * Save database configuration to file
+     *
+     * @param array $config Database configuration
+     * @return array Result with 'success' boolean and 'message' string
      */
-    public static function saveConfig(array $config): bool
+    public static function saveConfig(array $config): array
     {
+        $configFile = SRC_PATH . '/config/database.php';
+        $configDir = dirname($configFile);
+
+        // Check if config directory exists
+        if (!is_dir($configDir)) {
+            if (!@mkdir($configDir, 0755, true)) {
+                Logger::error('Failed to create config directory', ['path' => $configDir]);
+                return [
+                    'success' => false,
+                    'message' => 'Konfigurationsverzeichnis konnte nicht erstellt werden: ' . $configDir
+                ];
+            }
+        }
+
+        // Check if config directory is writable
+        if (!is_writable($configDir)) {
+            Logger::error('Config directory not writable', ['path' => $configDir]);
+            return [
+                'success' => false,
+                'message' => 'Konfigurationsverzeichnis ist nicht beschreibbar: ' . $configDir
+            ];
+        }
+
+        // Check if config file exists and is writable
+        if (file_exists($configFile) && !is_writable($configFile)) {
+            Logger::error('Config file not writable', ['path' => $configFile]);
+            return [
+                'success' => false,
+                'message' => 'Konfigurationsdatei ist nicht beschreibbar: ' . $configFile
+            ];
+        }
+
         $configContent = "<?php
 /**
  * Database Configuration
@@ -646,8 +681,46 @@ return [
 ];
 ";
 
-        $configFile = SRC_PATH . '/config/database.php';
-        return file_put_contents($configFile, $configContent) !== false;
+        // Attempt to write with error suppression, check result
+        $bytesWritten = @file_put_contents($configFile, $configContent, LOCK_EX);
+
+        if ($bytesWritten === false) {
+            $error = error_get_last();
+            $errorMsg = $error['message'] ?? 'Unbekannter Fehler';
+            Logger::error('Failed to write config file', [
+                'path' => $configFile,
+                'error' => $errorMsg
+            ]);
+            return [
+                'success' => false,
+                'message' => 'Konfigurationsdatei konnte nicht geschrieben werden: ' . $errorMsg
+            ];
+        }
+
+        // Verify the file was written correctly
+        if (!file_exists($configFile)) {
+            Logger::error('Config file does not exist after write', ['path' => $configFile]);
+            return [
+                'success' => false,
+                'message' => 'Konfigurationsdatei existiert nicht nach dem Schreiben'
+            ];
+        }
+
+        Logger::info('Database configuration saved successfully', ['path' => $configFile]);
+        return [
+            'success' => true,
+            'message' => 'Konfiguration erfolgreich gespeichert'
+        ];
+    }
+
+    /**
+     * Save database configuration to file (legacy boolean return)
+     * @deprecated Use saveConfig() which returns detailed result array
+     */
+    public static function saveConfigLegacy(array $config): bool
+    {
+        $result = self::saveConfig($config);
+        return $result['success'];
     }
 
     /**
