@@ -21,6 +21,7 @@ return [
     'GET /login' => ['AuthController', 'showLogin'],
     'POST /login' => ['AuthController', 'login'],
     'GET /logout' => ['AuthController', 'logout'],
+    'POST /logout' => ['AuthController', 'logout'],
     'GET /forgot-password' => ['AuthController', 'showForgotPassword'],
     'POST /forgot-password' => ['AuthController', 'sendResetLink'],
     'GET /reset-password' => ['AuthController', 'showResetPassword'],
