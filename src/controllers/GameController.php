@@ -469,19 +469,4 @@ class GameController extends Controller
         return $materials;
     }
 
-    /**
-     * Get POST parameter
-     */
-    private function getPost(string $key, mixed $default = null): mixed
-    {
-        return $_POST[$key] ?? $default;
-    }
-
-    /**
-     * Get GET parameter
-     */
-    private function getQuery(string $key, mixed $default = null): mixed
-    {
-        return $_GET[$key] ?? $default;
-    }
 }
