@@ -173,7 +173,7 @@
                     <th><?= __('form.name') ?></th>
                     <th><?= __('box.label') ?></th>
                     <th><?= __('box.location') ?></th>
-                    <th><?= __('nav.games') ?></th>
+                    <th><?= __('nav.materials') ?></th>
                     <th style="width: 80px;"></th>
                 </tr>
             </thead>
@@ -187,7 +187,7 @@
                     </td>
                     <td><?= e($box['label'] ?? '-') ?></td>
                     <td><?= e($box['location'] ?? '-') ?></td>
-                    <td><span class="badge"><?= $box['game_count'] ?></span></td>
+                    <td><span class="badge"><?= $box['material_count'] ?></span></td>
                     <td>
                         <a href="<?= url('/boxes/' . $box['id']) ?>" class="btn btn-sm btn-secondary"><?= __('action.view') ?></a>
                     </td>
