@@ -785,20 +785,4 @@ class ApiController extends Controller
             'error' => $message,
         ], $status);
     }
-
-    /**
-     * Get POST parameter
-     */
-    private function getPost(string $key, mixed $default = null): mixed
-    {
-        return $_POST[$key] ?? $default;
-    }
-
-    /**
-     * Get GET parameter
-     */
-    private function getQuery(string $key, mixed $default = null): mixed
-    {
-        return $_GET[$key] ?? $default;
-    }
 }

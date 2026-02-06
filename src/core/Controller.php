@@ -1,6 +1,106 @@
 <?php
 /**
- * Base Controller Class
+ * =====================================================================================
+ * BASE CONTROLLER - Request Handling and View Rendering
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * This abstract class provides common functionality for all controllers including
+ * view rendering, authentication, CSRF protection, and response helpers.
+ *
+ * EXTENDING THIS CLASS:
+ * ```php
+ * class GameController extends Controller
+ * {
+ *     public function __construct()
+ *     {
+ *         $this->requireAuth(); // All actions require login
+ *     }
+ *
+ *     public function index(): void
+ *     {
+ *         $games = Game::all();
+ *         $this->setTitle('Games');
+ *         $this->render('games/index', ['games' => $games]);
+ *     }
+ * }
+ * ```
+ *
+ * VIEW RENDERING:
+ * - render('view/path', $data) - Renders view within layout
+ * - renderPartial('view/path', $data) - Renders view without layout
+ * - Views located in src/views/, layouts in src/views/layouts/
+ * - Default layout is 'main' (src/views/layouts/main.php)
+ *
+ * AVAILABLE IN VIEWS:
+ * - $content - The rendered view content (in layouts)
+ * - $pageTitle - Set via setTitle()
+ * - $breadcrumbs - Set via addBreadcrumb()
+ * - $flash - Flash messages from Session
+ * - $errors - Validation errors from Session
+ * - $csrfToken - CSRF token for forms
+ * - $lang - Translation array
+ * - All data passed to render()
+ *
+ * CSRF PROTECTION:
+ * ```php
+ * public function store(): void
+ * {
+ *     $this->requireCsrf(); // Dies with 403 if invalid
+ *     // ... process form
+ * }
+ * ```
+ * In forms: <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+ * For AJAX: Set X-CSRF-TOKEN header
+ *
+ * AUTHENTICATION:
+ * - requireAuth() - Redirects to /login if not authenticated
+ * - Called in constructor for protected controllers
+ *
+ * REQUEST HELPERS:
+ * - getPost('key', $default) - Get POST parameter
+ * - getQuery('key', $default) - Get GET parameter
+ * - getFile('key') - Get uploaded file
+ * - isPost() / isAjax() - Check request type
+ *
+ * RESPONSE HELPERS:
+ * - json($data, $statusCode) - Send JSON response and exit
+ * - redirect('/path') - Redirect (validates URL)
+ * - back() - Redirect to HTTP referer
+ * - redirectWithMessage('/path', 'success', 'Message')
+ *
+ * LAYOUT OPTIONS:
+ * - 'main' - Standard authenticated layout with nav
+ * - 'auth' - Login/auth pages (minimal)
+ * - 'print' - Print-friendly layout
+ * - 'install' - Installation wizard layout
+ *
+ * CHILD CONTROLLERS:
+ * - AuthController - Login, logout, password reset
+ * - DashboardController - Main dashboard
+ * - GameController - Games CRUD
+ * - MaterialController - Materials CRUD
+ * - BoxController - Boxes CRUD
+ * - CategoryController - Categories CRUD
+ * - TagController - Tags CRUD
+ * - GroupController - Groups CRUD
+ * - CalendarController - Calendar events
+ * - SearchController - Global search
+ * - ChangelogController - Audit log
+ * - SettingsController - User settings
+ * - ApiController - AJAX endpoints
+ * - InstallController - Installation wizard
+ *
+ * AI NOTES:
+ * - Translation function __($key) is defined in helpers/functions.php
+ * - Flash messages persist for ONE request only (session-based)
+ * - CSRF tokens are regenerated per-session, not per-request
+ * - JSON responses set charset=utf-8 for German character support
+ * - Redirects use Router::redirect() which validates URLs
+ *
+ * @package KindergartenOrganizer\Core
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 abstract class Controller

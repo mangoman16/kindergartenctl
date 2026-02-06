@@ -208,6 +208,7 @@ return [
     'auth.set_new_password' => 'Neues Passwort setzen',
     'auth.welcome_back' => 'Willkommen zurück!',
     'auth.login_to_continue' => 'Bitte melden Sie sich an, um fortzufahren.',
+    'auth.logout' => 'Sie wurden abgemeldet.',
 
     // Search
     'search.title' => 'Suche',

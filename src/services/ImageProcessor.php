@@ -21,8 +21,9 @@ class ImageProcessor
 
         $this->uploadPath = UPLOADS_PATH;
         $this->maxSize = $upload['max_size'];
-        $this->fullSize = $upload['image_sizes']['full'];
-        $this->thumbSize = $upload['image_sizes']['thumb'];
+        // Config uses full_width/thumb_width keys, not image_sizes array
+        $this->fullSize = $upload['full_width'] ?? 600;
+        $this->thumbSize = $upload['thumb_width'] ?? 150;
         $this->allowedTypes = $upload['allowed_types'];
         $this->quality = $upload['quality'];
     }

@@ -225,31 +225,32 @@ class InstallController extends Controller
 
     /**
      * Save email configuration
+     * Saves SMTP config to storage/smtp.php file (same format as SettingsController)
      */
     public function saveEmail(): void
     {
-        $data = [
+        // Use same key names as Mailer.php expects
+        $config = [
             'smtp_host' => $this->getPost('smtp_host'),
-            'smtp_port' => $this->getPost('smtp_port', 587),
-            'smtp_username' => $this->getPost('smtp_username'),
-            'smtp_password' => $this->getPost('smtp_password'),
-            'smtp_encryption' => $this->getPost('smtp_encryption', 'tls'),
-            'smtp_from_email' => $this->getPost('smtp_from_email'),
+            'smtp_port' => (int)$this->getPost('smtp_port', 587),
+            'smtp_user' => $this->getPost('smtp_username'),
+            'smtp_pass' => $this->getPost('smtp_password'),
+            'smtp_from' => $this->getPost('smtp_from_email'),
             'smtp_from_name' => $this->getPost('smtp_from_name', 'Kindergarten Spiele Organizer'),
+            'smtp_encryption' => $this->getPost('smtp_encryption', 'tls'),
         ];
 
-        // Load database config
-        Database::loadConfig();
-        $db = Database::getInstance();
+        // Only save if host and from email are provided
+        if (!empty($config['smtp_host']) && !empty($config['smtp_from'])) {
+            $configPath = STORAGE_PATH . '/smtp.php';
+            $content = "<?php\nreturn " . var_export($config, true) . ";\n";
 
-        // Save settings to database
-        foreach ($data as $key => $value) {
-            $stmt = $db->prepare("
-                INSERT INTO settings (setting_key, setting_value)
-                VALUES (:key, :value)
-                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
-            ");
-            $stmt->execute(['key' => $key, 'value' => $value]);
+            if (file_put_contents($configPath, $content) === false) {
+                Logger::error('Failed to save SMTP config during installation', ['path' => $configPath]);
+                Session::setFlash('error', 'E-Mail-Einstellungen konnten nicht gespeichert werden.');
+                $this->redirect('/install/step4');
+                return;
+            }
         }
 
         $this->finishInstallation();

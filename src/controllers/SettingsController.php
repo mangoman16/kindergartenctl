@@ -353,8 +353,8 @@ class SettingsController extends Controller
             return;
         }
 
-        // Insert ban
-        $stmt = $db->prepare("INSERT INTO ip_bans (ip_address, reason, created_at) VALUES (:ip, :reason, NOW())");
+        // Insert ban (is_permanent = 1 to ensure manual bans are always active)
+        $stmt = $db->prepare("INSERT INTO ip_bans (ip_address, reason, is_permanent, created_at) VALUES (:ip, :reason, 1, NOW())");
         $stmt->execute(['ip' => $ip, 'reason' => $reason]);
 
         Session::setFlash('success', 'IP-Adresse wurde gesperrt.');

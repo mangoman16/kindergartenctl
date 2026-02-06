@@ -109,14 +109,17 @@ class SearchController extends Controller
 
     /**
      * Search boxes by name, label, or location
+     *
+     * AI NOTE: Boxes contain materials (via materials.box_id), not games directly.
+     * The material_count shows how many materials are stored in each box.
      */
     private function searchBoxes(string $query): array
     {
         $db = Database::getInstance();
         $stmt = $db->prepare("
-            SELECT b.*, COUNT(g.id) as game_count
+            SELECT b.*, COUNT(m.id) as material_count
             FROM boxes b
-            LEFT JOIN games g ON g.box_id = b.id
+            LEFT JOIN materials m ON m.box_id = b.id
             WHERE b.name LIKE :query OR b.label LIKE :query OR b.location LIKE :query
             GROUP BY b.id
             ORDER BY b.name ASC
