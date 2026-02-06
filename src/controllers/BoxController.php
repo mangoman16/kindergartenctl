@@ -95,7 +95,7 @@ class BoxController extends Controller
             'location' => trim($this->getPost('location', '')),
             'description' => trim($this->getPost('description', '')),
             'notes' => trim($this->getPost('notes', '')),
-            'image_path' => $this->getPost('image_path', ''),
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
         ];
 
         // Validate
@@ -183,7 +183,7 @@ class BoxController extends Controller
             'location' => trim($this->getPost('location', '')),
             'description' => trim($this->getPost('description', '')),
             'notes' => trim($this->getPost('notes', '')),
-            'image_path' => $this->getPost('image_path', '') ?: $box['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $box['image_path'],
         ];
 
         // Validate

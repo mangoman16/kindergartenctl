@@ -1,6 +1,30 @@
 <?php
 /**
- * Date Formatting Helpers (Austrian/German)
+ * =====================================================================================
+ * DATE HELPERS - German/Austrian Date Formatting
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Provides date/time formatting functions for the German locale. All dates in
+ * the application are stored as MySQL DATETIME/DATE but displayed in German
+ * format (DD.MM.YYYY) throughout the UI.
+ *
+ * FUNCTION INDEX:
+ * - formatDate($date)          : "15.01.2026" (DD.MM.YYYY)
+ * - formatDateTime($datetime)  : "15.01.2026 14:30" (DD.MM.YYYY HH:MM)
+ * - formatDateRelative($date)  : "Heute", "Gestern", "Vor 3 Tagen", "15.01.2026"
+ * - formatDuration($minutes)   : "1 Std. 30 Min." or "45 Min."
+ * - formatDateRange($start,$end): "15.01. - 20.01.2026" or "15.01.2026"
+ *
+ * AI NOTES:
+ * - All functions accept MySQL date/datetime strings and return German formatted strings
+ * - formatDateRelative() shows relative text for recent dates (< 7 days),
+ *   absolute dates for older entries
+ * - Used primarily in view templates for display purposes
+ *
+ * @package KindergartenOrganizer\Helpers
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 /**

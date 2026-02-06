@@ -1,5 +1,15 @@
 <?php
 /**
+ * =====================================================================================
+ * BOX MODEL - Physical Storage Containers
+ * =====================================================================================
+ *
+ * Represents physical storage boxes/containers where games and materials are kept.
+ * Each box has a name, number, label, location, and can contain multiple materials.
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * Box Model
  */
 

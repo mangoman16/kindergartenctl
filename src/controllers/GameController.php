@@ -100,7 +100,7 @@ class GameController extends Controller
             'duration_minutes' => $this->getPost('duration_minutes') ? (int)$this->getPost('duration_minutes') : null,
             'is_outdoor' => $this->getPost('is_outdoor') ? 1 : 0,
             'is_active' => $this->getPost('is_active') ? 1 : 0,
-            'image_path' => $this->getPost('image_path', ''),
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
             'box_id' => $this->getPost('box_id') ? (int)$this->getPost('box_id') : null,
             'category_id' => $this->getPost('category_id') ? (int)$this->getPost('category_id') : null,
         ];
@@ -260,7 +260,7 @@ class GameController extends Controller
             'duration_minutes' => $this->getPost('duration_minutes') ? (int)$this->getPost('duration_minutes') : null,
             'is_outdoor' => $this->getPost('is_outdoor') ? 1 : 0,
             'is_active' => $this->getPost('is_active') ? 1 : 0,
-            'image_path' => $this->getPost('image_path', '') ?: $game['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $game['image_path'],
             'box_id' => $this->getPost('box_id') ? (int)$this->getPost('box_id') : null,
             'category_id' => $this->getPost('category_id') ? (int)$this->getPost('category_id') : null,
         ];

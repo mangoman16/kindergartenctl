@@ -55,7 +55,7 @@ class TagController extends Controller
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
             'color' => $this->getPost('color', ''),
-            'image_path' => $this->getPost('image_path', ''),
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
         ];
 
         // Validate
@@ -138,7 +138,7 @@ class TagController extends Controller
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
             'color' => $this->getPost('color', '') ?: $tag['color'],
-            'image_path' => $this->getPost('image_path', '') ?: $tag['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $tag['image_path'],
         ];
 
         // Validate

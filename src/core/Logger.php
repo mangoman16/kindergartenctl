@@ -1,7 +1,49 @@
 <?php
 /**
- * Logger Class
- * Centralized logging system with file-based storage
+ * =====================================================================================
+ * LOGGER - File-Based Logging System
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Centralized logging with severity levels and structured context. Writes to
+ * daily-rotated log files in storage/logs/. Used throughout the application
+ * for error tracking, security events, and debugging.
+ *
+ * LOG LEVELS (in order of severity):
+ * - ERROR    : Application errors, exceptions, failed operations
+ * - WARNING  : Non-critical issues (deprecated features, fallbacks used)
+ * - INFO     : Significant events (user created, config saved)
+ * - DEBUG    : Detailed diagnostic info (only when APP_DEBUG=true)
+ * - SECURITY : Security-relevant events (failed logins, banned IPs, CSRF failures)
+ *
+ * LOG FORMAT:
+ * [2026-01-15 14:30:00] [ERROR] Database connection failed | {"host":"localhost"}
+ *
+ * FILE NAMING:
+ * storage/logs/app-2026-01-15.log (one file per day)
+ *
+ * USAGE:
+ * ```php
+ * Logger::error('Database query failed', ['query' => $sql, 'error' => $e->getMessage()]);
+ * Logger::security('Failed login attempt', ['ip' => $ip, 'username' => $user]);
+ * Logger::info('User created', ['user_id' => $id]);
+ * ```
+ *
+ * AI NOTES:
+ * - All methods are static (no instantiation needed)
+ * - Context arrays are JSON-encoded and appended to the log line
+ * - Security logs go to the same file but with [SECURITY] level for easy grep
+ * - Log directory is created automatically if it doesn't exist
+ * - Old logs are not auto-rotated/deleted (manual cleanup needed)
+ *
+ * RELATED FILES:
+ * - storage/logs/ - Log file directory
+ * - src/config/config.php - APP_DEBUG flag controls DEBUG level output
+ * - All core classes use Logger for error reporting
+ *
+ * @package KindergartenOrganizer\Core
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class Logger

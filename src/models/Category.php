@@ -1,5 +1,16 @@
 <?php
 /**
+ * =====================================================================================
+ * CATEGORY MODEL - Age Groups for Games
+ * =====================================================================================
+ *
+ * Represents age group categories (2-3 years, 3-4 years, etc.).
+ * Games link to categories via category_id FK (primary) and game_categories
+ * junction table (additional categories).
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * Category Model (Age Groups)
  */
 

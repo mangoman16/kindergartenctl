@@ -1,6 +1,59 @@
 <?php
 /**
- * Input Validation Class
+ * =====================================================================================
+ * VALIDATOR - Input Validation Engine
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Validates user input data against a set of rules. Used by all controllers to
+ * validate form submissions before database operations.
+ *
+ * RULE FORMAT:
+ * Rules are pipe-separated strings: "required|max:100|email"
+ * Each rule is a method on this class: validate_{ruleName}()
+ *
+ * AVAILABLE RULES:
+ * - required       : Field must not be empty
+ * - email           : Must be valid email format
+ * - min:{n}         : Minimum string length
+ * - max:{n}         : Maximum string length
+ * - numeric         : Must be numeric
+ * - integer         : Must be integer
+ * - min_value:{n}   : Minimum numeric value
+ * - max_value:{n}   : Maximum numeric value
+ * - in:{a,b,c}      : Must be one of listed values
+ * - date            : Must be valid date (Y-m-d)
+ * - url             : Must be valid URL
+ * - alpha_num       : Alphanumeric characters only
+ * - color           : Valid hex color (#RGB or #RRGGBB)
+ *
+ * USAGE:
+ * ```php
+ * $validator = Validator::make($data, [
+ *     'name'  => 'required|max:100',
+ *     'email' => 'required|email',
+ *     'age'   => 'integer|min_value:0',
+ * ]);
+ * $validator->addError('name', 'Custom error'); // Add manual errors
+ * if ($validator->fails()) {
+ *     $errors = $validator->errors(); // ['name' => ['...'], 'email' => ['...']]
+ * }
+ * ```
+ *
+ * AI NOTES:
+ * - make() is a static factory that creates and runs the validator in one call
+ * - Error messages are in German (hardcoded), matching the application locale
+ * - The validator does NOT sanitize data - it only checks validity
+ * - addError() allows controllers to add custom errors (e.g., duplicate name checks)
+ * - fails() returns true if ANY errors exist
+ *
+ * RELATED FILES:
+ * - All controller store()/update() methods use Validator::make()
+ * - src/views/ form templates display errors via $errors array
+ *
+ * @package KindergartenOrganizer\Core
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class Validator

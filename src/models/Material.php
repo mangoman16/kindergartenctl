@@ -1,5 +1,17 @@
 <?php
 /**
+ * =====================================================================================
+ * MATERIAL MODEL - Physical Items and Components
+ * =====================================================================================
+ *
+ * Represents physical materials used by games (balls, cards, dice, etc.).
+ * Materials belong to boxes (storage) and associate with games via game_materials.
+ *
+ * KEY FIELDS: is_consumable (bool), status (enum), quantity (int stock count)
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * Material Model
  */
 
@@ -44,9 +56,12 @@ class Material extends Model
             $params['is_favorite'] = $filters['is_favorite'];
         }
 
+        // AI NOTE: Uses distinct named params (:search1, :search2) because PDO native
+        // prepared statements do not support reusing the same named parameter.
         if (!empty($filters['search'])) {
-            $where[] = '(m.name LIKE :search OR m.description LIKE :search)';
-            $params['search'] = '%' . $filters['search'] . '%';
+            $where[] = '(m.name LIKE :search1 OR m.description LIKE :search2)';
+            $params['search1'] = '%' . $filters['search'] . '%';
+            $params['search2'] = '%' . $filters['search'] . '%';
         }
 
         $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
@@ -130,16 +145,25 @@ class Material extends Model
     }
 
     /**
-     * Quick create a material (for inline creation in game form)
+     * Quick create a material (for inline creation in game form).
+     *
+     * AI NOTE: Trims the name BEFORE the existence check to prevent a mismatch
+     * where "  Material  " passes the duplicate check but stores as "Material",
+     * potentially creating a duplicate if "Material" already exists.
+     *
+     * @param string $name Raw material name from user input
+     * @return int|null New material ID, or null if name already exists or insert failed
      */
     public static function quickCreate(string $name): ?int
     {
-        if (self::nameExists($name)) {
+        $name = trim($name);
+
+        if (empty($name) || self::nameExists($name)) {
             return null;
         }
 
         return self::create([
-            'name' => trim($name),
+            'name' => $name,
         ]);
     }
 

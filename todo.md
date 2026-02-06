@@ -175,14 +175,15 @@ The project has a comprehensive foundation with most core features implemented. 
 - Game, Material, Box, Category, Tag, Group
 - CalendarEvent, User, PasswordReset
 
-### Core Classes (8)
+### Core Classes (9)
 - App, Router, Database, Controller, Model
-- Session, Auth, Validator
+- Session, Auth, Validator, Logger
 
-### Services (3)
+### Services (4)
 - ChangelogService (audit logging)
 - ImageProcessor (WebP conversion, thumbnails)
 - Mailer (SMTP email)
+- TransactionService (data integrity verification)
 
 ### API Endpoints (20+)
 - Image upload/delete
@@ -219,4 +220,30 @@ All tables from specification are present:
 
 ---
 
-*Last updated: 2026-02-01*
+## Recently Fixed (February 2026 - Code Quality Review)
+
+### Security Fixes
+- [x] Fixed ApiController auth bypass - isPublicEndpoint() used str_contains() allowing bypass via query params (e.g., /api/upload?x=/api/health). Now uses parse_url() + exact path match.
+- [x] Fixed unvalidated image_path in all controllers - Added sanitizeImagePath() to Controller base class. Validates format with regex to prevent path traversal attacks via crafted image paths.
+- [x] Fixed ApiController removeItemFromGroup() - Added missing item_type whitelist validation (was present in addItemToGroup but missing in remove).
+- [x] Fixed User model $fillable - Removed password_hash and remember_token from mass-assignable fields to prevent mass-assignment attacks.
+
+### Bug Fixes
+- [x] Fixed CalendarEvent::getForRange() - PDO named parameters were reused (:start, :end) which fails with EMULATE_PREPARES=false. Now uses distinct params (:start1-3, :end1-3).
+- [x] Fixed Material::allWithGameCount() - Same reused PDO parameter issue with :search.
+- [x] Fixed Game::search() incompatible method signature - Renamed to searchGames() to avoid PHP 8.0+ deprecation for overriding Model::search() with different signature.
+- [x] Fixed Game::duplicate() - Missing difficulty and is_favorite columns in INSERT caused duplicated games to lose these fields.
+- [x] Fixed Game::updateTags() and updateMaterials() - Delete-then-insert was not wrapped in transaction, risking data loss on crash. Now transactional.
+- [x] Fixed Tag::quickCreate() and Material::quickCreate() - Trim was applied AFTER nameExists() check, creating potential duplicates when name had leading/trailing spaces.
+- [x] Fixed Group::addGame() incorrect comment - Said "INSERT IGNORE" but code used SELECT FOR UPDATE.
+- [x] Fixed Group::addItem()/removeItem() - in_array() calls now use strict comparison (true as 3rd arg).
+- [x] Fixed PasswordReset::cleanupExpired() comment - Said "expired tokens" but also deletes used tokens.
+
+### Code Quality
+- [x] Added comprehensive AI-readable comments to all core classes, helpers, services, and models
+- [x] Fixed README.md license inconsistency (said MIT but LICENSE file is Apache 2.0)
+- [x] Updated architecture summary with correct class/service counts
+
+---
+
+*Last updated: 2026-02-06*

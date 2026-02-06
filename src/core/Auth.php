@@ -1,6 +1,55 @@
 <?php
 /**
- * Authentication Helper Class
+ * =====================================================================================
+ * AUTH - Authentication and Authorization
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Manages user authentication state (login, logout, current user). Provides
+ * "remember me" functionality via hashed tokens stored in cookies and the
+ * users table. Handles IP-based brute force protection via the ip_bans table.
+ *
+ * AUTHENTICATION FLOW:
+ * 1. User submits login form -> AuthController::login()
+ * 2. Auth::attempt() verifies credentials via password_verify()
+ * 3. On success: session is regenerated, user_id stored in session
+ * 4. On failure: failed attempt counter incremented, IP may be banned
+ * 5. Auth::check() is called on every authenticated request
+ * 6. If no session, Auth::checkRememberToken() tries cookie-based login
+ *
+ * REMEMBER ME:
+ * - Plain token sent as cookie, hashed (SHA-256) version stored in DB
+ * - Tokens expire after configured period (default 30 days)
+ * - Token is rotated on each use (old token invalidated, new token issued)
+ *
+ * BRUTE FORCE PROTECTION:
+ * - Tracks failed login attempts per IP in ip_bans table
+ * - Temporary ban after 5 failures (configurable)
+ * - Ban duration increases with repeated failures
+ *
+ * USAGE:
+ * ```php
+ * Auth::check()        // Returns true if user is authenticated
+ * Auth::user()         // Returns user array or null
+ * Auth::id()           // Returns user ID or null
+ * Auth::attempt($credentials) // Try to log in
+ * Auth::logout()       // Destroy session and clear remember token
+ * ```
+ *
+ * AI NOTES:
+ * - Uses static $user property as cache to avoid repeated DB lookups
+ * - check() is called by Controller::requireAuth() which most controllers use
+ * - IP ban logic is in Auth, not a separate middleware (no middleware system)
+ *
+ * RELATED FILES:
+ * - src/controllers/AuthController.php - Login/logout/password reset UI
+ * - src/models/User.php - User DB queries
+ * - src/core/Session.php - Session management
+ * - src/helpers/security.php - Password hashing, CSRF tokens
+ *
+ * @package KindergartenOrganizer\Core
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class Auth

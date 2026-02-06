@@ -1,17 +1,32 @@
 <?php
 /**
+ * =====================================================================================
+ * USER MODEL - User Accounts and Authentication
+ * =====================================================================================
+ *
+ * Manages user accounts. password_hash and remember_token excluded from $fillable
+ * for mass-assignment protection. Use dedicated methods: createUser(),
+ * updatePassword(), setRememberToken(), clearRememberToken().
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * User Model
  */
 
 class User extends Model
 {
     protected static string $table = 'users';
+    /**
+     * AI NOTE: password_hash and remember_token are intentionally EXCLUDED from
+     * $fillable to prevent mass-assignment attacks. These sensitive fields must
+     * only be set via their dedicated methods: createUser(), updatePassword(),
+     * setRememberToken(), clearRememberToken(). Those methods use direct SQL
+     * updates that bypass the $fillable filter.
+     */
     protected static array $fillable = [
         'username',
         'email',
-        'password_hash',
-        'remember_token',
-        'remember_token_expires_at',
         'last_login_at',
     ];
 

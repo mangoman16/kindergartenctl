@@ -62,7 +62,7 @@ class GroupController extends Controller
         $data = [
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
-            'image_path' => $this->getPost('image_path', ''),
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
         ];
 
         $gameIds = $this->getPost('games', []);
@@ -191,7 +191,7 @@ class GroupController extends Controller
         $data = [
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
-            'image_path' => $this->getPost('image_path', '') ?: $group['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $group['image_path'],
         ];
 
         $gameIds = $this->getPost('games', []);

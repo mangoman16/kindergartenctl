@@ -1,6 +1,50 @@
 <?php
 /**
- * Security Helper Functions
+ * =====================================================================================
+ * SECURITY HELPERS - CSRF, Rate Limiting, and Security Utilities
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Security-focused utility functions for CSRF protection, rate limiting,
+ * and token generation. Autoloaded globally via composer.json.
+ *
+ * FUNCTION INDEX:
+ * - generateCsrfToken()    : Create and store a CSRF token in the session
+ * - verifyCsrfToken($tok)  : Validate a submitted CSRF token (timing-safe compare)
+ * - csrfField()            : Generate HTML hidden input with current CSRF token
+ * - generateSecureToken()  : Create a cryptographically secure random hex token
+ * - hashToken($token)      : SHA-256 hash a token for storage (password resets, etc.)
+ * - checkRateLimit($key)   : File-based rate limiter (returns false if over limit)
+ * - sanitizeFilename($name): Remove unsafe characters from filenames
+ *
+ * CSRF PROTECTION:
+ * - Token stored in $_SESSION['csrf_token']
+ * - All state-changing forms include csrfField() in their HTML
+ * - Controllers call $this->requireCsrf() which calls verifyCsrfToken()
+ * - Uses hash_equals() for timing-safe comparison to prevent timing attacks
+ *
+ * RATE LIMITING:
+ * - File-based (storage/cache/ratelimit_*.json) rather than DB-based
+ * - Tracks attempts per key (e.g., "login:192.168.1.1") with timestamps
+ * - Window-based: counts attempts within the last N seconds
+ *
+ * AI NOTES:
+ * - CSRF tokens are per-session, not per-request (single token reused)
+ * - Rate limit files are JSON with structure: {"attempts": [timestamp, ...]}
+ * - generateSecureToken() uses random_bytes() (CSPRNG)
+ * - hashToken() is used for password reset tokens: plain token emailed to user,
+ *   hashed version stored in DB. On verification, submitted token is hashed
+ *   and compared to stored hash.
+ *
+ * RELATED FILES:
+ * - src/core/Controller.php - requireCsrf() method
+ * - src/core/Auth.php - Uses rate limiting for login attempts
+ * - src/controllers/AuthController.php - Password reset token flow
+ * - storage/cache/ - Rate limit files stored here
+ *
+ * @package KindergartenOrganizer\Helpers
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 /**

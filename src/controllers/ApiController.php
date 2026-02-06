@@ -1,37 +1,96 @@
 <?php
 /**
- * API Controller
+ * =====================================================================================
+ * API CONTROLLER - AJAX/JSON Endpoint Handler
+ * =====================================================================================
  *
- * Handles AJAX endpoints for image upload, duplicate checking, search, etc.
+ * PURPOSE:
+ * Handles all AJAX/API requests from the frontend JavaScript (app.js).
+ * All responses are JSON. Provides endpoints for image upload/delete,
+ * duplicate checking, autocomplete search, quick-create, favorite toggling,
+ * random game selection, and group item management.
+ *
+ * AUTHENTICATION:
+ * - All endpoints require authentication EXCEPT those listed in isPublicEndpoint()
+ * - Auth check happens in __construct() before any action runs
+ * - CSRF is required on all state-changing (POST) endpoints
+ *
+ * RATE LIMITING:
+ * - Applied per-endpoint via rateLimit() method
+ * - Uses IP-based file locking (see helpers/security.php checkRateLimit())
+ *
+ * RESPONSE FORMAT:
+ * - Success: {"success": true, "data": ...}
+ * - Error: {"success": false, "error": "message"}
+ *
+ * ENDPOINTS (defined in src/config/routes.php):
+ * - POST /api/upload-image - Upload and process image
+ * - POST /api/delete-image - Delete uploaded image
+ * - GET  /api/check-duplicate - Check for duplicate names
+ * - GET  /api/search/tags - Autocomplete search for tags
+ * - GET  /api/search/materials - Autocomplete search for materials
+ * - GET  /api/search/games - Autocomplete search for games
+ * - GET  /api/live-search - Global live search across all entities
+ * - POST /api/quick-create/tag - Create tag inline (from game form)
+ * - POST /api/quick-create/material - Create material inline (from game form)
+ * - GET  /api/tags - Get all tags for dropdowns
+ * - GET  /api/materials - Get all materials for dropdowns
+ * - GET  /api/categories - Get all categories for dropdowns
+ * - GET  /api/boxes - Get all boxes for dropdowns
+ * - GET  /api/groups - Get all groups for dropdowns
+ * - POST /api/toggle-favorite - Toggle favorite status on game/material
+ * - GET  /api/random-game - Get a random game with optional filters
+ * - POST /api/group/add-item - Add game/material to a group
+ * - POST /api/group/remove-item - Remove game/material from a group
+ * - GET  /api/health - Public health check endpoint (no auth required)
+ *
+ * AI NOTES:
+ * - This controller overrides the parent json() method with its own private version
+ *   that includes JSON_UNESCAPED_UNICODE for German character support
+ * - Image upload returns the relative path for storage in the database
+ * - Autocomplete endpoints return arrays of {id, name, ...} for Select2/similar widgets
+ * - Quick-create endpoints are called from inline "add new" buttons in game forms
+ *
+ * RELATED FILES:
+ * - public/assets/js/app.js - Frontend JavaScript that calls these endpoints
+ * - src/services/ImageProcessor.php - Image upload processing
+ * - src/config/routes.php - Route definitions mapping URLs to methods
+ *
+ * @package KindergartenOrganizer\Controllers
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class ApiController extends Controller
 {
     public function __construct()
     {
-        // Most API endpoints require authentication
+        // AI NOTE: Auth check runs before any action. Public endpoints skip this.
         if (!$this->isPublicEndpoint()) {
             $this->requireAuth();
         }
     }
 
     /**
-     * Check if the current endpoint is public
+     * Check if the current request targets a public (no-auth) endpoint.
+     *
+     * AI NOTE: Uses parse_url() to extract only the path component, then compares
+     * with exact match. Previously used str_contains() which was vulnerable to
+     * auth bypass (e.g., /api/upload?x=/api/health would match).
+     *
+     * SECURITY: Must use exact path matching, not substring matching.
      */
     private function isPublicEndpoint(): bool
     {
         $uri = $_SERVER['REQUEST_URI'] ?? '';
+        $path = parse_url($uri, PHP_URL_PATH);
+        $path = '/' . trim($path, '/');
+
         $publicEndpoints = [
             '/api/health',
         ];
 
-        foreach ($publicEndpoints as $endpoint) {
-            if (str_contains($uri, $endpoint)) {
-                return true;
-            }
-        }
-
-        return false;
+        return in_array($path, $publicEndpoints, true);
     }
 
     /**
@@ -294,7 +353,7 @@ class ApiController extends Controller
         }
 
         require_once SRC_PATH . '/models/Game.php';
-        $games = Game::search($query, 10);
+        $games = Game::searchGames($query, 10);
 
         $results = array_map(function($game) {
             return [
@@ -336,7 +395,7 @@ class ApiController extends Controller
         $searchTerm = '%' . $query . '%';
 
         // Search games (limit 5)
-        $games = Game::search($query, 5);
+        $games = Game::searchGames($query, 5);
         foreach ($games as $game) {
             $results[] = [
                 'type' => 'game',
@@ -739,6 +798,9 @@ class ApiController extends Controller
 
     /**
      * Remove item from group
+     *
+     * AI NOTE: Validates item_type against whitelist to match addItemToGroup().
+     * Without this check, arbitrary strings could be passed to Group::removeItem().
      */
     public function removeItemFromGroup(): void
     {
@@ -752,6 +814,11 @@ class ApiController extends Controller
 
         if (!$groupId || !$itemType || !$itemId) {
             $this->jsonError('Gruppe, Typ und Element sind erforderlich.', 400);
+            return;
+        }
+
+        if (!in_array($itemType, ['game', 'material'], true)) {
+            $this->jsonError('Ungültiger Elementtyp.', 400);
             return;
         }
 

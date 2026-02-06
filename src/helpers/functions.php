@@ -1,6 +1,43 @@
 <?php
 /**
- * Global Helper Functions
+ * =====================================================================================
+ * HELPER FUNCTIONS - Global Utility Functions
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Provides globally-available utility functions autoloaded via composer.json
+ * "files" directive. These functions are used throughout views and controllers.
+ *
+ * FUNCTION INDEX:
+ * - url($path)           : Generate absolute URL from relative path (prepends BASE_URL)
+ * - asset($path)         : Generate URL to a file in public/assets/
+ * - redirect($url)       : Send HTTP redirect and exit
+ * - cleanInput($str)     : Sanitize string (trim + htmlspecialchars)
+ * - cleanHtml($str)      : Sanitize HTML allowing safe tags (strip_tags with whitelist)
+ * - __($key, $params)    : Translate a key using src/lang/de.php translations
+ * - formatNumber($n)     : Format number with German locale (1.234,56)
+ * - isCurrentUrl($path)  : Check if current URL matches (for nav highlighting)
+ * - logMessage($msg)     : Quick logging shortcut (calls Logger::info/error)
+ * - getClientIp()        : Get client IP (respects X-Forwarded-For proxy header)
+ *
+ * AI NOTES:
+ * - These are plain functions, not class methods (old-school PHP helper pattern)
+ * - Autoloaded by composer.json: "files": ["src/helpers/functions.php"]
+ * - __() translation function loads src/lang/de.php which returns a flat key=>value array
+ *   Keys use dot notation: 'game.title' => 'Spiele'
+ * - cleanInput() is the primary XSS defense for output escaping in views
+ * - getClientIp() trusts X-Forwarded-For which can be spoofed; only used for
+ *   rate limiting, not security decisions
+ *
+ * RELATED FILES:
+ * - src/lang/de.php - German translation strings
+ * - composer.json - Autoloads this file
+ * - src/helpers/security.php - Security-specific helpers
+ * - src/helpers/dates.php - Date formatting helpers
+ *
+ * @package KindergartenOrganizer\Helpers
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 /**

@@ -58,7 +58,7 @@ class CategoryController extends Controller
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
             'sort_order' => (int)$this->getPost('sort_order', 0),
-            'image_path' => $this->getPost('image_path', ''),
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
         ];
 
         // Validate
@@ -141,7 +141,7 @@ class CategoryController extends Controller
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
             'sort_order' => (int)$this->getPost('sort_order', 0),
-            'image_path' => $this->getPost('image_path', '') ?: $category['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $category['image_path'],
         ];
 
         // Validate

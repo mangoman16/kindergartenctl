@@ -1,8 +1,42 @@
 <?php
 /**
- * Transaction Service
- * Handles all data operations with proper transaction handling and verification
- * Like an online shop - every transaction is logged and verified for correctness
+ * =====================================================================================
+ * TRANSACTION SERVICE - Data Integrity and Audit Logging
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Provides transaction wrapping with automatic logging and checksum-based
+ * integrity verification. Every data modification can be tracked with
+ * before/after snapshots for audit purposes.
+ *
+ * TRANSACTION LIFECYCLE:
+ * 1. begin() - Start tracked transaction, generate unique transaction ID
+ * 2. execute() - Run operation callback within the transaction
+ * 3. logTransaction() - Record operation details with data checksums
+ * 4. commit() / rollback() - Finalize with status update
+ *
+ * VERIFICATION:
+ * - Each transaction record includes a SHA-256 checksum of the operation data
+ * - verifyTransaction() can re-check integrity of committed records
+ * - verifyAllPending() batch-verifies unverified committed transactions
+ *
+ * AI NOTES:
+ * - Singleton pattern via getInstance() (shared across controllers)
+ * - execute() auto-starts a transaction if none is active
+ * - Transaction ID format: "YYYYMMDDHHmmss_random16hex_hash8"
+ * - checksum includes a microtime timestamp that is NOT stored separately,
+ *   so verification recalculates without the timestamp (known limitation)
+ * - Requires a 'transactions' table (defined in Database::getSchema())
+ * - cleanupOldTransactions() deletes verified records older than N days
+ *
+ * RELATED FILES:
+ * - src/core/Database.php - Contains transactions table schema
+ * - src/services/ChangelogService.php - Higher-level audit log (uses changelog table)
+ * - src/core/Logger.php - Error logging for failed transactions
+ *
+ * @package KindergartenOrganizer\Services
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class TransactionService

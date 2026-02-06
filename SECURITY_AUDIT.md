@@ -326,22 +326,37 @@ function checkRateLimit(string $key, int $maxAttempts, int $decaySeconds): bool
 ## Recommendations Summary
 
 ### Immediate Actions (Critical/High):
-1. Fix password field name in SettingsController.php
+1. ~~Fix password field name in SettingsController.php~~ **FIXED 2026-02-01**
 2. Disable debug mode for production
-3. Whitelist ORDER BY columns
-4. Validate redirect URLs
+3. ~~Whitelist ORDER BY columns~~ **FIXED** (all models now use $allowedOrderColumns)
+4. Validate redirect URLs (Router::back() open redirect)
+5. ~~Fix ApiController auth bypass via str_contains~~ **FIXED 2026-02-06**
+6. ~~Fix unvalidated image_path in all controllers~~ **FIXED 2026-02-06**
 
 ### Short-Term Actions (Medium):
-5. Add Content-Security-Policy header
-6. Add SRI hashes to CDN resources
-7. Move secrets to environment variables
-8. Enforce HTTPS
+7. Add Content-Security-Policy header
+8. Add SRI hashes to CDN resources
+9. Move secrets to environment variables
+10. Enforce HTTPS
+11. ~~Fix CalendarEvent/Material reused PDO params~~ **FIXED 2026-02-06**
+12. ~~Fix Game::updateTags/updateMaterials transaction safety~~ **FIXED 2026-02-06**
+13. ~~Remove password_hash/remember_token from User $fillable~~ **FIXED 2026-02-06**
 
 ### Long-Term Actions (Low):
-9. Implement proper rate limiting backend
-10. Review changelog data retention
-11. Consider session token name
-12. Add comprehensive input validation
+14. Implement proper rate limiting backend
+15. Review changelog data retention
+16. Consider session token name
+17. Add comprehensive input validation
+
+---
+
+## Additional Security Reviews
+
+Detailed follow-up audits are documented in separate files:
+- `SECURITY_AUDIT_2026-01-16.md` - Comprehensive security analysis
+- `SECURITY_AUDIT_2026-01-16_COMPREHENSIVE.md` - Deep-dive security review
+- `SECURITY_AUDIT_2026-01-16_UPDATE.md` - Security fixes applied on 2026-01-16
+- `BUG_AUDIT_REPORT.md` - Bug tracking and fixes
 
 ---
 
@@ -374,12 +389,13 @@ function checkRateLimit(string $key, int $maxAttempts, int $decaySeconds): bool
 
 ## Conclusion
 
-The Kindergarten Spiele Organizer demonstrates good security fundamentals with proper use of prepared statements, password hashing, CSRF protection, and XSS prevention. However, the critical bug in SettingsController.php and the enabled debug mode should be addressed immediately before production deployment.
+The Kindergarten Spiele Organizer demonstrates good security fundamentals with proper use of prepared statements, password hashing, CSRF protection, and XSS prevention. All critical security bugs have been resolved as of 2026-02-06.
 
-The application would benefit from:
-- Environment-based configuration management
-- Enhanced HTTP security headers
-- SRI for external resources
-- Database-backed rate limiting
+**Remaining items before production deployment:**
+- Disable debug mode (`config.php` -> `'debug' => false`)
+- Validate redirect URLs in Router::back()
+- Add Content-Security-Policy header
+- Add SRI hashes to CDN resources
+- Enforce HTTPS
 
-For a single-user application with limited exposure, the current security posture is acceptable after fixing the critical issues. For broader deployment, the medium-severity recommendations should also be implemented.
+For a single-user application with limited exposure, the current security posture is acceptable. For broader deployment, the medium-severity recommendations should also be implemented.
