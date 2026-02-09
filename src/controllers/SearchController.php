@@ -1,6 +1,23 @@
 <?php
 /**
- * Search Controller
+ * =====================================================================================
+ * SEARCH CONTROLLER - Global Full-Text Search Across All Entities
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Provides a unified search page that queries across games, materials, boxes,
+ * tags, and groups. Results are grouped by entity type with tab navigation.
+ *
+ * AI NOTES:
+ * - Uses distinct PDO params (:query1, :query2, etc.) because EMULATE_PREPARES=false
+ * - getCounts() re-runs the same queries to get totals per type (not optimal but simple)
+ * - Games search delegates to Game::allWithRelations() which handles its own params
+ * - Tags search delegates to Tag::searchByName() which handles its own params
+ * - Materials, boxes, and groups use inline queries in this controller
+ *
+ * @package KindergartenOrganizer\Controllers
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class SearchController extends Controller
@@ -99,11 +116,12 @@ class SearchController extends Controller
         $db = Database::getInstance();
         $stmt = $db->prepare("
             SELECT * FROM materials
-            WHERE name LIKE :query OR description LIKE :query
+            WHERE name LIKE :query1 OR description LIKE :query2
             ORDER BY name ASC
             LIMIT 50
         ");
-        $stmt->execute(['query' => '%' . $query . '%']);
+        $searchTerm = '%' . $query . '%';
+        $stmt->execute(['query1' => $searchTerm, 'query2' => $searchTerm]);
         return $stmt->fetchAll();
     }
 
@@ -120,12 +138,13 @@ class SearchController extends Controller
             SELECT b.*, COUNT(m.id) as material_count
             FROM boxes b
             LEFT JOIN materials m ON m.box_id = b.id
-            WHERE b.name LIKE :query OR b.label LIKE :query OR b.location LIKE :query
+            WHERE b.name LIKE :query1 OR b.label LIKE :query2 OR b.location LIKE :query3
             GROUP BY b.id
             ORDER BY b.name ASC
             LIMIT 50
         ");
-        $stmt->execute(['query' => '%' . $query . '%']);
+        $searchTerm = '%' . $query . '%';
+        $stmt->execute(['query1' => $searchTerm, 'query2' => $searchTerm, 'query3' => $searchTerm]);
         return $stmt->fetchAll();
     }
 
@@ -140,11 +159,12 @@ class SearchController extends Controller
                    (SELECT COUNT(*) FROM group_games gg WHERE gg.group_id = g.id) as game_count,
                    (SELECT COUNT(*) FROM group_materials gm WHERE gm.group_id = g.id) as material_count
             FROM groups g
-            WHERE g.name LIKE :query OR g.description LIKE :query
+            WHERE g.name LIKE :query1 OR g.description LIKE :query2
             ORDER BY g.name ASC
             LIMIT 50
         ");
-        $stmt->execute(['query' => '%' . $query . '%']);
+        $searchTerm = '%' . $query . '%';
+        $stmt->execute(['query1' => $searchTerm, 'query2' => $searchTerm]);
         return $stmt->fetchAll();
     }
 }

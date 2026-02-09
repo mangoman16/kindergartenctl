@@ -102,9 +102,11 @@ class Game extends Model
             $params['is_favorite'] = $filters['is_favorite'];
         }
 
+        // AI NOTE: Distinct params because EMULATE_PREPARES=false forbids reuse
         if (!empty($filters['search'])) {
-            $where[] = '(g.name LIKE :search OR g.description LIKE :search)';
-            $params['search'] = '%' . $filters['search'] . '%';
+            $where[] = '(g.name LIKE :search1 OR g.description LIKE :search2)';
+            $params['search1'] = '%' . $filters['search'] . '%';
+            $params['search2'] = '%' . $filters['search'] . '%';
         }
 
         $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';

@@ -420,8 +420,8 @@ class ApiController extends Controller
         }
 
         // Search boxes (limit 2)
-        $stmt = $db->prepare("SELECT id, name FROM boxes WHERE name LIKE :q OR label LIKE :q ORDER BY name LIMIT 2");
-        $stmt->execute(['q' => $searchTerm]);
+        $stmt = $db->prepare("SELECT id, name FROM boxes WHERE name LIKE :q1 OR label LIKE :q2 ORDER BY name LIMIT 2");
+        $stmt->execute(['q1' => $searchTerm, 'q2' => $searchTerm]);
         foreach ($stmt->fetchAll() as $box) {
             $results[] = [
                 'type' => 'box',

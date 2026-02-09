@@ -31,7 +31,10 @@ class User extends Model
     ];
 
     /**
-     * Find a user by login (username or email)
+     * Find a user by login (username or email).
+     *
+     * AI NOTE: Uses distinct params (:login1, :login2) because PDO native
+     * prepared statements (EMULATE_PREPARES=false) cannot reuse named params.
      */
     public static function findByLogin(string $login): ?array
     {
@@ -39,10 +42,10 @@ class User extends Model
 
         $stmt = $db->prepare("
             SELECT * FROM users
-            WHERE username = :login OR email = :login
+            WHERE username = :login1 OR email = :login2
             LIMIT 1
         ");
-        $stmt->execute(['login' => $login]);
+        $stmt->execute(['login1' => $login, 'login2' => $login]);
 
         $result = $stmt->fetch();
         return $result ?: null;
