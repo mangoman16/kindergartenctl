@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const select = document.getElementById('bulk-group-select');
         select.innerHTML = '<option value="">-- Gruppe wählen --</option>';
-        data.forEach(group => {
+        (data.groups || data).forEach(group => {
             select.innerHTML += `<option value="${group.id}">${group.name}</option>`;
         });
 

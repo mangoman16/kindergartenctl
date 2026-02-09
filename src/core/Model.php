@@ -179,7 +179,7 @@ abstract class Model
     /**
      * Get all records
      */
-    public static function all(string $orderBy = null, string $direction = 'ASC'): array
+    public static function all(?string $orderBy = null, string $direction = 'ASC'): array
     {
         $db = self::getDb();
         $table = static::$table;
@@ -198,7 +198,7 @@ abstract class Model
     /**
      * Get records with pagination
      */
-    public static function paginate(int $page = 1, int $perPage = 24, string $orderBy = null, string $direction = 'ASC'): array
+    public static function paginate(int $page = 1, int $perPage = 24, ?string $orderBy = null, string $direction = 'ASC'): array
     {
         $db = self::getDb();
         $table = static::$table;
@@ -387,7 +387,7 @@ abstract class Model
     /**
      * Get records where column equals value
      */
-    public static function where(string $column, $value, string $orderBy = null, string $direction = 'ASC'): array
+    public static function where(string $column, $value, ?string $orderBy = null, string $direction = 'ASC'): array
     {
         self::assertValidColumn($column);
 

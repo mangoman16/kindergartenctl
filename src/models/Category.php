@@ -42,10 +42,13 @@ class Category extends Model
             $orderBy = 'sort_order';
         }
 
-        $sql = "SELECT c.*, COUNT(gc.game_id) as game_count
+        $sql = "SELECT c.*,
+                    (SELECT COUNT(DISTINCT g.id)
+                     FROM games g
+                     LEFT JOIN game_categories gc ON gc.game_id = g.id
+                     WHERE g.category_id = c.id OR gc.category_id = c.id
+                    ) as game_count
                 FROM categories c
-                LEFT JOIN game_categories gc ON gc.category_id = c.id
-                GROUP BY c.id
                 ORDER BY c.{$orderBy} {$direction}";
 
         $stmt = $db->query($sql);
@@ -60,11 +63,14 @@ class Category extends Model
         $db = self::getDb();
 
         $stmt = $db->prepare("
-            SELECT c.*, COUNT(gc.game_id) as game_count
+            SELECT c.*,
+                (SELECT COUNT(DISTINCT g.id)
+                 FROM games g
+                 LEFT JOIN game_categories gc ON gc.game_id = g.id
+                 WHERE g.category_id = c.id OR gc.category_id = c.id
+                ) as game_count
             FROM categories c
-            LEFT JOIN game_categories gc ON gc.category_id = c.id
             WHERE c.id = :id
-            GROUP BY c.id
         ");
         $stmt->execute(['id' => $id]);
 
@@ -75,24 +81,29 @@ class Category extends Model
     /**
      * Get games in this category
      */
+    /**
+     * Get games in this category (both primary via category_id FK and
+     * additional via game_categories junction table).
+     */
     public static function getGames(int $categoryId, int $limit = 0): array
     {
         $db = self::getDb();
 
-        $sql = "SELECT g.* FROM games g
-                INNER JOIN game_categories gc ON gc.game_id = g.id
-                WHERE gc.category_id = :category_id
+        $sql = "SELECT DISTINCT g.* FROM games g
+                LEFT JOIN game_categories gc ON gc.game_id = g.id
+                WHERE g.category_id = :cat_id1 OR gc.category_id = :cat_id2
                 ORDER BY g.name ASC";
 
         if ($limit > 0) {
             $sql .= " LIMIT :limit";
             $stmt = $db->prepare($sql);
-            $stmt->bindValue('category_id', $categoryId, PDO::PARAM_INT);
+            $stmt->bindValue('cat_id1', $categoryId, PDO::PARAM_INT);
+            $stmt->bindValue('cat_id2', $categoryId, PDO::PARAM_INT);
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
         } else {
             $stmt = $db->prepare($sql);
-            $stmt->execute(['category_id' => $categoryId]);
+            $stmt->execute(['cat_id1' => $categoryId, 'cat_id2' => $categoryId]);
         }
 
         return $stmt->fetchAll();

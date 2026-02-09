@@ -14,9 +14,9 @@ define('STORAGE_PATH', ROOT_PATH . '/storage');
 define('TEMP_PATH', ROOT_PATH . '/temp');
 define('UPLOADS_PATH', PUBLIC_PATH . '/uploads');
 
-// Error reporting (disable in production)
+// Error reporting - display_errors controlled after config loads
 error_reporting(E_ALL);
-ini_set('display_errors', '1');
+ini_set('display_errors', '0');
 
 // Start output buffering
 ob_start();

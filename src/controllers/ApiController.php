@@ -761,7 +761,7 @@ class ApiController extends Controller
 
         $groups = Group::getForSelect();
 
-        $this->json($groups);
+        $this->json(['groups' => $groups]);
     }
 
     /**

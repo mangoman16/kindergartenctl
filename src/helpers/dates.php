@@ -102,7 +102,50 @@ function getGermanWeekdaysShort(): array
 }
 
 /**
- * Format date in German style
+ * Format a date using a PHP date format string, with German month/day names.
+ *
+ * AI NOTE: Views call this function with raw PHP format strings like 'd.m.Y',
+ * 'M', 'd.m. H:i'. The 'M' and 'F' format characters are replaced with
+ * German short/full month names respectively.
+ *
+ * @param mixed $date DateTime object, timestamp, or date string
+ * @param string $format PHP date() format string (default: 'd.m.Y')
+ */
+function formatDate($date, string $format = 'd.m.Y'): string
+{
+    if ($date === null) {
+        return '';
+    }
+
+    if (is_string($date)) {
+        $date = new DateTime($date);
+    } elseif (is_int($date)) {
+        $dateObj = new DateTime();
+        $dateObj->setTimestamp($date);
+        $date = $dateObj;
+    }
+
+    if (!$date instanceof DateTime) {
+        return '';
+    }
+
+    // Replace 'M' with German short month name (not preceded by backslash escape)
+    if (strpos($format, 'M') !== false) {
+        $monthsShort = getGermanMonthsShort();
+        $format = str_replace('M', '\\' . implode('\\', str_split($monthsShort[(int)$date->format('n')])), $format);
+    }
+
+    // Replace 'F' with German full month name
+    if (strpos($format, 'F') !== false) {
+        $months = getGermanMonths();
+        $format = str_replace('F', '\\' . implode('\\', str_split($months[(int)$date->format('n')])), $format);
+    }
+
+    return $date->format($format);
+}
+
+/**
+ * Format date in German style using named format presets.
  *
  * @param mixed $date DateTime object, timestamp, or date string
  * @param string $format 'short' (24.12.2024), 'full' (Dienstag, 24. Dezember 2024),
