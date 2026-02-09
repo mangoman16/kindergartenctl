@@ -468,22 +468,23 @@ class Game extends Model
         try {
             $stmt = $db->prepare("
                 SELECT g.*, b.name as box_name, c.name as category_name,
-                       MATCH(g.name, g.description, g.instructions) AGAINST(:query IN NATURAL LANGUAGE MODE) as relevance
+                       MATCH(g.name, g.description, g.instructions) AGAINST(:query1 IN NATURAL LANGUAGE MODE) as relevance
                 FROM games g
                 LEFT JOIN boxes b ON b.id = g.box_id
                 LEFT JOIN categories c ON c.id = g.category_id
-                WHERE MATCH(g.name, g.description, g.instructions) AGAINST(:query IN NATURAL LANGUAGE MODE)
+                WHERE MATCH(g.name, g.description, g.instructions) AGAINST(:query2 IN NATURAL LANGUAGE MODE)
                 ORDER BY relevance DESC
                 LIMIT :limit
             ");
-            $stmt->bindValue('query', $query, PDO::PARAM_STR);
+            $stmt->bindValue('query1', $query, PDO::PARAM_STR);
+            $stmt->bindValue('query2', $query, PDO::PARAM_STR);
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             // Fallback to LIKE search if fulltext not available
-            return self::search($query, $limit);
+            return self::searchGames($query, $limit);
         }
     }
 

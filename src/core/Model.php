@@ -422,14 +422,15 @@ abstract class Model
 
         $columnList = implode(', ', array_map(fn($c) => "`{$c}`", $columns));
 
-        $sql = "SELECT *, MATCH({$columnList}) AGAINST(:query IN BOOLEAN MODE) AS relevance
+        $sql = "SELECT *, MATCH({$columnList}) AGAINST(:query1 IN BOOLEAN MODE) AS relevance
                 FROM `{$table}`
-                WHERE MATCH({$columnList}) AGAINST(:query IN BOOLEAN MODE)
+                WHERE MATCH({$columnList}) AGAINST(:query2 IN BOOLEAN MODE)
                 ORDER BY relevance DESC
                 LIMIT :limit";
 
         $stmt = $db->prepare($sql);
-        $stmt->bindValue('query', $query . '*', PDO::PARAM_STR);
+        $stmt->bindValue('query1', $query . '*', PDO::PARAM_STR);
+        $stmt->bindValue('query2', $query . '*', PDO::PARAM_STR);
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 

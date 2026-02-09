@@ -10,6 +10,7 @@
 | 2026-01-08 | Initial security audit + bug audit | Claude Code |
 | 2026-01-16 | Follow-up comprehensive audit + security hardening | Claude Code |
 | 2026-02-06 | Code quality review + PDO parameter fixes | Claude Code |
+| 2026-02-09 | Follow-up bug scan (createUser regression, fulltext search, App paths) | Claude Code |
 
 ---
 
@@ -81,6 +82,11 @@ All issues discovered across all audits, with current status:
 | BUG-009 | Game::allWithRelations() reused :search PDO param | Game.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-010 | SearchController 3x reused :query PDO params | SearchController.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-011 | ApiController boxes search reused :q PDO param | ApiController.php | 2026-02-06 | FIXED 2026-02-06 |
+| BUG-012 | User::createUser() password_hash filtered by $fillable (regression) | User.php | 2026-02-09 | FIXED 2026-02-09 |
+| BUG-013 | Game::fulltextSearch() reused :query PDO param | Game.php | 2026-02-09 | FIXED 2026-02-09 |
+| BUG-014 | Model::search() reused :query PDO param | Model.php | 2026-02-09 | FIXED 2026-02-09 |
+| BUG-015 | Game::fulltextSearch() fallback calls search() with wrong args | Game.php | 2026-02-09 | FIXED 2026-02-09 |
+| BUG-016 | App.php loads services from wrong path (/core/ instead of /services/) | App.php | 2026-02-09 | FIXED 2026-02-09 |
 
 ### Low Severity
 
@@ -95,6 +101,7 @@ All issues discovered across all audits, with current status:
 | SEC-017 | Database config file permissions | database.php | 2026-01-16 | Open (optional) |
 | SEC-018 | Predictable session cookie name | config.php | 2026-01-16 | Open (optional) |
 | SEC-026 | Division by zero edge case in formatFileSize() | functions.php | 2026-01-08 | FIXED 2026-01-08 |
+| BUG-017 | ChangelogController ignores action filter when type is also set | ChangelogController.php | 2026-02-09 | FIXED 2026-02-09 |
 
 ---
 

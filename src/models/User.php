@@ -79,15 +79,32 @@ class User extends Model
     }
 
     /**
-     * Create a new user
+     * Create a new user with password hash.
+     *
+     * AI NOTE: Uses direct SQL INSERT instead of Model::create() because
+     * password_hash is excluded from $fillable for mass-assignment protection.
+     * Model::create() would filter it out, creating a user without a password.
      */
     public static function createUser(string $username, string $email, string $password): ?int
     {
-        return self::create([
-            'username' => $username,
-            'email' => $email,
-            'password_hash' => password_hash($password, PASSWORD_DEFAULT),
-        ]);
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            INSERT INTO users (username, email, password_hash)
+            VALUES (:username, :email, :hash)
+        ");
+
+        try {
+            $stmt->execute([
+                'username' => $username,
+                'email' => $email,
+                'hash' => password_hash($password, PASSWORD_DEFAULT),
+            ]);
+
+            return (int) $db->lastInsertId();
+        } catch (PDOException $e) {
+            return null;
+        }
     }
 
     /**
