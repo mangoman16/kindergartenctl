@@ -75,6 +75,7 @@ All issues discovered across all audits, with current status:
 | SEC-024 | Weak password requirements (length only) | Validator.php | 2026-01-16 | FIXED 2026-01-16 |
 | SEC-025 | Missing item_type validation in removeItemFromGroup | ApiController.php | 2026-02-06 | FIXED 2026-02-06 |
 | SEC-027 | display_errors hardcoded to '1' in index.php | public/index.php | 2026-02-09 | FIXED 2026-02-09 |
+| SEC-029 | unbanIp() missing IP validation (banIp validates, unbanIp doesn't) | SettingsController.php | 2026-02-09 | FIXED 2026-02-09 |
 | BUG-003 | CalendarEvent::getForRange() reused PDO params | CalendarEvent.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-004 | Game::updateTags/updateMaterials not transactional | Game.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-005 | Game::duplicate() missing difficulty/is_favorite columns | Game.php | 2026-02-06 | FIXED 2026-02-06 |
@@ -350,7 +351,7 @@ Headers in `public/.htaccess`:
 | Open Issues | 14 | 4 (all low) | 4 (all low) | 5 (all low/optional) |
 | Security Rating | MODERATE | VERY GOOD | EXCELLENT | EXCELLENT |
 
-### Total Issues Found and Fixed: 44
+### Total Issues Found and Fixed: 45
 ### Remaining Open (all optional/low): 5
 
 ---

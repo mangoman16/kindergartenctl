@@ -370,6 +370,12 @@ class SettingsController extends Controller
 
         $ip = trim($_POST['ip'] ?? '');
 
+        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+            Session::setFlash('error', 'Ungültige IP-Adresse.');
+            $this->redirect('/settings');
+            return;
+        }
+
         $db = Database::getInstance();
         $stmt = $db->prepare("DELETE FROM ip_bans WHERE ip_address = :ip");
         $stmt->execute(['ip' => $ip]);

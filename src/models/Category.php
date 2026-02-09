@@ -79,9 +79,6 @@ class Category extends Model
     }
 
     /**
-     * Get games in this category
-     */
-    /**
      * Get games in this category (both primary via category_id FK and
      * additional via game_categories junction table).
      */

@@ -122,33 +122,22 @@ The project has a comprehensive foundation with most core features implemented. 
 
 ---
 
-## Recently Fixed (February 2026)
+## Fixes & Audits (January - February 2026)
 
-### Bug Fixes
-- [x] Fixed ChangelogService.php - Changed u.name to u.username (users table has username, not name)
-- [x] Fixed Database::saveConfig() - Added comprehensive error handling with detailed messages
-- [x] Fixed finishInstallation() - Added error handling for installed.lock file creation
-- [x] Fixed App.php - Sessions now start for all routes including /install/* for flash messages
+### January 2026
+- [x] Database schema alignment (games table columns, junction tables, fulltext indexes)
+- [x] Model fillable arrays updated (Game: difficulty/is_favorite, Box: label)
+- [x] Missing German translations added
+- [x] ChangelogService.php column name fix (u.name -> u.username)
+- [x] Database::saveConfig() error handling
+- [x] App.php session handling for install routes
+- [x] README.md complete rewrite
 
-### Documentation Updates
-- [x] Updated README.md - Complete rewrite with proper 5-step installation guide
-- [x] Added comprehensive AI-friendly comments to ChangelogService.php
-- [x] Updated SECURITY_AUDIT.md - Marked password field bug as fixed
-
----
-
-## Previously Fixed (January 2026)
-
-### Database Schema Alignment
-- [x] Fixed games table schema - added missing columns: instructions, min_players, max_players, duration_minutes, is_outdoor, is_active, box_id, category_id
-- [x] Added quantity column to game_materials junction table
-- [x] Created proper group_games and group_materials tables (replaced polymorphic group_items)
-- [x] Added label column to boxes table
-- [x] Updated fulltext index on games table to include instructions field
-- [x] Updated Game model fillable array with difficulty and is_favorite
-- [x] Updated Box model fillable array with label field
-- [x] Added missing German translations (game.instructions, game.min_players, etc.)
-- [x] Added label field to box form view
+### February 2026
+- [x] 29 security issues found and fixed (see `SECURITY_AUDIT.md`)
+- [x] 26 bugs found and fixed (see `BUG_AUDIT.md`)
+- [x] Code quality audit completed (see `CODE_QUALITY.md`)
+- [x] Comprehensive AI-readable comments added to all core files
 
 ---
 
@@ -220,30 +209,14 @@ All tables from specification are present:
 
 ---
 
-## Recently Fixed (February 2026 - Code Quality Review)
+## Related Documents
 
-### Security Fixes
-- [x] Fixed ApiController auth bypass - isPublicEndpoint() used str_contains() allowing bypass via query params (e.g., /api/upload?x=/api/health). Now uses parse_url() + exact path match.
-- [x] Fixed unvalidated image_path in all controllers - Added sanitizeImagePath() to Controller base class. Validates format with regex to prevent path traversal attacks via crafted image paths.
-- [x] Fixed ApiController removeItemFromGroup() - Added missing item_type whitelist validation (was present in addItemToGroup but missing in remove).
-- [x] Fixed User model $fillable - Removed password_hash and remember_token from mass-assignable fields to prevent mass-assignment attacks.
-
-### Bug Fixes
-- [x] Fixed CalendarEvent::getForRange() - PDO named parameters were reused (:start, :end) which fails with EMULATE_PREPARES=false. Now uses distinct params (:start1-3, :end1-3).
-- [x] Fixed Material::allWithGameCount() - Same reused PDO parameter issue with :search.
-- [x] Fixed Game::search() incompatible method signature - Renamed to searchGames() to avoid PHP 8.0+ deprecation for overriding Model::search() with different signature.
-- [x] Fixed Game::duplicate() - Missing difficulty and is_favorite columns in INSERT caused duplicated games to lose these fields.
-- [x] Fixed Game::updateTags() and updateMaterials() - Delete-then-insert was not wrapped in transaction, risking data loss on crash. Now transactional.
-- [x] Fixed Tag::quickCreate() and Material::quickCreate() - Trim was applied AFTER nameExists() check, creating potential duplicates when name had leading/trailing spaces.
-- [x] Fixed Group::addGame() incorrect comment - Said "INSERT IGNORE" but code used SELECT FOR UPDATE.
-- [x] Fixed Group::addItem()/removeItem() - in_array() calls now use strict comparison (true as 3rd arg).
-- [x] Fixed PasswordReset::cleanupExpired() comment - Said "expired tokens" but also deletes used tokens.
-
-### Code Quality
-- [x] Added comprehensive AI-readable comments to all core classes, helpers, services, and models
-- [x] Fixed README.md license inconsistency (said MIT but LICENSE file is Apache 2.0)
-- [x] Updated architecture summary with correct class/service counts
+- **`SECURITY_AUDIT.md`** - Full security audit with 45 tracked issues (29 SEC + 16 BUG with security impact)
+- **`BUG_AUDIT.md`** - Complete bug tracking with 26 issues found and fixed
+- **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
+- **`project.md`** - Full project specification and database schema
+- **`README.md`** - Installation guide and requirements
 
 ---
 
-*Last updated: 2026-02-06*
+*Last updated: 2026-02-09*

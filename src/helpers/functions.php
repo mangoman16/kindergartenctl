@@ -269,14 +269,18 @@ function imagePath(?string $path, string $type = 'games', string $size = 'thumb'
  */
 function formatDifficulty(int $level, string $format = 'stars'): string
 {
+    $level = max(1, min(5, $level));
+
     if ($format === 'stars') {
-        return str_repeat('★', $level) . str_repeat('☆', 3 - $level);
+        return str_repeat('★', $level) . str_repeat('☆', 5 - $level);
     }
 
     $labels = [
-        1 => 'Leicht',
-        2 => 'Mittel',
-        3 => 'Schwer',
+        1 => 'Sehr leicht',
+        2 => 'Leicht',
+        3 => 'Mittel',
+        4 => 'Schwer',
+        5 => 'Sehr schwer',
     ];
 
     return $labels[$level] ?? '';
