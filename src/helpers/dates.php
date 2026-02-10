@@ -1,6 +1,30 @@
 <?php
 /**
- * Date Formatting Helpers (Austrian/German)
+ * =====================================================================================
+ * DATE HELPERS - German/Austrian Date Formatting
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Provides date/time formatting functions for the German locale. All dates in
+ * the application are stored as MySQL DATETIME/DATE but displayed in German
+ * format (DD.MM.YYYY) throughout the UI.
+ *
+ * FUNCTION INDEX:
+ * - formatDate($date)          : "15.01.2026" (DD.MM.YYYY)
+ * - formatDateTime($datetime)  : "15.01.2026 14:30" (DD.MM.YYYY HH:MM)
+ * - formatDateRelative($date)  : "Heute", "Gestern", "Vor 3 Tagen", "15.01.2026"
+ * - formatDuration($minutes)   : "1 Std. 30 Min." or "45 Min."
+ * - formatDateRange($start,$end): "15.01. - 20.01.2026" or "15.01.2026"
+ *
+ * AI NOTES:
+ * - All functions accept MySQL date/datetime strings and return German formatted strings
+ * - formatDateRelative() shows relative text for recent dates (< 7 days),
+ *   absolute dates for older entries
+ * - Used primarily in view templates for display purposes
+ *
+ * @package KindergartenOrganizer\Helpers
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 /**
@@ -78,7 +102,50 @@ function getGermanWeekdaysShort(): array
 }
 
 /**
- * Format date in German style
+ * Format a date using a PHP date format string, with German month/day names.
+ *
+ * AI NOTE: Views call this function with raw PHP format strings like 'd.m.Y',
+ * 'M', 'd.m. H:i'. The 'M' and 'F' format characters are replaced with
+ * German short/full month names respectively.
+ *
+ * @param mixed $date DateTime object, timestamp, or date string
+ * @param string $format PHP date() format string (default: 'd.m.Y')
+ */
+function formatDate($date, string $format = 'd.m.Y'): string
+{
+    if ($date === null) {
+        return '';
+    }
+
+    if (is_string($date)) {
+        $date = new DateTime($date);
+    } elseif (is_int($date)) {
+        $dateObj = new DateTime();
+        $dateObj->setTimestamp($date);
+        $date = $dateObj;
+    }
+
+    if (!$date instanceof DateTime) {
+        return '';
+    }
+
+    // Replace 'M' with German short month name (not preceded by backslash escape)
+    if (strpos($format, 'M') !== false) {
+        $monthsShort = getGermanMonthsShort();
+        $format = str_replace('M', '\\' . implode('\\', str_split($monthsShort[(int)$date->format('n')])), $format);
+    }
+
+    // Replace 'F' with German full month name
+    if (strpos($format, 'F') !== false) {
+        $months = getGermanMonths();
+        $format = str_replace('F', '\\' . implode('\\', str_split($months[(int)$date->format('n')])), $format);
+    }
+
+    return $date->format($format);
+}
+
+/**
+ * Format date in German style using named format presets.
  *
  * @param mixed $date DateTime object, timestamp, or date string
  * @param string $format 'short' (24.12.2024), 'full' (Dienstag, 24. Dezember 2024),

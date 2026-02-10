@@ -245,7 +245,7 @@
     </div>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 .tag-badge {
     display: inline-block;
     padding: 4px 12px;
@@ -278,7 +278,7 @@
 }
 </style>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('favorite-toggle');
     if (toggleBtn) {
@@ -398,7 +398,7 @@ function closeAddToGroupModal() {
     </div>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 .modal {
     position: fixed;
     top: 0;

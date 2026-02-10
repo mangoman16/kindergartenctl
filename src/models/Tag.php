@@ -1,5 +1,15 @@
 <?php
 /**
+ * =====================================================================================
+ * TAG MODEL - Themes and Categories for Games
+ * =====================================================================================
+ *
+ * Tags represent themes (seasons, holidays, colors) assigned to games via game_tags.
+ * quickCreate() trims name before duplicate check to prevent mismatch.
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * Tag Model (Themes)
  */
 
@@ -107,16 +117,25 @@ class Tag extends Model
     }
 
     /**
-     * Quick create a tag (for inline creation in game form)
+     * Quick create a tag (for inline creation in game form).
+     *
+     * AI NOTE: Trims the name BEFORE the existence check to prevent a mismatch
+     * where "  Tag  " passes the duplicate check but stores as "Tag", potentially
+     * creating a duplicate if "Tag" already exists.
+     *
+     * @param string $name Raw tag name from user input
+     * @return int|null New tag ID, or null if name already exists or insert failed
      */
     public static function quickCreate(string $name): ?int
     {
-        if (self::nameExists($name)) {
+        $name = trim($name);
+
+        if (empty($name) || self::nameExists($name)) {
             return null;
         }
 
         return self::create([
-            'name' => trim($name),
+            'name' => $name,
         ]);
     }
 

@@ -245,7 +245,7 @@
 </div>
 <?php endif; ?>
 
-<style>
+<style<?= cspNonce() ?>>
 .game-card { position: relative; }
 .game-card-image {
     display: block;
@@ -386,7 +386,7 @@
     </div>
 </div>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('toggle-selection-mode');
     const bulkBar = document.getElementById('bulk-actions-bar');
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const select = document.getElementById('bulk-group-select');
         select.innerHTML = '<option value="">-- Gruppe wählen --</option>';
-        data.forEach(group => {
+        (data.groups || data).forEach(group => {
             select.innerHTML += `<option value="${group.id}">${group.name}</option>`;
         });
 

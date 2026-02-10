@@ -206,7 +206,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
     </div>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 .pagination {
     display: flex;
     align-items: center;
@@ -280,7 +280,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
 }
 </style>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('changelog-modal');
     const changesTable = document.getElementById('changes-table').querySelector('tbody');

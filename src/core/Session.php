@@ -1,6 +1,47 @@
 <?php
 /**
- * Session Management Class
+ * =====================================================================================
+ * SESSION - Secure Session Management
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Manages PHP sessions with security hardening. Provides flash messages (one-time
+ * display notifications), session start/destroy, and get/set operations.
+ *
+ * SECURITY FEATURES:
+ * - Configures secure cookie parameters (httponly, samesite=Strict, secure flag)
+ * - Regenerates session ID on login (via Auth) to prevent session fixation
+ * - Session lifetime configured in src/config/config.php
+ *
+ * FLASH MESSAGES:
+ * Flash messages persist for exactly one page load. They are set before a redirect
+ * and displayed after the redirect, then automatically cleared.
+ * Types: 'success', 'error', 'warning', 'info' (maps to CSS alert classes)
+ *
+ * USAGE:
+ * ```php
+ * Session::start();                              // Begin session
+ * Session::set('user_id', 42);                   // Store value
+ * $id = Session::get('user_id');                 // Retrieve value
+ * Session::setFlash('success', 'Saved!');        // Set one-time message
+ * $flash = Session::getFlash();                  // Get and clear flash
+ * ```
+ *
+ * AI NOTES:
+ * - start() is called by App::__construct() on every request
+ * - Flash messages use $_SESSION['flash_messages'] array
+ * - getFlash() returns AND deletes messages (read-once pattern)
+ * - Controller::render() passes flash messages to view templates automatically
+ *
+ * RELATED FILES:
+ * - src/core/App.php - Calls Session::start() during bootstrap
+ * - src/core/Auth.php - Uses Session for user authentication state
+ * - src/views/partials/flash-messages.php - Renders flash messages in HTML
+ * - src/config/config.php - Session lifetime configuration
+ *
+ * @package KindergartenOrganizer\Core
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class Session

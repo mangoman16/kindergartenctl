@@ -27,13 +27,13 @@ class ChangelogController extends Controller
         $changelog = ChangelogService::getInstance();
 
         // Get entries based on filters
-        if ($filterAction && !$filterType) {
+        if ($filterAction) {
             $entries = $changelog->getByAction($filterAction, $perPage * 10);
         } else {
             $entries = $changelog->getRecent($perPage * 10, 0);
         }
 
-        // Apply type filter
+        // Apply type filter as post-filter (works with or without action filter)
         if ($filterType) {
             $entries = array_filter($entries, fn($e) => $e['entity_type'] === $filterType);
         }

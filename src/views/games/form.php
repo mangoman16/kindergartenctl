@@ -51,7 +51,7 @@
                     <h2 class="card-title">Spieldetails</h2>
                 </div>
                 <div class="card-body">
-                    <div class="grid grid-cols-3 gap-4">
+                    <div class="grid grid-cols-4 gap-4">
                         <div class="form-group">
                             <label for="min_players" class="form-label"><?= __('game.min_players') ?></label>
                             <input type="number" id="min_players" name="min_players"
@@ -77,6 +77,15 @@
                                        placeholder="z.B. 15">
                                 <span class="text-muted">Min.</span>
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="difficulty" class="form-label"><?= __('game.difficulty') ?></label>
+                            <select id="difficulty" name="difficulty" class="form-control">
+                                <option value="1" <?= old('difficulty', $game['difficulty'] ?? 1) == 1 ? 'selected' : '' ?>>1 - <?= __('game.difficulty.1') ?></option>
+                                <option value="2" <?= old('difficulty', $game['difficulty'] ?? 1) == 2 ? 'selected' : '' ?>>2 - <?= __('game.difficulty.2') ?></option>
+                                <option value="3" <?= old('difficulty', $game['difficulty'] ?? 1) == 3 ? 'selected' : '' ?>>3 - <?= __('game.difficulty.3') ?></option>
+                            </select>
                         </div>
                     </div>
 
@@ -232,7 +241,7 @@
     </div>
 </form>
 
-<style>
+<style<?= cspNonce() ?>>
 .tag-badge-sm {
     display: inline-block;
     padding: 2px 8px;
@@ -247,7 +256,7 @@
 }
 </style>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     // Add material functionality
     const addMaterialSelect = document.getElementById('add-material');

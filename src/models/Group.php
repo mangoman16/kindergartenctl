@@ -1,5 +1,16 @@
 <?php
 /**
+ * =====================================================================================
+ * GROUP MODEL - Collections of Games and Materials
+ * =====================================================================================
+ *
+ * Virtual collections for organizing games/materials for activities.
+ * Uses SELECT FOR UPDATE in addGame()/addMaterial() for race condition safety.
+ * addItem()/removeItem() dispatch polymorphically with strict in_array.
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * Group Model
  *
  * Groups are collections of games and materials for specific activities.
@@ -102,7 +113,7 @@ class Group extends Model
         try {
             $db->beginTransaction();
 
-            // Check if already exists (use INSERT IGNORE for race condition safety)
+            // Check if already exists using SELECT FOR UPDATE (row-level locking)
             $stmt = $db->prepare("SELECT id FROM group_games WHERE group_id = :group_id AND game_id = :game_id FOR UPDATE");
             $stmt->execute(['group_id' => $groupId, 'game_id' => $gameId]);
             if ($stmt->fetch()) {
@@ -282,7 +293,7 @@ class Group extends Model
      */
     public static function addItem(int $groupId, string $itemType, int $itemId): bool
     {
-        if (!in_array($itemType, ['game', 'material'])) {
+        if (!in_array($itemType, ['game', 'material'], true)) {
             return false;
         }
 
@@ -298,7 +309,7 @@ class Group extends Model
      */
     public static function removeItem(int $groupId, string $itemType, int $itemId): bool
     {
-        if (!in_array($itemType, ['game', 'material'])) {
+        if (!in_array($itemType, ['game', 'material'], true)) {
             return false;
         }
 

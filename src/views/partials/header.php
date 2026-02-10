@@ -24,7 +24,7 @@
     </div>
 </header>
 
-<script>
+<script<?= cspNonce() ?>>
 (function() {
     const searchInput = document.getElementById('headerSearchInput');
     const searchDropdown = document.getElementById('searchDropdown');

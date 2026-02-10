@@ -122,33 +122,22 @@ The project has a comprehensive foundation with most core features implemented. 
 
 ---
 
-## Recently Fixed (February 2026)
+## Fixes & Audits (January - February 2026)
 
-### Bug Fixes
-- [x] Fixed ChangelogService.php - Changed u.name to u.username (users table has username, not name)
-- [x] Fixed Database::saveConfig() - Added comprehensive error handling with detailed messages
-- [x] Fixed finishInstallation() - Added error handling for installed.lock file creation
-- [x] Fixed App.php - Sessions now start for all routes including /install/* for flash messages
+### January 2026
+- [x] Database schema alignment (games table columns, junction tables, fulltext indexes)
+- [x] Model fillable arrays updated (Game: difficulty/is_favorite, Box: label)
+- [x] Missing German translations added
+- [x] ChangelogService.php column name fix (u.name -> u.username)
+- [x] Database::saveConfig() error handling
+- [x] App.php session handling for install routes
+- [x] README.md complete rewrite
 
-### Documentation Updates
-- [x] Updated README.md - Complete rewrite with proper 5-step installation guide
-- [x] Added comprehensive AI-friendly comments to ChangelogService.php
-- [x] Updated SECURITY_AUDIT.md - Marked password field bug as fixed
-
----
-
-## Previously Fixed (January 2026)
-
-### Database Schema Alignment
-- [x] Fixed games table schema - added missing columns: instructions, min_players, max_players, duration_minutes, is_outdoor, is_active, box_id, category_id
-- [x] Added quantity column to game_materials junction table
-- [x] Created proper group_games and group_materials tables (replaced polymorphic group_items)
-- [x] Added label column to boxes table
-- [x] Updated fulltext index on games table to include instructions field
-- [x] Updated Game model fillable array with difficulty and is_favorite
-- [x] Updated Box model fillable array with label field
-- [x] Added missing German translations (game.instructions, game.min_players, etc.)
-- [x] Added label field to box form view
+### February 2026
+- [x] 48 security + bug issues found and fixed (see `SECURITY_AUDIT.md`)
+- [x] 34 bugs found and fixed (see `BUG_AUDIT.md`)
+- [x] Code quality audit completed (see `CODE_QUALITY.md`)
+- [x] Comprehensive AI-readable comments added to all core files
 
 ---
 
@@ -175,14 +164,15 @@ The project has a comprehensive foundation with most core features implemented. 
 - Game, Material, Box, Category, Tag, Group
 - CalendarEvent, User, PasswordReset
 
-### Core Classes (8)
+### Core Classes (9)
 - App, Router, Database, Controller, Model
-- Session, Auth, Validator
+- Session, Auth, Validator, Logger
 
-### Services (3)
+### Services (4)
 - ChangelogService (audit logging)
 - ImageProcessor (WebP conversion, thumbnails)
 - Mailer (SMTP email)
+- TransactionService (data integrity verification)
 
 ### API Endpoints (20+)
 - Image upload/delete
@@ -219,4 +209,14 @@ All tables from specification are present:
 
 ---
 
-*Last updated: 2026-02-01*
+## Related Documents
+
+- **`SECURITY_AUDIT.md`** - Full security audit with 48 tracked issues, all resolved (0 open)
+- **`BUG_AUDIT.md`** - Complete bug tracking with 34 issues found and fixed
+- **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
+- **`project.md`** - Full project specification and database schema
+- **`README.md`** - Installation guide and requirements
+
+---
+
+*Last updated: 2026-02-10*

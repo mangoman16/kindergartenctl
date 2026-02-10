@@ -1,6 +1,31 @@
 <?php
 /**
- * Game Model
+ * =====================================================================================
+ * GAME MODEL - Core Entity for Educational Games
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Represents educational games - the primary entity in this application.
+ * Games have tags (themes), materials (physical items), categories (age groups),
+ * and belong to boxes (storage locations).
+ *
+ * RELATIONSHIPS:
+ * - Game -> Box: belongsTo via box_id FK
+ * - Game -> Category: belongsTo via category_id FK (primary age group)
+ * - Game -> Tags: many-to-many via game_tags junction table
+ * - Game -> Materials: many-to-many via game_materials (with quantity)
+ * - Game -> Groups: many-to-many via group_games
+ *
+ * AI NOTES:
+ * - searchGames() is renamed from search() to avoid incompatible override
+ *   of Model::search(string, array, int). Uses LIKE instead of FULLTEXT.
+ * - updateTags()/updateMaterials() are wrapped in transactions
+ * - duplicate() copies everything except image_path
+ * - difficulty is TINYINT 1-5 (1=easy, 5=hard)
+ *
+ * @package KindergartenOrganizer\Models
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class Game extends Model
@@ -77,9 +102,11 @@ class Game extends Model
             $params['is_favorite'] = $filters['is_favorite'];
         }
 
+        // AI NOTE: Distinct params because EMULATE_PREPARES=false forbids reuse
         if (!empty($filters['search'])) {
-            $where[] = '(g.name LIKE :search OR g.description LIKE :search)';
-            $params['search'] = '%' . $filters['search'] . '%';
+            $where[] = '(g.name LIKE :search1 OR g.description LIKE :search2)';
+            $params['search1'] = '%' . $filters['search'] . '%';
+            $params['search2'] = '%' . $filters['search'] . '%';
         }
 
         $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
@@ -168,46 +195,86 @@ class Game extends Model
     }
 
     /**
-     * Update game tags
+     * Update game tags (replace all tags for a game).
+     *
+     * AI NOTE: Uses a transaction to ensure atomicity of the delete-then-insert
+     * pattern. Without a transaction, a crash between DELETE and INSERT would
+     * permanently lose all tag associations for this game. Only starts a new
+     * transaction if one is not already active (e.g., from GameController::update).
      */
     public static function updateTags(int $gameId, array $tagIds): void
     {
         $db = self::getDb();
+        $inTransaction = $db->inTransaction();
 
-        // Delete existing tags
-        $stmt = $db->prepare("DELETE FROM game_tags WHERE game_id = :game_id");
-        $stmt->execute(['game_id' => $gameId]);
+        if (!$inTransaction) {
+            $db->beginTransaction();
+        }
 
-        // Insert new tags
-        if (!empty($tagIds)) {
-            $stmt = $db->prepare("INSERT INTO game_tags (game_id, tag_id) VALUES (:game_id, :tag_id)");
-            foreach ($tagIds as $tagId) {
-                $stmt->execute(['game_id' => $gameId, 'tag_id' => $tagId]);
+        try {
+            // Delete existing tags
+            $stmt = $db->prepare("DELETE FROM game_tags WHERE game_id = :game_id");
+            $stmt->execute(['game_id' => $gameId]);
+
+            // Insert new tags
+            if (!empty($tagIds)) {
+                $stmt = $db->prepare("INSERT INTO game_tags (game_id, tag_id) VALUES (:game_id, :tag_id)");
+                foreach ($tagIds as $tagId) {
+                    $stmt->execute(['game_id' => $gameId, 'tag_id' => (int)$tagId]);
+                }
             }
+
+            if (!$inTransaction) {
+                $db->commit();
+            }
+        } catch (PDOException $e) {
+            if (!$inTransaction) {
+                $db->rollBack();
+            }
+            throw $e;
         }
     }
 
     /**
-     * Update game materials
+     * Update game materials (replace all material associations for a game).
+     *
+     * AI NOTE: Uses a transaction to ensure atomicity of the delete-then-insert
+     * pattern. Same safety concern as updateTags() above.
      */
     public static function updateMaterials(int $gameId, array $materials): void
     {
         $db = self::getDb();
+        $inTransaction = $db->inTransaction();
 
-        // Delete existing materials
-        $stmt = $db->prepare("DELETE FROM game_materials WHERE game_id = :game_id");
-        $stmt->execute(['game_id' => $gameId]);
+        if (!$inTransaction) {
+            $db->beginTransaction();
+        }
 
-        // Insert new materials
-        if (!empty($materials)) {
-            $stmt = $db->prepare("INSERT INTO game_materials (game_id, material_id, quantity) VALUES (:game_id, :material_id, :quantity)");
-            foreach ($materials as $material) {
-                $stmt->execute([
-                    'game_id' => $gameId,
-                    'material_id' => $material['id'],
-                    'quantity' => $material['quantity'] ?? 1,
-                ]);
+        try {
+            // Delete existing materials
+            $stmt = $db->prepare("DELETE FROM game_materials WHERE game_id = :game_id");
+            $stmt->execute(['game_id' => $gameId]);
+
+            // Insert new materials
+            if (!empty($materials)) {
+                $stmt = $db->prepare("INSERT INTO game_materials (game_id, material_id, quantity) VALUES (:game_id, :material_id, :quantity)");
+                foreach ($materials as $material) {
+                    $stmt->execute([
+                        'game_id' => $gameId,
+                        'material_id' => (int)$material['id'],
+                        'quantity' => (int)($material['quantity'] ?? 1),
+                    ]);
+                }
             }
+
+            if (!$inTransaction) {
+                $db->commit();
+            }
+        } catch (PDOException $e) {
+            if (!$inTransaction) {
+                $db->rollBack();
+            }
+            throw $e;
         }
     }
 
@@ -220,19 +287,29 @@ class Game extends Model
     }
 
     /**
-     * Search games
+     * Search games by name/description using LIKE matching.
+     *
+     * AI NOTE: This method intentionally has a DIFFERENT name from Model::search()
+     * which uses fulltext MATCH/AGAINST. Renamed from search() to searchGames() to
+     * avoid PHP 8.0+ deprecation for incompatible child method signatures.
+     * The parent Model::search(string, array, int) expects a columns array.
+     * This method uses LIKE '%query%' for partial matching (better for autocomplete).
+     *
+     * Uses distinct named parameters (:query1, :query2) because PDO native prepared
+     * statements do not support reusing the same named parameter.
      */
-    public static function search(string $query, int $limit = 20): array
+    public static function searchGames(string $query, int $limit = 20): array
     {
         $db = self::getDb();
 
         $stmt = $db->prepare("
             SELECT id, name, image_path FROM games
-            WHERE name LIKE :query OR description LIKE :query
+            WHERE name LIKE :query1 OR description LIKE :query2
             ORDER BY name ASC
             LIMIT :limit
         ");
-        $stmt->bindValue('query', '%' . $query . '%', PDO::PARAM_STR);
+        $stmt->bindValue('query1', '%' . $query . '%', PDO::PARAM_STR);
+        $stmt->bindValue('query2', '%' . $query . '%', PDO::PARAM_STR);
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 
@@ -391,22 +468,23 @@ class Game extends Model
         try {
             $stmt = $db->prepare("
                 SELECT g.*, b.name as box_name, c.name as category_name,
-                       MATCH(g.name, g.description, g.instructions) AGAINST(:query IN NATURAL LANGUAGE MODE) as relevance
+                       MATCH(g.name, g.description, g.instructions) AGAINST(:query1 IN NATURAL LANGUAGE MODE) as relevance
                 FROM games g
                 LEFT JOIN boxes b ON b.id = g.box_id
                 LEFT JOIN categories c ON c.id = g.category_id
-                WHERE MATCH(g.name, g.description, g.instructions) AGAINST(:query IN NATURAL LANGUAGE MODE)
+                WHERE MATCH(g.name, g.description, g.instructions) AGAINST(:query2 IN NATURAL LANGUAGE MODE)
                 ORDER BY relevance DESC
                 LIMIT :limit
             ");
-            $stmt->bindValue('query', $query, PDO::PARAM_STR);
+            $stmt->bindValue('query1', $query, PDO::PARAM_STR);
+            $stmt->bindValue('query2', $query, PDO::PARAM_STR);
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             // Fallback to LIKE search if fulltext not available
-            return self::search($query, $limit);
+            return self::searchGames($query, $limit);
         }
     }
 
@@ -491,12 +569,15 @@ class Game extends Model
                 return null;
             }
 
-            // Create new game directly in transaction
+            // AI NOTE: Copies all game fields except image_path (images are not duplicated).
+            // Previously missing: difficulty and is_favorite columns.
             $stmt = $db->prepare("
                 INSERT INTO games (name, description, instructions, min_players, max_players,
-                                   duration_minutes, is_outdoor, is_active, image_path, box_id, category_id)
+                                   duration_minutes, difficulty, is_outdoor, is_active, is_favorite,
+                                   image_path, box_id, category_id)
                 VALUES (:name, :description, :instructions, :min_players, :max_players,
-                        :duration_minutes, :is_outdoor, :is_active, :image_path, :box_id, :category_id)
+                        :duration_minutes, :difficulty, :is_outdoor, :is_active, :is_favorite,
+                        :image_path, :box_id, :category_id)
             ");
             $stmt->execute([
                 'name' => $newName,
@@ -505,8 +586,10 @@ class Game extends Model
                 'min_players' => $game['min_players'],
                 'max_players' => $game['max_players'],
                 'duration_minutes' => $game['duration_minutes'],
+                'difficulty' => $game['difficulty'] ?? 1,
                 'is_outdoor' => $game['is_outdoor'],
                 'is_active' => $game['is_active'],
+                'is_favorite' => $game['is_favorite'] ?? 0,
                 'image_path' => null, // Don't copy image
                 'box_id' => $game['box_id'],
                 'category_id' => $game['category_id'],

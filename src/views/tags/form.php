@@ -88,7 +88,7 @@
     </div>
 </div>
 
-<script>
+<script<?= cspNonce() ?>>
 // Sync color picker with text input
 document.getElementById('color').addEventListener('input', function() {
     document.getElementById('color_text').value = this.value;

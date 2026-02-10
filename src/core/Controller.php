@@ -262,7 +262,7 @@ abstract class Controller
     /**
      * Get POST data
      */
-    protected function getPost(string $key = null, $default = null)
+    protected function getPost(?string $key = null, $default = null)
     {
         if ($key === null) {
             return $_POST;
@@ -273,7 +273,7 @@ abstract class Controller
     /**
      * Get GET data
      */
-    protected function getQuery(string $key = null, $default = null)
+    protected function getQuery(?string $key = null, $default = null)
     {
         if ($key === null) {
             return $_GET;
@@ -339,6 +339,35 @@ abstract class Controller
             return null;
         }
         return $_FILES[$key];
+    }
+
+    /**
+     * Validate and sanitize an image_path value from user input.
+     *
+     * AI NOTE: image_path comes from a hidden form field populated by the JS image
+     * uploader. It should match the format: "type/full/filename.webp"
+     * (e.g., "games/full/20260115_abc123.webp"). If the path doesn't match this
+     * format, it could be used for path traversal attacks when passed to unlink().
+     *
+     * SECURITY: Prevents arbitrary file deletion via crafted image_path values
+     * like "../../config/database.php" stored in the DB and later passed to unlink().
+     *
+     * @param string $path The raw image_path from POST input
+     * @return string Sanitized path, or empty string if invalid
+     */
+    protected function sanitizeImagePath(string $path): string
+    {
+        if (empty($path)) {
+            return '';
+        }
+
+        // Must match: word_chars/full/word_chars.webp (e.g., "games/full/20260115_abc123.webp")
+        if (!preg_match('#^[a-zA-Z0-9_-]+/(full)/[a-zA-Z0-9_.-]+\.webp$#', $path)) {
+            Logger::security('Invalid image_path rejected', ['path' => $path]);
+            return '';
+        }
+
+        return $path;
     }
 
     /**

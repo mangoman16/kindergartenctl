@@ -111,7 +111,11 @@ abstract class Model
      */
     protected static function getDb(): PDO
     {
-        return Database::getInstance();
+        $db = Database::getInstance();
+        if ($db === null) {
+            throw new RuntimeException('Database connection not available. Is the application installed?');
+        }
+        return $db;
     }
 
     /**
@@ -179,7 +183,7 @@ abstract class Model
     /**
      * Get all records
      */
-    public static function all(string $orderBy = null, string $direction = 'ASC'): array
+    public static function all(?string $orderBy = null, string $direction = 'ASC'): array
     {
         $db = self::getDb();
         $table = static::$table;
@@ -198,7 +202,7 @@ abstract class Model
     /**
      * Get records with pagination
      */
-    public static function paginate(int $page = 1, int $perPage = 24, string $orderBy = null, string $direction = 'ASC'): array
+    public static function paginate(int $page = 1, int $perPage = 24, ?string $orderBy = null, string $direction = 'ASC'): array
     {
         $db = self::getDb();
         $table = static::$table;
@@ -387,7 +391,7 @@ abstract class Model
     /**
      * Get records where column equals value
      */
-    public static function where(string $column, $value, string $orderBy = null, string $direction = 'ASC'): array
+    public static function where(string $column, $value, ?string $orderBy = null, string $direction = 'ASC'): array
     {
         self::assertValidColumn($column);
 
@@ -422,14 +426,15 @@ abstract class Model
 
         $columnList = implode(', ', array_map(fn($c) => "`{$c}`", $columns));
 
-        $sql = "SELECT *, MATCH({$columnList}) AGAINST(:query IN BOOLEAN MODE) AS relevance
+        $sql = "SELECT *, MATCH({$columnList}) AGAINST(:query1 IN BOOLEAN MODE) AS relevance
                 FROM `{$table}`
-                WHERE MATCH({$columnList}) AGAINST(:query IN BOOLEAN MODE)
+                WHERE MATCH({$columnList}) AGAINST(:query2 IN BOOLEAN MODE)
                 ORDER BY relevance DESC
                 LIMIT :limit";
 
         $stmt = $db->prepare($sql);
-        $stmt->bindValue('query', $query . '*', PDO::PARAM_STR);
+        $stmt->bindValue('query1', $query . '*', PDO::PARAM_STR);
+        $stmt->bindValue('query2', $query . '*', PDO::PARAM_STR);
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 

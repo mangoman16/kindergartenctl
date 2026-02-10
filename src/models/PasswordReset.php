@@ -1,5 +1,16 @@
 <?php
 /**
+ * =====================================================================================
+ * PASSWORD RESET MODEL - Token-Based Password Recovery
+ * =====================================================================================
+ *
+ * Flow: user requests reset -> plain token emailed -> hashed token stored in DB ->
+ * user submits token -> hash compared -> password updated.
+ * cleanupExpired() removes both expired AND already-used tokens.
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * Password Reset Model
  */
 
@@ -51,7 +62,11 @@ class PasswordReset extends Model
     }
 
     /**
-     * Delete expired tokens
+     * Delete expired and already-used tokens (cleanup).
+     *
+     * AI NOTE: Removes tokens that have either passed their expiry date OR
+     * have already been used (used_at IS NOT NULL). Both types are safe to
+     * delete as they can no longer be redeemed.
      */
     public static function cleanupExpired(): int
     {

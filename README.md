@@ -247,6 +247,20 @@ To completely reinstall the application:
 
 ---
 
+## Features
+
+- **Games Management** - Organize educational games with metadata (age range, difficulty, players, duration)
+- **Materials Tracking** - Track physical materials/components and their storage locations
+- **Box/Storage System** - Organize materials into physical storage containers
+- **Age Group Categories** - Categorize games by age groups (2-3, 3-4, 4-5, 5-6 years)
+- **Tagging System** - Add themes/tags (colors, seasons, holidays) to games
+- **Collections/Groups** - Create custom collections of games and materials
+- **Calendar** - Schedule game usage and track past activities
+- **Search** - Fulltext search across all entities
+- **Print Views** - Print games, materials, boxes, groups, and checklists
+- **Dashboard** - Statistics, quick actions, recent activity, random game picker
+- **Audit Logging** - Track all changes via changelog
+
 ## License
 
-MIT License
+Apache License 2.0 - See [LICENSE](LICENSE) file for details.

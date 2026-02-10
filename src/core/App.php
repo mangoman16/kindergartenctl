@@ -83,19 +83,19 @@ class App
         require_once SRC_PATH . '/core/Validator.php';
 
         // Load ChangelogService if exists
-        $changelogService = SRC_PATH . '/core/ChangelogService.php';
+        $changelogService = SRC_PATH . '/services/ChangelogService.php';
         if (file_exists($changelogService)) {
             require_once $changelogService;
         }
 
         // Load ImageProcessor if exists
-        $imageProcessor = SRC_PATH . '/core/ImageProcessor.php';
+        $imageProcessor = SRC_PATH . '/services/ImageProcessor.php';
         if (file_exists($imageProcessor)) {
             require_once $imageProcessor;
         }
 
         // Load Mailer if exists
-        $mailer = SRC_PATH . '/core/Mailer.php';
+        $mailer = SRC_PATH . '/services/Mailer.php';
         if (file_exists($mailer)) {
             require_once $mailer;
         }

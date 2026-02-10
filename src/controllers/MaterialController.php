@@ -66,7 +66,7 @@ class MaterialController extends Controller
         $data = [
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
-            'image_path' => $this->getPost('image_path', ''),
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
             'quantity' => (int)$this->getPost('quantity', 0),
             'is_consumable' => $this->getPost('is_consumable') ? 1 : 0,
         ];
@@ -181,7 +181,7 @@ class MaterialController extends Controller
         $data = [
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
-            'image_path' => $this->getPost('image_path', '') ?: $material['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $material['image_path'],
             'quantity' => (int)$this->getPost('quantity', 0),
             'is_consumable' => $this->getPost('is_consumable') ? 1 : 0,
         ];

@@ -1,5 +1,15 @@
 <?php
 /**
+ * =====================================================================================
+ * BOX MODEL - Physical Storage Containers
+ * =====================================================================================
+ *
+ * Represents physical storage boxes/containers where games and materials are kept.
+ * Each box has a name, number, label, location, and can contain multiple materials.
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * Box Model
  */
 
@@ -73,6 +83,23 @@ class Box extends Model
 
         $stmt = $db->prepare("
             SELECT * FROM materials
+            WHERE box_id = :box_id
+            ORDER BY name ASC
+        ");
+        $stmt->execute(['box_id' => $boxId]);
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Get games in this box (via games.box_id FK)
+     */
+    public static function getGames(int $boxId): array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            SELECT * FROM games
             WHERE box_id = :box_id
             ORDER BY name ASC
         ");

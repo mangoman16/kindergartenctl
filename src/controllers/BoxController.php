@@ -92,16 +92,18 @@ class BoxController extends Controller
         $data = [
             'name' => trim($this->getPost('name', '')),
             'number' => trim($this->getPost('number', '')),
+            'label' => trim($this->getPost('label', '')),
             'location' => trim($this->getPost('location', '')),
             'description' => trim($this->getPost('description', '')),
             'notes' => trim($this->getPost('notes', '')),
-            'image_path' => $this->getPost('image_path', ''),
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
         ];
 
         // Validate
         $validator = Validator::make($data, [
             'name' => 'required|max:100',
             'number' => 'max:20',
+            'label' => 'max:50',
             'location' => 'max:255',
         ]);
 
@@ -180,16 +182,18 @@ class BoxController extends Controller
         $data = [
             'name' => trim($this->getPost('name', '')),
             'number' => trim($this->getPost('number', '')),
+            'label' => trim($this->getPost('label', '')),
             'location' => trim($this->getPost('location', '')),
             'description' => trim($this->getPost('description', '')),
             'notes' => trim($this->getPost('notes', '')),
-            'image_path' => $this->getPost('image_path', '') ?: $box['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $box['image_path'],
         ];
 
         // Validate
         $validator = Validator::make($data, [
             'name' => 'required|max:100',
             'number' => 'max:20',
+            'label' => 'max:50',
             'location' => 'max:255',
         ]);
 
@@ -317,7 +321,7 @@ class BoxController extends Controller
     private function getChanges(array $old, array $new): array
     {
         $changes = [];
-        $trackFields = ['name', 'number', 'location', 'description', 'notes', 'image_path'];
+        $trackFields = ['name', 'number', 'label', 'location', 'description', 'notes', 'image_path'];
 
         foreach ($trackFields as $field) {
             $oldValue = $old[$field] ?? '';

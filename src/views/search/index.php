@@ -279,7 +279,7 @@
 <?php endif; ?>
 <?php endif; ?>
 
-<style>
+<style<?= cspNonce() ?>>
 .tag-badge {
     display: inline-block;
     padding: 6px 14px;

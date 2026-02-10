@@ -196,7 +196,7 @@
     </div>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 .event-list {
     list-style: none;
     margin: 0;
@@ -349,7 +349,7 @@
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('event-modal');
     const form = document.getElementById('event-form');

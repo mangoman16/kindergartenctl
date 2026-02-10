@@ -183,7 +183,7 @@
 </div>
 <?php endif; ?>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('favorite-toggle');
     if (toggleBtn) {
@@ -302,7 +302,7 @@ function closeAddToGroupModal() {
     </div>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 .modal {
     position: fixed;
     top: 0;

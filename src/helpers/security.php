@@ -1,6 +1,50 @@
 <?php
 /**
- * Security Helper Functions
+ * =====================================================================================
+ * SECURITY HELPERS - CSRF, Rate Limiting, and Security Utilities
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Security-focused utility functions for CSRF protection, rate limiting,
+ * and token generation. Autoloaded globally via composer.json.
+ *
+ * FUNCTION INDEX:
+ * - generateCsrfToken()    : Create and store a CSRF token in the session
+ * - verifyCsrfToken($tok)  : Validate a submitted CSRF token (timing-safe compare)
+ * - csrfField()            : Generate HTML hidden input with current CSRF token
+ * - generateSecureToken()  : Create a cryptographically secure random hex token
+ * - hashToken($token)      : SHA-256 hash a token for storage (password resets, etc.)
+ * - checkRateLimit($key)   : File-based rate limiter (returns false if over limit)
+ * - sanitizeFilename($name): Remove unsafe characters from filenames
+ *
+ * CSRF PROTECTION:
+ * - Token stored in $_SESSION['csrf_token']
+ * - All state-changing forms include csrfField() in their HTML
+ * - Controllers call $this->requireCsrf() which calls verifyCsrfToken()
+ * - Uses hash_equals() for timing-safe comparison to prevent timing attacks
+ *
+ * RATE LIMITING:
+ * - File-based (storage/cache/ratelimit_*.json) rather than DB-based
+ * - Tracks attempts per key (e.g., "login:192.168.1.1") with timestamps
+ * - Window-based: counts attempts within the last N seconds
+ *
+ * AI NOTES:
+ * - CSRF tokens are per-session, not per-request (single token reused)
+ * - Rate limit files are JSON with structure: {"attempts": [timestamp, ...]}
+ * - generateSecureToken() uses random_bytes() (CSPRNG)
+ * - hashToken() is used for password reset tokens: plain token emailed to user,
+ *   hashed version stored in DB. On verification, submitted token is hashed
+ *   and compared to stored hash.
+ *
+ * RELATED FILES:
+ * - src/core/Controller.php - requireCsrf() method
+ * - src/core/Auth.php - Uses rate limiting for login attempts
+ * - src/controllers/AuthController.php - Password reset token flow
+ * - storage/cache/ - Rate limit files stored here
+ *
+ * @package KindergartenOrganizer\Helpers
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 /**
@@ -402,4 +446,77 @@ function checkRateLimit(string $key, int $maxAttempts, int $decaySeconds): bool
         flock($fp, LOCK_UN);
         fclose($fp);
     }
+}
+
+/**
+ * Get or create the application encryption key
+ * Key is stored in storage/.encryption_key (generated once)
+ */
+function getEncryptionKey(): string
+{
+    $keyFile = STORAGE_PATH . '/.encryption_key';
+
+    if (file_exists($keyFile)) {
+        $key = file_get_contents($keyFile);
+        if ($key !== false && strlen($key) >= 32) {
+            return $key;
+        }
+    }
+
+    // Generate new key
+    $key = bin2hex(random_bytes(32));
+    file_put_contents($keyFile, $key, LOCK_EX);
+    chmod($keyFile, 0600);
+
+    return $key;
+}
+
+/**
+ * Encrypt a string value using AES-256-GCM
+ * Returns base64-encoded ciphertext with IV and tag prepended
+ */
+function encryptValue(string $plaintext): string
+{
+    if ($plaintext === '') {
+        return '';
+    }
+
+    $key = hex2bin(getEncryptionKey());
+    $iv = random_bytes(12); // 96-bit IV for GCM
+    $tag = '';
+
+    $ciphertext = openssl_encrypt($plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+
+    if ($ciphertext === false) {
+        return $plaintext; // Fallback to plaintext if encryption fails
+    }
+
+    // Prepend IV + tag + ciphertext, then base64 encode
+    return 'enc:' . base64_encode($iv . $tag . $ciphertext);
+}
+
+/**
+ * Decrypt a string value encrypted with encryptValue()
+ * Handles both encrypted (enc:...) and legacy plaintext values
+ */
+function decryptValue(string $encrypted): string
+{
+    if ($encrypted === '' || !str_starts_with($encrypted, 'enc:')) {
+        return $encrypted; // Return as-is for empty or plaintext values
+    }
+
+    $key = hex2bin(getEncryptionKey());
+    $data = base64_decode(substr($encrypted, 4));
+
+    if ($data === false || strlen($data) < 28) { // 12 IV + 16 tag = 28 minimum
+        return ''; // Invalid data
+    }
+
+    $iv = substr($data, 0, 12);
+    $tag = substr($data, 12, 16);
+    $ciphertext = substr($data, 28);
+
+    $plaintext = openssl_decrypt($ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+
+    return $plaintext !== false ? $plaintext : '';
 }

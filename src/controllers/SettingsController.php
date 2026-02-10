@@ -262,15 +262,19 @@ class SettingsController extends Controller
         // Load existing config to preserve password if not changed
         $existingConfig = $this->getSmtpConfig();
         if (empty($smtpPass) && !empty($existingConfig['smtp_pass'])) {
-            $smtpPass = $existingConfig['smtp_pass'];
+            // Keep existing (already encrypted) password
+            $encryptedPass = $existingConfig['smtp_pass'];
+        } else {
+            // Encrypt new password before storage
+            $encryptedPass = encryptValue($smtpPass);
         }
 
-        // Save to storage file
+        // Save to storage file (password stored encrypted)
         $config = [
             'smtp_host' => $smtpHost,
             'smtp_port' => $smtpPort,
             'smtp_user' => $smtpUser,
-            'smtp_pass' => $smtpPass,
+            'smtp_pass' => $encryptedPass,
             'smtp_from' => $smtpFrom,
             'smtp_from_name' => $smtpFromName,
             'smtp_encryption' => $smtpEncryption,
@@ -279,12 +283,15 @@ class SettingsController extends Controller
         $configPath = STORAGE_PATH . '/smtp.php';
         $content = "<?php\nreturn " . var_export($config, true) . ";\n";
 
-        if (file_put_contents($configPath, $content) === false) {
+        if (file_put_contents($configPath, $content, LOCK_EX) === false) {
             Logger::error('Failed to save SMTP config', ['path' => $configPath]);
             Session::setFlash('error', 'E-Mail-Einstellungen konnten nicht gespeichert werden.');
             $this->redirect('/settings');
             return;
         }
+
+        // Restrict file permissions
+        chmod($configPath, 0640);
 
         Session::setFlash('success', 'E-Mail-Einstellungen wurden gespeichert.');
         $this->redirect('/settings');
@@ -369,6 +376,12 @@ class SettingsController extends Controller
         $this->requireCsrf();
 
         $ip = trim($_POST['ip'] ?? '');
+
+        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+            Session::setFlash('error', 'Ungültige IP-Adresse.');
+            $this->redirect('/settings');
+            return;
+        }
 
         $db = Database::getInstance();
         $stmt = $db->prepare("DELETE FROM ip_bans WHERE ip_address = :ip");

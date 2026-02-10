@@ -1,6 +1,8 @@
 <?php
 /**
- * Image Processor Service
+ * =====================================================================================
+ * IMAGE PROCESSOR - Upload, Resize, and WebP Conversion
+ * =====================================================================================
  *
  * Handles image uploads, cropping, resizing, and WebP conversion.
  */

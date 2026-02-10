@@ -1,8 +1,42 @@
 <?php
 /**
- * Transaction Service
- * Handles all data operations with proper transaction handling and verification
- * Like an online shop - every transaction is logged and verified for correctness
+ * =====================================================================================
+ * TRANSACTION SERVICE - Data Integrity and Audit Logging
+ * =====================================================================================
+ *
+ * PURPOSE:
+ * Provides transaction wrapping with automatic logging and checksum-based
+ * integrity verification. Every data modification can be tracked with
+ * before/after snapshots for audit purposes.
+ *
+ * TRANSACTION LIFECYCLE:
+ * 1. begin() - Start tracked transaction, generate unique transaction ID
+ * 2. execute() - Run operation callback within the transaction
+ * 3. logTransaction() - Record operation details with data checksums
+ * 4. commit() / rollback() - Finalize with status update
+ *
+ * VERIFICATION:
+ * - Each transaction record includes a SHA-256 checksum of the operation data
+ * - verifyTransaction() can re-check integrity of committed records
+ * - verifyAllPending() batch-verifies unverified committed transactions
+ *
+ * AI NOTES:
+ * - Singleton pattern via getInstance() (shared across controllers)
+ * - execute() auto-starts a transaction if none is active
+ * - Transaction ID format: "YYYYMMDDHHmmss_random16hex_hash8"
+ * - checksum covers entity_type, entity_id, operation, data_before, data_after
+ * - verifyTransaction() recalculates and compares checksum, marks as 'verified' or 'failed'
+ * - Requires a 'transactions' table (defined in Database::getSchema())
+ * - cleanupOldTransactions() deletes verified records older than N days
+ *
+ * RELATED FILES:
+ * - src/core/Database.php - Contains transactions table schema
+ * - src/services/ChangelogService.php - Higher-level audit log (uses changelog table)
+ * - src/core/Logger.php - Error logging for failed transactions
+ *
+ * @package KindergartenOrganizer\Services
+ * @since 1.0.0
+ * =====================================================================================
  */
 
 class TransactionService
@@ -193,7 +227,6 @@ class TransactionService
             'operation' => $operation,
             'data_before' => $dataBefore,
             'data_after' => $dataAfter,
-            'timestamp' => microtime(true)
         ];
 
         $checksum = $this->calculateChecksum($checksumData);
@@ -239,18 +272,21 @@ class TransactionService
             'operation' => $transaction['operation'],
             'data_before' => $transaction['data_before'] ? json_decode($transaction['data_before'], true) : null,
             'data_after' => $transaction['data_after'] ? json_decode($transaction['data_after'], true) : null,
-            // Note: We can't verify timestamp as it's not stored, but checksum includes it
         ];
 
-        // Mark as verified or failed
+        $recalculated = $this->calculateChecksum($checksumData);
+        $isValid = hash_equals($transaction['checksum'], $recalculated);
+
+        // Mark as verified or failed based on checksum comparison
+        $newStatus = $isValid ? 'verified' : 'failed';
         $stmt = $this->db->prepare("
             UPDATE transactions
-            SET status = 'verified', verified_at = NOW()
+            SET status = :status, verified_at = NOW()
             WHERE id = :id AND status = 'committed'
         ");
-        $stmt->execute(['id' => $transactionId]);
+        $stmt->execute(['status' => $newStatus, 'id' => $transactionId]);
 
-        return true;
+        return $isValid;
     }
 
     /**

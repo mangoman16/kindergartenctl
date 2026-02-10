@@ -98,9 +98,10 @@ class GameController extends Controller
             'min_players' => $this->getPost('min_players') ? (int)$this->getPost('min_players') : null,
             'max_players' => $this->getPost('max_players') ? (int)$this->getPost('max_players') : null,
             'duration_minutes' => $this->getPost('duration_minutes') ? (int)$this->getPost('duration_minutes') : null,
+            'difficulty' => $this->getPost('difficulty') ? (int)$this->getPost('difficulty') : 1,
             'is_outdoor' => $this->getPost('is_outdoor') ? 1 : 0,
             'is_active' => $this->getPost('is_active') ? 1 : 0,
-            'image_path' => $this->getPost('image_path', ''),
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
             'box_id' => $this->getPost('box_id') ? (int)$this->getPost('box_id') : null,
             'category_id' => $this->getPost('category_id') ? (int)$this->getPost('category_id') : null,
         ];
@@ -116,6 +117,7 @@ class GameController extends Controller
             'min_players' => 'integer|minValue:1|maxValue:999',
             'max_players' => 'integer|minValue:1|maxValue:999',
             'duration_minutes' => 'integer|minValue:1|maxValue:9999',
+            'difficulty' => 'integer|minValue:1|maxValue:5',
         ]);
 
         // Additional validation: max_players should be >= min_players
@@ -258,9 +260,10 @@ class GameController extends Controller
             'min_players' => $this->getPost('min_players') ? (int)$this->getPost('min_players') : null,
             'max_players' => $this->getPost('max_players') ? (int)$this->getPost('max_players') : null,
             'duration_minutes' => $this->getPost('duration_minutes') ? (int)$this->getPost('duration_minutes') : null,
+            'difficulty' => $this->getPost('difficulty') ? (int)$this->getPost('difficulty') : 1,
             'is_outdoor' => $this->getPost('is_outdoor') ? 1 : 0,
             'is_active' => $this->getPost('is_active') ? 1 : 0,
-            'image_path' => $this->getPost('image_path', '') ?: $game['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $game['image_path'],
             'box_id' => $this->getPost('box_id') ? (int)$this->getPost('box_id') : null,
             'category_id' => $this->getPost('category_id') ? (int)$this->getPost('category_id') : null,
         ];
@@ -276,6 +279,7 @@ class GameController extends Controller
             'min_players' => 'integer|minValue:1|maxValue:999',
             'max_players' => 'integer|minValue:1|maxValue:999',
             'duration_minutes' => 'integer|minValue:1|maxValue:9999',
+            'difficulty' => 'integer|minValue:1|maxValue:5',
         ]);
 
         // Additional validation: max_players should be >= min_players
@@ -301,7 +305,7 @@ class GameController extends Controller
         $changelog = ChangelogService::getInstance();
         $changes = $changelog->getChanges($game, $data, [
             'name', 'description', 'instructions', 'min_players', 'max_players',
-            'duration_minutes', 'is_outdoor', 'is_active', 'image_path', 'box_id', 'category_id'
+            'duration_minutes', 'difficulty', 'is_outdoor', 'is_active', 'image_path', 'box_id', 'category_id'
         ]);
 
         // Execute within transaction for data integrity

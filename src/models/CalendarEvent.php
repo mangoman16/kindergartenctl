@@ -1,5 +1,15 @@
 <?php
 /**
+ * =====================================================================================
+ * CALENDAR EVENT MODEL - Activity Scheduling
+ * =====================================================================================
+ *
+ * Events on the calendar linked to games or groups. getForRange() uses distinct
+ * PDO params because EMULATE_PREPARES=false prohibits reusing named parameters.
+ *
+ * @package KindergartenOrganizer\Models
+ * =====================================================================================
+ *
  * CalendarEvent Model
  */
 
@@ -18,7 +28,16 @@ class CalendarEvent extends Model
     ];
 
     /**
-     * Get events for a date range
+     * Get events for a date range (inclusive).
+     *
+     * AI NOTE: Uses distinct named parameters for each occurrence of start/end
+     * because PDO native prepared statements (ATTR_EMULATE_PREPARES=false) do not
+     * support reusing the same named parameter multiple times in a single query.
+     *
+     * The query covers three overlap cases:
+     * 1. Event starts within the range
+     * 2. Event ends within the range
+     * 3. Event spans the entire range (starts before, ends after)
      */
     public static function getForRange(string $start, string $end): array
     {
@@ -31,12 +50,16 @@ class CalendarEvent extends Model
             FROM calendar_events ce
             LEFT JOIN games g ON g.id = ce.game_id
             LEFT JOIN groups gr ON gr.id = ce.group_id
-            WHERE (ce.start_date BETWEEN :start AND :end)
-               OR (ce.end_date BETWEEN :start AND :end)
-               OR (ce.start_date <= :start AND ce.end_date >= :end)
+            WHERE (ce.start_date BETWEEN :start1 AND :end1)
+               OR (ce.end_date BETWEEN :start2 AND :end2)
+               OR (ce.start_date <= :start3 AND ce.end_date >= :end3)
             ORDER BY ce.start_date ASC
         ");
-        $stmt->execute(['start' => $start, 'end' => $end]);
+        $stmt->execute([
+            'start1' => $start, 'end1' => $end,
+            'start2' => $start, 'end2' => $end,
+            'start3' => $start, 'end3' => $end,
+        ]);
 
         return $stmt->fetchAll();
     }
