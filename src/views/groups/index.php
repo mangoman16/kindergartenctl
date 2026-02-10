@@ -102,7 +102,7 @@
 </div>
 <?php endif; ?>
 
-<style>
+<style<?= cspNonce() ?>>
 .group-card-image {
     display: block;
     aspect-ratio: 16/9;

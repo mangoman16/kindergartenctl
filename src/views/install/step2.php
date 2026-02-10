@@ -83,7 +83,7 @@
     </div>
 </form>
 
-<script>
+<script<?= cspNonce() ?>>
 document.getElementById('testConnection').addEventListener('click', function() {
     const form = document.getElementById('dbForm');
     const formData = new FormData(form);

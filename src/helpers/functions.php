@@ -137,6 +137,14 @@ function csrfField(): string
 }
 
 /**
+ * Get CSP nonce attribute for inline scripts/styles
+ */
+function cspNonce(): string
+{
+    return defined('CSP_NONCE') ? ' nonce="' . CSP_NONCE . '"' : '';
+}
+
+/**
  * Get old input value
  */
 function old(string $key, $default = ''): string

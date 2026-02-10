@@ -245,7 +245,7 @@
 </div>
 <?php endif; ?>
 
-<style>
+<style<?= cspNonce() ?>>
 .game-card { position: relative; }
 .game-card-image {
     display: block;
@@ -386,7 +386,7 @@
     </div>
 </div>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('toggle-selection-mode');
     const bulkBar = document.getElementById('bulk-actions-bar');

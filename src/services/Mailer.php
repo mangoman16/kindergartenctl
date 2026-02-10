@@ -91,7 +91,7 @@ class Mailer
         $this->host = $config['smtp_host'];
         $this->port = (int)($config['smtp_port'] ?? 587);
         $this->username = $config['smtp_user'] ?? '';
-        $this->password = $config['smtp_pass'] ?? '';
+        $this->password = decryptValue($config['smtp_pass'] ?? '');
         $this->encryption = $config['smtp_encryption'] ?? 'tls';
         $this->fromEmail = $config['smtp_from'];
         $this->fromName = $config['smtp_from_name'] ?? 'Kindergarten Organizer';

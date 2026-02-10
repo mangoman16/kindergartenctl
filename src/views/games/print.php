@@ -100,7 +100,7 @@
     <p>Gedruckt am <?= formatDate(date('Y-m-d'), 'd.m.Y') ?></p>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 .instructions-text {
     white-space: pre-wrap;
     line-height: 1.6;

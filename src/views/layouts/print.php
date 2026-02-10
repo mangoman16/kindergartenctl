@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
     <link rel="stylesheet" href="<?= asset('css/print.css') ?>">
 
-    <style>
+    <style<?= cspNonce() ?>>
         @media screen {
             body {
                 max-width: 800px;
@@ -34,7 +34,7 @@
     </div>
 
     <?php if (!isset($autoPrint) || $autoPrint): ?>
-    <script>
+    <script<?= cspNonce() ?>>
         window.onload = function() {
             window.print();
         };

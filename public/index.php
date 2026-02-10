@@ -18,6 +18,12 @@ define('UPLOADS_PATH', PUBLIC_PATH . '/uploads');
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
+// Generate CSP nonce for inline scripts/styles
+define('CSP_NONCE', base64_encode(random_bytes(16)));
+
+// Set CSP header with nonce (replaces static .htaccess CSP)
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-" . CSP_NONCE . "' https://cdn.jsdelivr.net; style-src 'self' 'nonce-" . CSP_NONCE . "' https://cdn.jsdelivr.net; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'self';");
+
 // Start output buffering
 ob_start();
 

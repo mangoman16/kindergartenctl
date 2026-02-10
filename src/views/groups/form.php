@@ -167,7 +167,7 @@
     </div>
 </form>
 
-<style>
+<style<?= cspNonce() ?>>
 .item-row {
     padding: 8px 12px;
     background: var(--color-gray-50);
@@ -175,7 +175,7 @@
 }
 </style>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     // Add game functionality
     const addGameSelect = document.getElementById('add-game');

@@ -81,7 +81,7 @@
     <p>Gedruckt am <?= formatDate(date('Y-m-d'), 'd.m.Y') ?></p>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 .print-checklist {
     list-style: none;
     padding: 0;

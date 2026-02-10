@@ -214,7 +214,7 @@
     </div>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 /* Bulk Actions */
 .bulk-actions-bar {
     background: var(--color-primary);
@@ -244,7 +244,7 @@
 tr.selected { background: var(--color-primary-bg) !important; }
 </style>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const bulkBar = document.getElementById('bulk-actions-bar');
     const selectAllCheckbox = document.getElementById('select-all-checkbox');

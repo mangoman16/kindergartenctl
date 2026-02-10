@@ -447,3 +447,76 @@ function checkRateLimit(string $key, int $maxAttempts, int $decaySeconds): bool
         fclose($fp);
     }
 }
+
+/**
+ * Get or create the application encryption key
+ * Key is stored in storage/.encryption_key (generated once)
+ */
+function getEncryptionKey(): string
+{
+    $keyFile = STORAGE_PATH . '/.encryption_key';
+
+    if (file_exists($keyFile)) {
+        $key = file_get_contents($keyFile);
+        if ($key !== false && strlen($key) >= 32) {
+            return $key;
+        }
+    }
+
+    // Generate new key
+    $key = bin2hex(random_bytes(32));
+    file_put_contents($keyFile, $key, LOCK_EX);
+    chmod($keyFile, 0600);
+
+    return $key;
+}
+
+/**
+ * Encrypt a string value using AES-256-GCM
+ * Returns base64-encoded ciphertext with IV and tag prepended
+ */
+function encryptValue(string $plaintext): string
+{
+    if ($plaintext === '') {
+        return '';
+    }
+
+    $key = hex2bin(getEncryptionKey());
+    $iv = random_bytes(12); // 96-bit IV for GCM
+    $tag = '';
+
+    $ciphertext = openssl_encrypt($plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+
+    if ($ciphertext === false) {
+        return $plaintext; // Fallback to plaintext if encryption fails
+    }
+
+    // Prepend IV + tag + ciphertext, then base64 encode
+    return 'enc:' . base64_encode($iv . $tag . $ciphertext);
+}
+
+/**
+ * Decrypt a string value encrypted with encryptValue()
+ * Handles both encrypted (enc:...) and legacy plaintext values
+ */
+function decryptValue(string $encrypted): string
+{
+    if ($encrypted === '' || !str_starts_with($encrypted, 'enc:')) {
+        return $encrypted; // Return as-is for empty or plaintext values
+    }
+
+    $key = hex2bin(getEncryptionKey());
+    $data = base64_decode(substr($encrypted, 4));
+
+    if ($data === false || strlen($data) < 28) { // 12 IV + 16 tag = 28 minimum
+        return ''; // Invalid data
+    }
+
+    $iv = substr($data, 0, 12);
+    $tag = substr($data, 12, 16);
+    $ciphertext = substr($data, 28);
+
+    $plaintext = openssl_decrypt($ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+
+    return $plaintext !== false ? $plaintext : '';
+}

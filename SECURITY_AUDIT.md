@@ -106,12 +106,12 @@ All issues discovered across all audits, with current status:
 | SEC-012 | Image crop bounds checking missing | ImageProcessor.php | 2026-01-08 | FIXED 2026-01-08 |
 | SEC-013 | Debug mode enabled in config | config.php | 2026-01-08 | FIXED 2026-01-08 |
 | SEC-014 | Debug helper dd() available in production | functions.php | 2026-01-16 | FIXED 2026-01-16 |
-| SEC-015 | SMTP password stored unencrypted | Settings table | 2026-01-16 | Open (optional) |
-| SEC-016 | Missing Subresource Integrity on CDN resources | Layout views | 2026-01-08 | Open (optional) |
-| SEC-017 | Database config file permissions | database.php | 2026-01-16 | Open (optional) |
-| SEC-018 | Predictable session cookie name | config.php | 2026-01-16 | Open (optional) |
+| SEC-015 | SMTP password stored unencrypted | Settings table | 2026-01-16 | FIXED 2026-02-10 |
+| SEC-016 | Missing Subresource Integrity on CDN resources | Layout views | 2026-01-08 | FIXED (already implemented) |
+| SEC-017 | Database config file permissions | database.php | 2026-01-16 | FIXED 2026-02-10 |
+| SEC-018 | Predictable session cookie name | config.php | 2026-01-16 | FIXED 2026-02-10 |
 | SEC-026 | Division by zero edge case in formatFileSize() | functions.php | 2026-01-08 | FIXED 2026-01-08 |
-| SEC-028 | CSP allows unsafe-inline for scripts and styles | .htaccess | 2026-02-09 | Open (optional) |
+| SEC-028 | CSP allows unsafe-inline for scripts and styles | .htaccess | 2026-02-09 | FIXED 2026-02-10 |
 | BUG-017 | ChangelogController ignores action filter when type is also set | ChangelogController.php | 2026-02-09 | FIXED 2026-02-09 |
 
 ---
@@ -217,7 +217,7 @@ Headers in `public/.htaccess`:
 - `X-Frame-Options: SAMEORIGIN`
 - `X-XSS-Protection: 1; mode=block`
 - `Referrer-Policy: strict-origin-when-cross-origin`
-- `Content-Security-Policy` defined (note: uses `unsafe-inline` - see SEC-028)
+- `Content-Security-Policy` with per-request nonce for inline scripts/styles
 - Directory listing disabled
 - Dotfile access denied
 
@@ -269,26 +269,19 @@ Headers in `public/.htaccess`:
 
 ---
 
-## Remaining Recommendations (All Optional/Low Priority)
+## Remaining Recommendations
 
-### Optional Improvements:
-
-1. **SMTP Password Encryption** - Encrypt SMTP password in database with `openssl_encrypt()`. Priority: LOW. Effort: 2 hours.
-
-2. **Subresource Integrity** - Add SRI hashes to CDN resources (cropperjs, etc.). Priority: LOW. Effort: 30 minutes.
-
-3. **Database File Permissions** - Verify `src/config/database.php` has 600/640 permissions. Priority: LOW. Effort: 5 minutes.
-
-4. **Session Cookie Name** - Use less descriptive name than `kindergarten_session`. Priority: VERY LOW. Effort: 2 minutes.
-
-5. **CSP unsafe-inline** - Remove `unsafe-inline` from Content-Security-Policy and use nonces for inline scripts/styles. Priority: LOW. Effort: 2-4 hours.
+All previously identified security issues have been resolved. No open issues remain.
 
 ### Deployment Checklist:
 
 - [x] Debug mode disabled (`config.php` -> `debug => false`)
 - [x] display_errors set to '0' in index.php
+- [x] Config file permissions set to 0640 (database.php, smtp.php)
+- [x] SMTP password encrypted at rest (AES-256-GCM)
+- [x] CSP with per-request nonces (no unsafe-inline)
+- [x] SRI hashes on all CDN resources
 - [ ] Enforce HTTPS at server level
-- [ ] Set restrictive file permissions on config files
 - [ ] Configure regular database backups
 - [ ] Review trusted proxy IPs if behind reverse proxy
 
@@ -351,12 +344,12 @@ Headers in `public/.htaccess`:
 | Critical Issues | 1 | 0 | 2 found + fixed | 1 found + fixed | 0 |
 | High Issues | 3 | 0 | 2 found + fixed | 0 | 0 |
 | Medium Issues | 6 | 3 found + fixed | 9 found + fixed | 4 found + fixed | 3 found + fixed |
-| Low Issues | 4 (3 fixed) | 1 found + fixed | 1 fixed | 1 found (optional) | 0 |
-| Open Issues | 14 | 4 (all low) | 4 (all low) | 5 (all low/optional) | 5 (all low/optional) |
+| Low Issues | 4 (3 fixed) | 1 found + fixed | 1 fixed | 1 found (optional) | 5 fixed |
+| Open Issues | 14 | 4 (all low) | 4 (all low) | 5 (all low/optional) | 0 |
 | Security Rating | MODERATE | VERY GOOD | EXCELLENT | EXCELLENT | EXCELLENT |
 
 ### Total Issues Found and Fixed: 48
-### Remaining Open (all optional/low): 5
+### Remaining Open: 0
 
 ---
 

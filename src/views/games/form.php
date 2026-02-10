@@ -241,7 +241,7 @@
     </div>
 </form>
 
-<style>
+<style<?= cspNonce() ?>>
 .tag-badge-sm {
     display: inline-block;
     padding: 2px 8px;
@@ -256,7 +256,7 @@
 }
 </style>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     // Add material functionality
     const addMaterialSelect = document.getElementById('add-material');

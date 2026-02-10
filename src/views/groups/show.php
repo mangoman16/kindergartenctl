@@ -185,7 +185,7 @@
     </div>
 </div>
 
-<style>
+<style<?= cspNonce() ?>>
 .stat-box {
     text-align: center;
     padding: 12px 24px;

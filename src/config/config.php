@@ -16,7 +16,7 @@ return [
 
     // Session settings
     'session' => [
-        'name' => 'kindergarten_session',
+        'name' => '__app_sess',
         'lifetime' => 86400, // 24 hours in seconds
         'remember_lifetime' => 2592000, // 30 days in seconds
         'secure' => isset($_SERVER['HTTPS']), // Auto-detect HTTPS

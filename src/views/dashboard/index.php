@@ -405,7 +405,7 @@
 </div>
 <?php endif; ?>
 
-<script>
+<script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const randomBtn = document.getElementById('random-game-btn');
     const categorySelect = document.getElementById('random-category');
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<style>
+<style<?= cspNonce() ?>>
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);

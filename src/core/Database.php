@@ -743,6 +743,9 @@ return [
             ];
         }
 
+        // Restrict file permissions (owner read/write, group read, no world access)
+        @chmod($configFile, 0640);
+
         // Verify the file was written correctly
         if (!file_exists($configFile)) {
             Logger::error('Config file does not exist after write', ['path' => $configFile]);
