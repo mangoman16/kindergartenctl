@@ -164,7 +164,7 @@ class Validator
      */
     private function validateInteger(string $field, $value, array $params): void
     {
-        if ($value !== null && $value !== '' && !filter_var($value, FILTER_VALIDATE_INT)) {
+        if ($value !== null && $value !== '' && filter_var($value, FILTER_VALIDATE_INT) === false) {
             $this->addError($field, 'Dieses Feld muss eine ganze Zahl sein');
         }
     }

@@ -11,6 +11,7 @@
 | 2026-01-16 | Follow-up comprehensive audit + security hardening | Claude Code |
 | 2026-02-06 | Code quality review + PDO parameter fixes | Claude Code |
 | 2026-02-09 | Full comprehensive re-audit (all files, all categories) | Claude Code |
+| 2026-02-10 | Deep sweep: undefined methods, missing fields, integrity checks | Claude Code |
 
 ---
 
@@ -76,6 +77,9 @@ All issues discovered across all audits, with current status:
 | SEC-025 | Missing item_type validation in removeItemFromGroup | ApiController.php | 2026-02-06 | FIXED 2026-02-06 |
 | SEC-027 | display_errors hardcoded to '1' in index.php | public/index.php | 2026-02-09 | FIXED 2026-02-09 |
 | SEC-029 | unbanIp() missing IP validation (banIp validates, unbanIp doesn't) | SettingsController.php | 2026-02-09 | FIXED 2026-02-09 |
+| SEC-030 | Validator::validateInteger() rejects 0 (allows bypass of validation) | Validator.php | 2026-02-10 | FIXED 2026-02-10 |
+| SEC-031 | addItemToGroup() in_array() without strict comparison | ApiController.php | 2026-02-10 | FIXED 2026-02-10 |
+| SEC-032 | TransactionService integrity verification always passes (no-op) | TransactionService.php | 2026-02-10 | FIXED 2026-02-10 |
 | BUG-003 | CalendarEvent::getForRange() reused PDO params | CalendarEvent.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-004 | Game::updateTags/updateMaterials not transactional | Game.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-005 | Game::duplicate() missing difficulty/is_favorite columns | Game.php | 2026-02-06 | FIXED 2026-02-06 |
@@ -342,19 +346,19 @@ Headers in `public/.htaccess`:
 
 ## Audit Comparison
 
-| Metric | 2026-01-08 | 2026-01-16 | 2026-02-06 | 2026-02-09 |
-|--------|------------|------------|------------|------------|
-| Critical Issues | 1 | 0 | 2 found + fixed | 1 found + fixed |
-| High Issues | 3 | 0 | 2 found + fixed | 0 |
-| Medium Issues | 6 | 3 found + fixed | 9 found + fixed | 4 found + fixed |
-| Low Issues | 4 (3 fixed) | 1 found + fixed | 1 fixed | 1 found (optional) |
-| Open Issues | 14 | 4 (all low) | 4 (all low) | 5 (all low/optional) |
-| Security Rating | MODERATE | VERY GOOD | EXCELLENT | EXCELLENT |
+| Metric | 2026-01-08 | 2026-01-16 | 2026-02-06 | 2026-02-09 | 2026-02-10 |
+|--------|------------|------------|------------|------------|------------|
+| Critical Issues | 1 | 0 | 2 found + fixed | 1 found + fixed | 0 |
+| High Issues | 3 | 0 | 2 found + fixed | 0 | 0 |
+| Medium Issues | 6 | 3 found + fixed | 9 found + fixed | 4 found + fixed | 3 found + fixed |
+| Low Issues | 4 (3 fixed) | 1 found + fixed | 1 fixed | 1 found (optional) | 0 |
+| Open Issues | 14 | 4 (all low) | 4 (all low) | 5 (all low/optional) | 5 (all low/optional) |
+| Security Rating | MODERATE | VERY GOOD | EXCELLENT | EXCELLENT | EXCELLENT |
 
-### Total Issues Found and Fixed: 45
+### Total Issues Found and Fixed: 48
 ### Remaining Open (all optional/low): 5
 
 ---
 
-*This report consolidates findings from all security audits conducted between 2026-01-08 and 2026-02-09.*
+*This report consolidates findings from all security audits conducted between 2026-01-08 and 2026-02-10.*
 *Next recommended audit: 2026-08-09 (6 months) or after major feature additions.*

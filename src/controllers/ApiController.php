@@ -782,7 +782,7 @@ class ApiController extends Controller
             return;
         }
 
-        if (!in_array($itemType, ['game', 'material'])) {
+        if (!in_array($itemType, ['game', 'material'], true)) {
             $this->jsonError('Ungültiger Elementtyp.', 400);
             return;
         }

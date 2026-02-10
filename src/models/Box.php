@@ -92,6 +92,23 @@ class Box extends Model
     }
 
     /**
+     * Get games in this box (via games.box_id FK)
+     */
+    public static function getGames(int $boxId): array
+    {
+        $db = self::getDb();
+
+        $stmt = $db->prepare("
+            SELECT * FROM games
+            WHERE box_id = :box_id
+            ORDER BY name ASC
+        ");
+        $stmt->execute(['box_id' => $boxId]);
+
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Search boxes
      */
     public static function searchBoxes(string $query, int $limit = 50): array

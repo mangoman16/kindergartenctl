@@ -262,7 +262,7 @@ abstract class Controller
     /**
      * Get POST data
      */
-    protected function getPost(string $key = null, $default = null)
+    protected function getPost(?string $key = null, $default = null)
     {
         if ($key === null) {
             return $_POST;
@@ -273,7 +273,7 @@ abstract class Controller
     /**
      * Get GET data
      */
-    protected function getQuery(string $key = null, $default = null)
+    protected function getQuery(?string $key = null, $default = null)
     {
         if ($key === null) {
             return $_GET;

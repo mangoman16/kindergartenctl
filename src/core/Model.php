@@ -111,7 +111,11 @@ abstract class Model
      */
     protected static function getDb(): PDO
     {
-        return Database::getInstance();
+        $db = Database::getInstance();
+        if ($db === null) {
+            throw new RuntimeException('Database connection not available. Is the application installed?');
+        }
+        return $db;
     }
 
     /**

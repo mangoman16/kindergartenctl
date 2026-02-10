@@ -24,8 +24,8 @@
  * - Singleton pattern via getInstance() (shared across controllers)
  * - execute() auto-starts a transaction if none is active
  * - Transaction ID format: "YYYYMMDDHHmmss_random16hex_hash8"
- * - checksum includes a microtime timestamp that is NOT stored separately,
- *   so verification recalculates without the timestamp (known limitation)
+ * - checksum covers entity_type, entity_id, operation, data_before, data_after
+ * - verifyTransaction() recalculates and compares checksum, marks as 'verified' or 'failed'
  * - Requires a 'transactions' table (defined in Database::getSchema())
  * - cleanupOldTransactions() deletes verified records older than N days
  *
@@ -227,7 +227,6 @@ class TransactionService
             'operation' => $operation,
             'data_before' => $dataBefore,
             'data_after' => $dataAfter,
-            'timestamp' => microtime(true)
         ];
 
         $checksum = $this->calculateChecksum($checksumData);
@@ -273,18 +272,21 @@ class TransactionService
             'operation' => $transaction['operation'],
             'data_before' => $transaction['data_before'] ? json_decode($transaction['data_before'], true) : null,
             'data_after' => $transaction['data_after'] ? json_decode($transaction['data_after'], true) : null,
-            // Note: We can't verify timestamp as it's not stored, but checksum includes it
         ];
 
-        // Mark as verified or failed
+        $recalculated = $this->calculateChecksum($checksumData);
+        $isValid = hash_equals($transaction['checksum'], $recalculated);
+
+        // Mark as verified or failed based on checksum comparison
+        $newStatus = $isValid ? 'verified' : 'failed';
         $stmt = $this->db->prepare("
             UPDATE transactions
-            SET status = 'verified', verified_at = NOW()
+            SET status = :status, verified_at = NOW()
             WHERE id = :id AND status = 'committed'
         ");
-        $stmt->execute(['id' => $transactionId]);
+        $stmt->execute(['status' => $newStatus, 'id' => $transactionId]);
 
-        return true;
+        return $isValid;
     }
 
     /**

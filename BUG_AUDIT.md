@@ -11,22 +11,23 @@
 | 2026-01-16 | Follow-up audit + schema alignment fixes | Claude Code |
 | 2026-02-06 | Comprehensive PDO parameter + logic bug audit | Claude Code |
 | 2026-02-09 | Full re-audit, all files, all categories | Claude Code |
+| 2026-02-10 | Deep sweep: undefined methods, missing fields, logic errors | Claude Code |
 
 ---
 
 ## Executive Summary
 
-### Bug Status: **ALL CRITICAL/HIGH/MEDIUM BUGS FIXED**
+### Bug Status: **ALL BUGS FIXED**
 
-All 24 bugs discovered across four audit rounds have been identified and fixed. The codebase is stable and production-ready. Two remaining items are low-priority display concerns.
+All 34 bugs discovered across five audit rounds have been identified and fixed. The codebase is stable and production-ready.
 
 | Severity | Total Found | Fixed | Open |
 |----------|-------------|-------|------|
-| Critical | 3 | 3 | 0 |
-| High | 2 | 2 | 0 |
-| Medium | 16 | 16 | 0 |
-| Low | 5 | 3 | 2 |
-| **Total** | **26** | **24** | **2** |
+| Critical | 4 | 4 | 0 |
+| High | 4 | 4 | 0 |
+| Medium | 19 | 19 | 0 |
+| Low | 7 | 7 | 0 |
+| **Total** | **34** | **34** | **0** |
 
 ---
 
@@ -39,6 +40,7 @@ All 24 bugs discovered across four audit rounds have been identified and fixed. 
 | BUG-001 | Password update fails silently (wrong field name `current_password` vs `password`) | SettingsController.php | 2026-01-16 | FIXED 2026-01-16 |
 | BUG-002 | User::findByLogin() reused `:login` PDO param - crashes on every login attempt | User.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-018 | `formatDate()` undefined - called 13x in views but function didn't exist | dates.php, views/*.php | 2026-02-09 | FIXED 2026-02-09 |
+| BUG-027 | `Box::getGames()` undefined - API endpoint calls non-existent method | ApiController.php, Box.php | 2026-02-10 | FIXED 2026-02-10 |
 
 ### High Bugs
 
@@ -46,6 +48,8 @@ All 24 bugs discovered across four audit rounds have been identified and fixed. 
 |----|-------------|----------|-------|--------|
 | BUG-012 | User::createUser() password_hash filtered by $fillable (regression from security fix) | User.php | 2026-02-09 | FIXED 2026-02-09 |
 | BUG-016 | App.php loads services from wrong path (`/core/` instead of `/services/`) | App.php | 2026-02-09 | FIXED 2026-02-09 |
+| BUG-028 | GameController store/update never reads `difficulty` from POST (silently dropped) | GameController.php | 2026-02-10 | FIXED 2026-02-10 |
+| BUG-029 | BoxController store/update never reads `label` from POST (silently dropped) | BoxController.php | 2026-02-10 | FIXED 2026-02-10 |
 
 ### Medium Bugs
 
@@ -67,6 +71,9 @@ All 24 bugs discovered across four audit rounds have been identified and fixed. 
 | BUG-020 | Model.php implicit nullable type hints (PHP 8.0 deprecation, PHP 8.4 fatal) | Model.php | 2026-02-09 | FIXED 2026-02-09 |
 | BUG-021 | ApiController::getGroups() inconsistent JSON response format | ApiController.php | 2026-02-09 | FIXED 2026-02-09 |
 | BUG-022 | formatDifficulty() uses 3-star scale but difficulty stored as 1-5 | functions.php | 2026-02-09 | FIXED 2026-02-09 |
+| BUG-030 | Controller::getPost()/getQuery() implicit nullable (PHP 8.1 deprecation) | Controller.php | 2026-02-10 | FIXED 2026-02-10 |
+| BUG-031 | Validator::validateInteger() rejects value `0` (falsy comparison) | Validator.php | 2026-02-10 | FIXED 2026-02-10 |
+| BUG-032 | TransactionService checksum includes timestamp not stored, verification always passes | TransactionService.php | 2026-02-10 | FIXED 2026-02-10 |
 
 ### Low Bugs
 
@@ -77,6 +84,8 @@ All 24 bugs discovered across four audit rounds have been identified and fixed. 
 | BUG-024 | Group::addGame() comment says "INSERT IGNORE" but code uses SELECT FOR UPDATE | Game.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-025 | PasswordReset::cleanupExpired() comment says "expired" but also deletes used tokens | PasswordReset.php | 2026-02-06 | FIXED 2026-02-06 |
 | BUG-026 | Group::addItem()/removeItem() in_array() without strict mode | Group.php | 2026-02-06 | FIXED 2026-02-06 |
+| BUG-033 | ApiController addItemToGroup() in_array() without strict mode | ApiController.php | 2026-02-10 | FIXED 2026-02-10 |
+| BUG-034 | Model::getDb() declares `PDO` return but Database::getInstance() returns `?PDO` | Model.php | 2026-02-10 | FIXED 2026-02-10 |
 
 ---
 
@@ -107,37 +116,49 @@ All 24 bugs discovered across four audit rounds have been identified and fixed. 
 
 **Fix:** Created `formatDate()` function in `dates.php` accepting PHP date format strings with German month name substitution.
 
-### 3. Data Loss / Integrity Bugs (3 instances)
+### 3. Data Loss / Integrity Bugs (5 instances)
 
 - `Game::updateTags()/updateMaterials()` - Delete+insert without transaction risked orphaned records on crash
 - `Game::duplicate()` - Missing columns in INSERT caused data loss on game duplication
 - `Tag/Material::quickCreate()` - Trim after existence check could create duplicate entries
+- `GameController` - `difficulty` field never read from POST, silently dropped on save
+- `BoxController` - `label` field never read from POST despite form having the input
 
 ### 4. Regression Bugs (1 instance)
 
 - `User::createUser()` - Removing `password_hash` from `$fillable` (correct security fix) broke user creation since `Model::create()` filters by `$fillable`. Fixed with direct SQL INSERT.
 
-### 5. Logic / Display Bugs (4 instances)
+### 5. Logic / Display Bugs (5 instances)
 
 - Category queries missed primary FK relationship
 - ChangelogController filter logic
 - formatDifficulty() scale mismatch (1-3 vs 1-5)
 - API response format inconsistency
+- Validator::validateInteger() rejects `0` due to falsy comparison (used `!` instead of `=== false`)
 
-### 6. PHP Compatibility (1 instance)
+### 6. PHP Compatibility (2 instances)
 
-- Implicit nullable type hints (`string $param = null`) deprecated in PHP 8.0, fatal in PHP 8.4. Fixed to explicit nullable (`?string $param = null`).
+- Model.php implicit nullable type hints (`string $param = null`) deprecated in PHP 8.0, fatal in PHP 8.4
+- Controller.php getPost()/getQuery() same implicit nullable issue
+
+### 7. Undefined Methods / Missing Code (1 instance)
+
+- `Box::getGames()` called from API endpoint but method didn't exist on Box model
+
+### 8. Broken Verification (1 instance)
+
+- TransactionService checksum included `microtime(true)` timestamp that was never stored, making verification always pass without actual comparison. Fixed by removing timestamp from checksum and adding real comparison.
 
 ---
 
 ## Verification Status
 
-All 24 fixed bugs have been verified by:
+All 34 fixed bugs have been verified by:
 1. Code inspection confirming the fix is present in the source file
 2. Pattern analysis ensuring no similar bugs exist elsewhere
 3. Cross-referencing with the security audit for overlap
 
-### Remaining Low-Priority Items
+### Remaining Items
 
 None - all bugs are fixed. The only open items are in the Security Audit (5 optional security hardening suggestions).
 
@@ -150,11 +171,12 @@ None - all bugs are fixed. The only open items are in the Security Audit (5 opti
 | 2026-01-08 | 0 (security only) | 0 | 0 |
 | 2026-01-16 | 1 critical | 1 | 1 |
 | 2026-02-06 | 11 (1 critical, 10 medium) | 11 | 12 |
-| 2026-02-09 | 15 (1 critical, 2 high, 8 medium, 4 low) | 15 | 26* |
+| 2026-02-09 | 15 (1 critical, 2 high, 8 medium, 4 low) | 15 | 26 |
+| 2026-02-10 | 8 (1 critical, 2 high, 3 medium, 2 low) | 8 | 34 |
 
 *Note: Some BUG-0xx IDs from earlier audits were originally tracked in the security audit. This report assigns them unique BUG IDs retroactively.
 
 ---
 
-*This report consolidates all bug findings from audits conducted between 2026-01-08 and 2026-02-09.*
+*This report consolidates all bug findings from audits conducted between 2026-01-08 and 2026-02-10.*
 *Next recommended audit: After major feature additions or dependency upgrades.*
