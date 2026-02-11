@@ -11,6 +11,7 @@
                 <div class="form-group">
                     <label for="name" class="form-label">
                         <?= __('form.name') ?> <span class="required">*</span>
+                        <span class="help-tooltip" data-help="<?= e(__('help.field_name')) ?>">?</span>
                     </label>
                     <input type="text" id="name" name="name"
                            class="form-control <?= hasError('name', $errors ?? []) ? 'is-invalid' : '' ?>"
@@ -26,6 +27,7 @@
                 <div class="form-group">
                     <label for="number" class="form-label">
                         <?= __('box.number') ?>
+                        <span class="help-tooltip" data-help="<?= e(__('help.field_box_number')) ?>">?</span>
                     </label>
                     <input type="text" id="number" name="number"
                            class="form-control"
@@ -36,6 +38,7 @@
                 <div class="form-group">
                     <label for="label" class="form-label">
                         <?= __('box.label') ?>
+                        <span class="help-tooltip" data-help="<?= e(__('help.field_box_label')) ?>">?</span>
                     </label>
                     <input type="text" id="label" name="label"
                            class="form-control"
@@ -47,6 +50,7 @@
             <div class="form-group">
                 <label for="location" class="form-label">
                     <?= __('box.location') ?>
+                    <span class="help-tooltip" data-help="<?= e(__('help.field_box_location')) ?>">?</span>
                 </label>
                 <input type="text" id="location" name="location"
                        class="form-control"

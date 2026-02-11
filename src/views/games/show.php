@@ -246,6 +246,22 @@
 </div>
 
 <style<?= cspNonce() ?>>
+.detail-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 16px;
+    margin: 0;
+    padding: 0;
+}
+.detail-list dt {
+    font-weight: 600;
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+    padding-top: 2px;
+}
+.detail-list dd {
+    margin: 0;
+}
 .tag-badge {
     display: inline-block;
     padding: 4px 12px;

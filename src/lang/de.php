@@ -15,6 +15,8 @@ return [
     'nav.calendar' => 'Kalender',
     'nav.changelog' => 'Änderungsprotokoll',
     'nav.settings' => 'Einstellungen',
+    'nav.help' => 'Hilfe',
+    'nav.search' => 'Suche',
     'nav.logout' => 'Abmelden',
 
     // Common Actions
@@ -40,6 +42,8 @@ return [
     'action.confirm' => 'Bestätigen',
     'action.select_all' => 'Alle auswählen',
     'action.deselect_all' => 'Alle abwählen',
+    'action.duplicate' => 'Duplizieren',
+    'action.view' => 'Anzeigen',
 
     // Forms
     'form.name' => 'Name',
@@ -51,6 +55,9 @@ return [
     'form.optional' => 'Optional',
     'form.select_option' => '-- Bitte wählen --',
     'form.no_options' => 'Keine Optionen verfügbar',
+    'form.search' => 'Suche',
+    'form.email' => 'E-Mail',
+    'form.password' => 'Passwort',
 
     // Games
     'game.title' => 'Spiel',
@@ -83,6 +90,7 @@ return [
     'game.is_outdoor' => 'Outdoor-Spiel',
     'game.is_active' => 'Aktiv',
     'game.age_group' => 'Altersgruppe',
+    'game.players' => 'Spieler',
 
     // Materials
     'material.title' => 'Material',
@@ -98,6 +106,9 @@ return [
     'material.status.missing' => 'Fehlt',
     'material.no_box' => 'Keine Box zugewiesen',
     'material.move_history' => 'Verschiebungshistorie',
+    'material.quantity' => 'Menge',
+    'material.type' => 'Typ',
+    'material.is_consumable' => 'Verbrauchsmaterial',
 
     // Boxes
     'box.title' => 'Box',
@@ -156,6 +167,7 @@ return [
     'calendar.month' => 'Monat',
     'calendar.week' => 'Woche',
     'calendar.day' => 'Tag',
+    'calendar.upcoming' => 'Kommende Termine',
 
     // Dashboard
     'dashboard.title' => 'Übersicht',
@@ -171,6 +183,8 @@ return [
     'dashboard.quick_actions' => 'Schnellzugriff',
     'dashboard.games_this_month' => 'Spiele diesen Monat',
     'dashboard.welcome' => 'Willkommen',
+    'dashboard.recent_changes' => 'Letzte Änderungen',
+    'dashboard.recent_games' => 'Zuletzt hinzugefügt',
 
     // Changelog
     'changelog.title' => 'Änderungsprotokoll',
@@ -185,6 +199,7 @@ return [
     'changelog.entity' => 'Objekt',
     'changelog.changes' => 'Änderungen',
     'changelog.no_entries' => 'Keine Einträge vorhanden',
+    'changelog.details' => 'Änderungsdetails',
     'changelog.confirm_clear' => 'Möchten Sie das gesamte Änderungsprotokoll wirklich löschen?',
 
     // Auth
@@ -237,6 +252,8 @@ return [
     'misc.show_less' => 'Weniger anzeigen',
     'misc.or' => 'oder',
     'misc.and' => 'und',
+    'misc.actions' => 'Aktionen',
+    'misc.search_placeholder' => 'Name suchen...',
 
     // Validation
     'validation.required' => 'Dieses Feld ist erforderlich',
@@ -290,11 +307,27 @@ return [
     'settings.default_view' => 'Standardansicht',
     'settings.view_grid' => 'Raster',
     'settings.view_list' => 'Liste',
+    'settings.language' => 'Sprache',
+    'settings.language_de' => 'Deutsch',
+    'settings.language_en' => 'English',
+    'settings.language_changed' => 'Sprache erfolgreich geändert',
+    'settings.debug' => 'Debug-Modus',
+    'settings.debug_enabled' => 'Debug-Modus aktiviert',
+    'settings.debug_disabled' => 'Debug-Modus deaktiviert',
+    'settings.customization' => 'Anpassung',
+    'settings.theme_color' => 'Akzentfarbe',
+    'settings.theme_pattern' => 'Hintergrundmuster',
+    'settings.pattern_none' => 'Keins',
+    'settings.pattern_dots' => 'Punkte',
+    'settings.pattern_stars' => 'Sterne',
+    'settings.pattern_hearts' => 'Herzen',
+    'settings.pattern_clouds' => 'Wolken',
+    'settings.saved' => 'Einstellungen gespeichert',
 
     // Installation
     'install.title' => 'Installation',
     'install.welcome' => 'Willkommen',
-    'install.welcome_text' => 'Willkommen bei der Installation des Kindergarten Spiele Organizers. Dieser Assistent wird Sie durch die Einrichtung führen.',
+    'install.welcome_text' => 'Willkommen bei der Installation des KindergartenOrganizers. Dieser Assistent wird Sie durch die Einrichtung führen.',
     'install.requirements' => 'Systemvoraussetzungen',
     'install.database' => 'Datenbank',
     'install.admin_user' => 'Administrator',
@@ -343,8 +376,63 @@ return [
 
     // Complete
     'install.complete_title' => 'Installation abgeschlossen!',
-    'install.complete_text' => 'Der Kindergarten Spiele Organizer wurde erfolgreich installiert. Sie können sich jetzt anmelden.',
+    'install.complete_text' => 'Der KindergartenOrganizer wurde erfolgreich installiert. Sie können sich jetzt anmelden.',
     'install.go_to_login' => 'Zur Anmeldung',
+
+    // User
+    'user.section' => 'Benutzerkonto',
+    'user.profile' => 'Profil',
+    'user.settings' => 'Mein Konto',
+
+    // Help
+    'help.title' => 'Hilfe',
+    'help.wizard_title' => 'So funktioniert der KindergartenOrganizer',
+    'help.wizard_welcome' => 'Willkommen! Dieser Assistent zeigt Ihnen die wichtigsten Funktionen.',
+    'help.step_dashboard' => 'Übersicht',
+    'help.step_dashboard_text' => 'Die Übersicht zeigt Ihnen alle wichtigen Informationen auf einen Blick: aktuelle Statistiken, zuletzt hinzugefügte Spiele, kommende Termine und Schnellzugriffe.',
+    'help.step_games' => 'Spiele verwalten',
+    'help.step_games_text' => 'Unter "Spiele" können Sie Spiele anlegen, bearbeiten und organisieren. Jedes Spiel kann Materialien, Altersgruppen und Themen zugeordnet werden.',
+    'help.step_materials' => 'Materialien',
+    'help.step_materials_text' => 'Materialien sind die Gegenstände, die Sie für Spiele brauchen (Bälle, Seile, Stifte). Hier verwalten Sie den Bestand.',
+    'help.step_boxes' => 'Aufbewahrungsboxen',
+    'help.step_boxes_text' => 'Boxen helfen Ihnen, den Überblick über den Aufbewahrungsort Ihrer Materialien zu behalten.',
+    'help.step_categories' => 'Altersgruppen',
+    'help.step_categories_text' => 'Erstellen Sie Altersgruppen, um Spiele nach dem passenden Alter zu filtern.',
+    'help.step_tags' => 'Themen',
+    'help.step_tags_text' => 'Themen helfen beim Kategorisieren und Filtern von Spielen. Jedes Thema kann eine eigene Farbe haben.',
+    'help.step_calendar' => 'Kalender',
+    'help.step_calendar_text' => 'Im Kalender planen Sie, wann welche Spiele gespielt werden.',
+    'help.step_groups' => 'Gruppen/Sammlungen',
+    'help.step_groups_text' => 'Gruppen sind Sammlungen von Spielen und Materialien für bestimmte Anlässe.',
+    'help.step_settings' => 'Einstellungen',
+    'help.step_settings_text' => 'In den Einstellungen können Sie die Anwendung anpassen: Sprache, Farben und mehr.',
+    'help.got_it' => 'Verstanden!',
+    'help.finish' => 'Fertig',
+    'help.field_name' => 'Geben Sie einen eindeutigen Namen ein.',
+    'help.field_description' => 'Optionale Beschreibung für mehr Details.',
+    'help.field_image' => 'Klicken Sie zum Hochladen. Das Bild kann zugeschnitten werden.',
+    'help.field_difficulty' => 'Wie anspruchsvoll ist das Spiel? 1 = Leicht, 3 = Schwer.',
+    'help.field_players' => 'Minimale und maximale Anzahl der Mitspieler.',
+    'help.field_duration' => 'Ungefähre Spieldauer in Minuten.',
+    'help.field_outdoor' => 'Aktivieren, wenn das Spiel draußen gespielt wird.',
+    'help.field_box' => 'In welcher Box wird das Material aufbewahrt?',
+    'help.field_age_group' => 'Für welche Altersgruppe ist das Spiel geeignet?',
+    'help.field_tags' => 'Wählen Sie passende Themen aus.',
+    'help.field_materials' => 'Welche Materialien werden für das Spiel benötigt?',
+    'help.field_quantity' => 'Verfügbare Anzahl des Materials (0 = unbekannt).',
+    'help.field_consumable' => 'Verbrauchsmaterial wird nach Nutzung aufgebraucht.',
+    'help.field_box_number' => 'Eine eindeutige Nummer zur Identifikation der Box.',
+    'help.field_box_label' => 'Ein kurzes Label oder Kürzel für die Box.',
+    'help.field_box_location' => 'Wo steht die Box? Z.B. "Regal A, Fach 3".',
+    'help.field_color' => 'Wählen Sie eine Farbe zur Kennzeichnung.',
+    'help.field_sort_order' => 'Bestimmt die Reihenfolge in Listen.',
+    'help.category_games' => 'Spiele sind die Hauptelemente des Organizers. Jedes Spiel enthält Anleitung, benötigte Materialien, Altersgruppe und weitere Informationen.',
+    'help.category_materials' => 'Materialien sind alle Gegenstände, die für die Spiele gebraucht werden.',
+    'help.category_boxes' => 'Boxen sind die Aufbewahrungsorte für Ihre Materialien.',
+    'help.category_categories' => 'Altersgruppen helfen Ihnen, Spiele für die richtige Altersklasse zu finden.',
+    'help.category_tags' => 'Themen sind flexible Kategorien für Spiele.',
+    'help.category_groups' => 'Gruppen sind Sammlungen von Spielen und Materialien für bestimmte Anlässe.',
+    'help.category_calendar' => 'Der Kalender hilft Ihnen bei der Planung Ihrer Spiele.',
 
     // Flash messages
     'flash.success' => 'Erfolg',

@@ -57,18 +57,22 @@ function __(?string $key, array $replace = []): string
         return '';
     }
 
-    static $lang = null;
+    static $langs = [];
 
-    if ($lang === null) {
-        $langFile = SRC_PATH . '/lang/de.php';
+    $language = userPreference('language', 'de');
+
+    if (!isset($langs[$language])) {
+        $langFile = SRC_PATH . '/lang/' . $language . '.php';
         if (file_exists($langFile)) {
-            $lang = require $langFile;
+            $langs[$language] = require $langFile;
         } else {
-            $lang = [];
+            // Fallback to German
+            $langFile = SRC_PATH . '/lang/de.php';
+            $langs[$language] = file_exists($langFile) ? require $langFile : [];
         }
     }
 
-    $text = $lang[$key] ?? $key;
+    $text = $langs[$language][$key] ?? $key;
 
     foreach ($replace as $search => $value) {
         $text = str_replace(':' . $search, (string)$value, $text);

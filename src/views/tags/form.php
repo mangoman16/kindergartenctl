@@ -10,6 +10,7 @@
             <div class="form-group">
                 <label for="name" class="form-label">
                     <?= __('form.name') ?> <span class="required">*</span>
+                    <span class="help-tooltip" data-help="<?= e(__('help.field_name')) ?>">?</span>
                 </label>
                 <input type="text" id="name" name="name"
                        class="form-control <?= hasError('name', $errors ?? []) ? 'is-invalid' : '' ?>"
@@ -33,6 +34,7 @@
             <div class="form-group">
                 <label for="color" class="form-label">
                     <?= __('tag.color') ?>
+                    <span class="help-tooltip" data-help="<?= e(__('help.field_color')) ?>">?</span>
                 </label>
                 <div class="flex items-center gap-3">
                     <input type="color" id="color" name="color"

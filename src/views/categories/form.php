@@ -10,6 +10,7 @@
             <div class="form-group">
                 <label for="name" class="form-label">
                     <?= __('form.name') ?> <span class="required">*</span>
+                    <span class="help-tooltip" data-help="<?= e(__('help.field_name')) ?>">?</span>
                 </label>
                 <input type="text" id="name" name="name"
                        class="form-control <?= hasError('name', $errors ?? []) ? 'is-invalid' : '' ?>"
@@ -31,6 +32,7 @@
             <div class="form-group">
                 <label for="sort_order" class="form-label">
                     <?= __('category.sort_order') ?>
+                    <span class="help-tooltip" data-help="<?= e(__('help.field_sort_order')) ?>">?</span>
                 </label>
                 <input type="number" id="sort_order" name="sort_order"
                        class="form-control" style="width: 100px;"

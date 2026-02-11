@@ -58,9 +58,11 @@ require_once SRC_PATH . '/services/ChangelogService.php';
 </div>
 <?php else: ?>
 
-<div class="text-muted mb-3"><?= $total ?> <?= pluralize($total, 'Eintrag', 'Einträge') ?></div>
-
-<div class="card">
+<!-- Entry Count & Table -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h2 class="card-title"><?= $total ?> <?= pluralize($total, 'Eintrag', 'Einträge') ?></h2>
+    </div>
     <div class="card-body p-0">
         <table class="table">
             <thead>
@@ -109,7 +111,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
                                 default => null
                             };
                             if ($url): ?>
-                                <a href="<?= $url ?>" class="text-sm ml-2">anzeigen →</a>
+                                <a href="<?= $url ?>" class="text-sm ml-2">anzeigen &rarr;</a>
                             <?php endif; ?>
                         <?php endif; ?>
                     </td>
@@ -135,25 +137,25 @@ require_once SRC_PATH . '/services/ChangelogService.php';
 
 <!-- Pagination -->
 <?php if ($totalPages > 1): ?>
-<div class="flex justify-center mt-4">
+<div class="flex justify-center mb-4">
     <nav class="pagination">
         <?php if ($currentPage > 1): ?>
             <a href="<?= url('/changelog?page=' . ($currentPage - 1) . ($filterType ? '&type=' . $filterType : '') . ($filterAction ? '&action=' . $filterAction : '')) ?>"
-               class="pagination-link">← Zurück</a>
+               class="pagination-link">&larr; Zurück</a>
         <?php endif; ?>
 
         <span class="pagination-info">Seite <?= $currentPage ?> von <?= $totalPages ?></span>
 
         <?php if ($currentPage < $totalPages): ?>
             <a href="<?= url('/changelog?page=' . ($currentPage + 1) . ($filterType ? '&type=' . $filterType : '') . ($filterAction ? '&action=' . $filterAction : '')) ?>"
-               class="pagination-link">Weiter →</a>
+               class="pagination-link">Weiter &rarr;</a>
         <?php endif; ?>
     </nav>
 </div>
 <?php endif; ?>
 
 <!-- Cleanup Section -->
-<div class="card mt-6">
+<div class="card mb-4">
     <div class="card-header">
         <h2 class="card-title">Changelog bereinigen</h2>
     </div>

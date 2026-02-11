@@ -46,7 +46,15 @@ class SettingsController extends Controller
             'bans' => $bans,
             'uploadsSize' => $this->formatBytes($uploadsSize),
             'tempSize' => $this->formatBytes($tempSize),
-            'smtpConfig' => $smtpConfig,
+            'smtp' => [
+                'host' => $smtpConfig['smtp_host'] ?? '',
+                'port' => $smtpConfig['smtp_port'] ?? 587,
+                'username' => $smtpConfig['smtp_user'] ?? '',
+                'password' => $smtpConfig['smtp_pass'] ?? '',
+                'from_email' => $smtpConfig['smtp_from'] ?? '',
+                'from_name' => $smtpConfig['smtp_from_name'] ?? '',
+                'encryption' => $smtpConfig['smtp_encryption'] ?? 'tls',
+            ],
             'preferences' => $preferences,
         ]);
     }
@@ -153,29 +161,33 @@ class SettingsController extends Controller
         // Validate current password
         if (!password_verify($currentPassword, $user['password_hash'])) {
             Session::setFlash('error', 'Das aktuelle Passwort ist falsch.');
-            $this->redirect('/settings');
+            $this->redirect('/user/settings');
             return;
         }
 
-        // Validate new password with complexity requirements
-        $validator = Validator::make(
-            ['new_password' => $newPassword, 'new_password_confirmation' => $confirmPassword],
-            ['new_password' => 'required|password|confirmed']
-        );
-
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $errorMessage = reset($errors)[0] ?? 'Ungültiges Passwort.';
-            Session::setFlash('error', $errorMessage);
-            $this->redirect('/settings');
+        // Validate new password
+        if (strlen($newPassword) < 8) {
+            Session::setFlash('error', __('validation.password_min_length'));
+            $this->redirect('/user/settings');
             return;
         }
 
-        // Update password using dedicated method
-        User::updatePassword(Auth::id(), $newPassword);
+        if ($newPassword !== $confirmPassword) {
+            Session::setFlash('error', __('validation.passwords_dont_match'));
+            $this->redirect('/user/settings');
+            return;
+        }
 
-        Session::setFlash('success', 'Passwort wurde geändert.');
-        $this->redirect('/settings');
+        // Update password
+        $db = Database::getInstance();
+        $stmt = $db->prepare("UPDATE users SET password_hash = :hash, updated_at = NOW() WHERE id = :id");
+        $stmt->execute([
+            'hash' => password_hash($newPassword, PASSWORD_DEFAULT),
+            'id' => Auth::id(),
+        ]);
+
+        Session::setFlash('success', __('settings.password_changed'));
+        $this->redirect('/user/settings');
     }
 
     /**
@@ -200,30 +212,27 @@ class SettingsController extends Controller
         // Validate password
         if (!password_verify($password, $user['password_hash'])) {
             Session::setFlash('error', 'Das Passwort ist falsch.');
-            $this->redirect('/settings');
+            $this->redirect('/user/settings');
             return;
         }
 
         // Validate email
         if (!filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
-            Session::setFlash('error', 'Bitte geben Sie eine gültige E-Mail-Adresse ein.');
-            $this->redirect('/settings');
-            return;
-        }
-
-        // Check if email already exists
-        $existingUser = User::findByEmail($newEmail);
-        if ($existingUser && $existingUser['id'] !== Auth::id()) {
-            Session::setFlash('error', 'Diese E-Mail-Adresse wird bereits verwendet.');
-            $this->redirect('/settings');
+            Session::setFlash('error', __('validation.invalid_email'));
+            $this->redirect('/user/settings');
             return;
         }
 
         // Update email
-        User::update(Auth::id(), ['email' => $newEmail]);
+        $db = Database::getInstance();
+        $stmt = $db->prepare("UPDATE users SET email = :email, updated_at = NOW() WHERE id = :id");
+        $stmt->execute([
+            'email' => $newEmail,
+            'id' => Auth::id(),
+        ]);
 
-        Session::setFlash('success', 'E-Mail-Adresse wurde geändert.');
-        $this->redirect('/settings');
+        Session::setFlash('success', __('settings.email_changed'));
+        $this->redirect('/user/settings');
     }
 
     /**
@@ -235,10 +244,10 @@ class SettingsController extends Controller
 
         $smtpHost = trim($_POST['smtp_host'] ?? '');
         $smtpPort = (int)($_POST['smtp_port'] ?? 587);
-        $smtpUser = trim($_POST['smtp_user'] ?? '');
-        $smtpPass = $_POST['smtp_pass'] ?? '';
-        $smtpFrom = trim($_POST['smtp_from'] ?? '');
-        $smtpFromName = trim($_POST['smtp_from_name'] ?? 'Kindergarten Spiele Organizer');
+        $smtpUser = trim($_POST['smtp_username'] ?? '');
+        $smtpPass = $_POST['smtp_password'] ?? '';
+        $smtpFrom = trim($_POST['smtp_from_email'] ?? '');
+        $smtpFromName = trim($_POST['smtp_from_name'] ?? 'KindergartenOrganizer');
         $smtpEncryption = $_POST['smtp_encryption'] ?? 'tls';
 
         // Validate SMTP port (1-65535)
@@ -389,6 +398,136 @@ class SettingsController extends Controller
 
         Session::setFlash('success', 'IP-Sperre wurde aufgehoben.');
         $this->redirect('/settings');
+    }
+
+    /**
+     * Show help wizard
+     */
+    public function help(): void
+    {
+        $this->setTitle(__('help.title'));
+        $this->addBreadcrumb(__('settings.title'), '/settings');
+        $this->addBreadcrumb(__('help.title'));
+
+        $this->render('settings/help');
+    }
+
+    /**
+     * Show user settings / profile page
+     */
+    public function userSettings(): void
+    {
+        require_once SRC_PATH . '/models/User.php';
+
+        $user = User::find(Auth::id());
+        if (!$user) {
+            Session::setFlash('error', 'Benutzer nicht gefunden.');
+            $this->redirect('/login');
+            return;
+        }
+
+        $preferences = $this->getUserPreferences();
+
+        $this->setTitle(__('user.settings'));
+        $this->addBreadcrumb(__('user.settings'));
+
+        $this->render('settings/user', [
+            'user' => $user,
+            'preferences' => $preferences,
+        ]);
+    }
+
+    /**
+     * Update language preference
+     */
+    public function updateLanguage(): void
+    {
+        $this->requireCsrf();
+
+        $language = $_POST['language'] ?? 'de';
+
+        // Validate language (only allow known languages)
+        $allowedLanguages = ['de', 'en'];
+        if (!in_array($language, $allowedLanguages, true)) {
+            $language = 'de';
+        }
+
+        // Load existing preferences and merge
+        $preferences = $this->getUserPreferences();
+        $preferences['language'] = $language;
+        $this->savePreferences($preferences);
+
+        Session::setFlash('success', 'Sprache wurde geändert.');
+        $this->redirect('/settings');
+    }
+
+    /**
+     * Update theme customization
+     */
+    public function updateCustomization(): void
+    {
+        $this->requireCsrf();
+
+        $themeColor = $_POST['theme_color'] ?? '';
+        $themePattern = $_POST['theme_pattern'] ?? '';
+
+        // Validate color format (hex color)
+        if (!empty($themeColor) && !preg_match('/^#[0-9A-Fa-f]{6}$/', $themeColor)) {
+            $themeColor = '';
+        }
+
+        // Validate pattern (only allow known patterns)
+        $allowedPatterns = ['none', 'dots', 'stars', 'hearts', 'clouds'];
+        if (!in_array($themePattern, $allowedPatterns, true)) {
+            $themePattern = 'none';
+        }
+
+        // Load existing preferences and merge
+        $preferences = $this->getUserPreferences();
+        $preferences['theme_color'] = $themeColor;
+        $preferences['theme_pattern'] = $themePattern;
+        $this->savePreferences($preferences);
+
+        Session::setFlash('success', 'Design wurde aktualisiert.');
+        $this->redirect('/settings');
+    }
+
+    /**
+     * Toggle debug mode
+     */
+    public function toggleDebug(): void
+    {
+        $this->requireCsrf();
+
+        $debugFlagPath = ROOT_PATH . '/storage/debug.flag';
+
+        if (file_exists($debugFlagPath)) {
+            // Disable debug mode
+            unlink($debugFlagPath);
+            Session::setFlash('success', 'Debug-Modus wurde deaktiviert.');
+        } else {
+            // Enable debug mode
+            file_put_contents($debugFlagPath, date('Y-m-d H:i:s'));
+            Session::setFlash('success', 'Debug-Modus wurde aktiviert.');
+        }
+
+        $this->redirect('/settings');
+    }
+
+    /**
+     * Save preferences to file
+     */
+    private function savePreferences(array $config): bool
+    {
+        $configPath = STORAGE_PATH . '/preferences.php';
+        $content = "<?php\nreturn " . var_export($config, true) . ";\n";
+
+        if (file_put_contents($configPath, $content, LOCK_EX) === false) {
+            Logger::error('Failed to save preferences', ['path' => $configPath]);
+            return false;
+        }
+
+        return true;
     }
 
     /**

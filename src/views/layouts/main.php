@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><?= e($pageTitle ?? 'Kindergarten Spiele Organizer') ?></title>
+    <title><?= e($pageTitle ?? 'KindergartenOrganizer') ?></title>
+    <link rel="icon" type="image/svg+xml" href="<?= asset('favicon.svg') ?>">
 
     <!-- Styles -->
     <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
@@ -17,8 +18,27 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css" integrity="sha384-a6Gc97sfYtY2RLuI0DRdWhlsFWvsFcj/+dCotZRJajCwx8/2cBBqn5k+FaatZ3cL" crossorigin="anonymous">
 
     <meta name="csrf-token" content="<?= e($csrfToken) ?>">
+
+<?php
+$themeColor = userPreference('theme_color', '#4F46E5');
+$themePattern = userPreference('theme_pattern', 'none');
+?>
+<style<?= cspNonce() ?>>
+:root {
+    --color-primary: <?= e($themeColor) ?>;
+    --color-primary-dark: <?= e($themeColor) ?>cc;
+    --color-primary-light: <?= e($themeColor) ?>88;
+    --color-primary-bg: <?= e($themeColor) ?>11;
+}
+<?php if ($themePattern !== 'none'): ?>
+.page-content {
+    background-image: var(--pattern-bg);
+    background-size: 60px 60px;
+}
+<?php endif; ?>
+</style>
 </head>
-<body>
+<body data-pattern="<?= e($themePattern) ?>">
     <div class="app-wrapper">
         <!-- Sidebar -->
         <?php include SRC_PATH . '/views/partials/sidebar.php'; ?>

@@ -103,6 +103,7 @@ return [
 
     // Settings
     'GET /settings' => ['SettingsController', 'index'],
+    'GET /settings/help' => ['SettingsController', 'help'],
     'POST /settings/password' => ['SettingsController', 'updatePassword'],
     'POST /settings/email' => ['SettingsController', 'updateEmail'],
     'POST /settings/preferences' => ['SettingsController', 'updatePreferences'],
@@ -111,6 +112,14 @@ return [
     'POST /settings/unban' => ['SettingsController', 'unbanIp'],
     'POST /settings/ban' => ['SettingsController', 'banIp'],
     'POST /settings/clear-temp' => ['SettingsController', 'clearTemp'],
+    'POST /settings/language' => ['SettingsController', 'updateLanguage'],
+    'POST /settings/customization' => ['SettingsController', 'updateCustomization'],
+    'POST /settings/debug' => ['SettingsController', 'toggleDebug'],
+
+    // User settings / profile
+    'GET /user/settings' => ['SettingsController', 'userSettings'],
+    'POST /user/settings/password' => ['SettingsController', 'updatePassword'],
+    'POST /user/settings/email' => ['SettingsController', 'updateEmail'],
 
     // API routes
     'GET /api/health' => ['ApiController', 'health'],
