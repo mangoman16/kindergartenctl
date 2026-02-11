@@ -120,6 +120,9 @@ return [
     'GET /user/settings' => ['SettingsController', 'userSettings'],
     'POST /user/settings/password' => ['SettingsController', 'updatePassword'],
     'POST /user/settings/email' => ['SettingsController', 'updateEmail'],
+    'POST /user/settings/language' => ['SettingsController', 'updateUserLanguage'],
+    'POST /user/settings/create-user' => ['SettingsController', 'createUser'],
+    'POST /user/settings/delete-user' => ['SettingsController', 'deleteUser'],
 
     // API routes
     'GET /api/health' => ['ApiController', 'health'],

@@ -428,13 +428,141 @@ class SettingsController extends Controller
 
         $preferences = $this->getUserPreferences();
 
+        // Load all users for user management
+        $db = Database::getInstance();
+        $users = $db->query("SELECT id, username, email, created_at FROM users ORDER BY id ASC")->fetchAll();
+
         $this->setTitle(__('user.settings'));
         $this->addBreadcrumb(__('user.settings'));
 
         $this->render('settings/user', [
             'user' => $user,
             'preferences' => $preferences,
+            'users' => $users,
         ]);
+    }
+
+    /**
+     * Update language from user settings page
+     */
+    public function updateUserLanguage(): void
+    {
+        $this->requireCsrf();
+
+        $language = $_POST['language'] ?? 'de';
+
+        $allowedLanguages = ['de', 'en'];
+        if (!in_array($language, $allowedLanguages, true)) {
+            $language = 'de';
+        }
+
+        $preferences = $this->getUserPreferences();
+        $preferences['language'] = $language;
+        $this->savePreferences($preferences);
+
+        Session::setFlash('success', __('settings.language_changed'));
+        $this->redirect('/user/settings');
+    }
+
+    /**
+     * Create a new user
+     */
+    public function createUser(): void
+    {
+        $this->requireCsrf();
+
+        require_once SRC_PATH . '/models/User.php';
+
+        $username = trim($_POST['username'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $passwordConfirm = $_POST['password_confirm'] ?? '';
+
+        // Validate
+        if (empty($username) || strlen($username) < 3) {
+            Session::setFlash('error', __('validation.min_length', ['min' => 3]));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Session::setFlash('error', __('validation.invalid_email'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if (strlen($password) < 8) {
+            Session::setFlash('error', __('validation.password_min_length'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if ($password !== $passwordConfirm) {
+            Session::setFlash('error', __('validation.passwords_dont_match'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if (User::usernameExists($username)) {
+            Session::setFlash('error', __('validation.duplicate'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if (User::emailExists($email)) {
+            Session::setFlash('error', __('validation.duplicate'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        $userId = User::createUser($username, $email, $password);
+
+        if ($userId) {
+            Session::setFlash('success', __('flash.created', ['item' => $username]));
+        } else {
+            Session::setFlash('error', __('flash.error'));
+        }
+
+        $this->redirect('/user/settings');
+    }
+
+    /**
+     * Delete a user
+     */
+    public function deleteUser(): void
+    {
+        $this->requireCsrf();
+
+        require_once SRC_PATH . '/models/User.php';
+
+        $userId = (int)($_POST['user_id'] ?? 0);
+
+        // Cannot delete yourself
+        if ($userId === Auth::id()) {
+            Session::setFlash('error', __('user.cannot_delete_self'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if ($userId <= 0) {
+            Session::setFlash('error', __('validation.invalid_value'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        $user = User::find($userId);
+        if (!$user) {
+            Session::setFlash('error', __('validation.invalid_value'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        $db = Database::getInstance();
+        $stmt = $db->prepare("DELETE FROM users WHERE id = :id");
+        $stmt->execute(['id' => $userId]);
+
+        Session::setFlash('success', __('flash.deleted', ['item' => $user['username']]));
+        $this->redirect('/user/settings');
     }
 
     /**

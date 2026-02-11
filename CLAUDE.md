@@ -106,11 +106,12 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 7. **Validation in update methods** - Must match create/store validation (don't skip)
 
 ### 9. Navigation Structure
-- **Sidebar**: Main navigation (Dashboard, Games, Materials, Boxes, Categories, Tags, Groups, Calendar, Changelog, Settings)
-- **Header**: Search bar + User dropdown (Mein Konto, Abmelden via POST form)
-- **User settings** (`/user/settings`): Profile, password change, email change
+- **Sidebar**: Main navigation (Dashboard, Games, Materials, Boxes, Categories, Tags, Groups, Calendar, Changelog) - icon-only logo at top, no settings link (settings accessible from user dropdown)
+- **Header**: Search bar + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
+- **User settings** (`/user/settings`): Profile, language change, password change, email change, user management (create/delete users)
 - **App settings** (`/settings`): Language, customization, SMTP, debug, help wizard, data management
 - **Help wizard** (`/settings/help`): Step-by-step guided tour of the application
+- **User management routes**: `POST /user/settings/language`, `POST /user/settings/create-user`, `POST /user/settings/delete-user`
 
 ### 10. Help System
 - **Field tooltips**: `.help-tooltip` spans with `data-help` attribute on form labels

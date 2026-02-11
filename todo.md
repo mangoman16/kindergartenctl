@@ -161,6 +161,24 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Unified button and card design
 - [x] Updated CLAUDE.md with new patterns and instructions
 
+### February 2026 - UI Redesign & Feature Additions
+- [x] Fixed CalendarController::json() access level fatal error (removed duplicate private method)
+- [x] Redesigned account menu - username dropdown with avatar, settings, and logout
+- [x] Removed "KindergartenOrganizer" text from sidebar (icon-only logo)
+- [x] Removed duplicate settings from sidebar navigation
+- [x] Apple-inspired CSS overhaul: removed borders/lines, shadow-based cards, rounded-2xl, cleaner spacing
+- [x] Custom styled select dropdowns (appearance:none with SVG chevron)
+- [x] Redesigned dashboard with stat cards, quick action tiles, and mini month calendar
+- [x] Dashboard mini-calendar: month navigation, day click popovers, AJAX event loading
+- [x] Redesigned "Zuletzt hinzugefügt" with image thumbnails and cleaner layout
+- [x] Added language change option in user settings (/user/settings/language)
+- [x] Added user creation functionality (/user/settings/create-user)
+- [x] Added user deletion functionality (/user/settings/delete-user)
+- [x] Added user management section to user settings page
+- [x] Updated README: removed VirtualHost config, recommend .htaccess instead
+- [x] Added new translation keys for user management (de + en)
+- [x] Updated CLAUDE.md with new navigation structure and routes
+
 ---
 
 ## Technical Debt / Improvements

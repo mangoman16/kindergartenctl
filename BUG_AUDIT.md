@@ -11,15 +11,20 @@
 
 | Severity | Found | Fixed |
 |----------|-------|-------|
-| Critical | 3 | 3 |
+| Critical | 4 | 4 |
 | High | 2 | 2 |
 | Medium | 6 | 6 |
 | Low | 1 | 1 |
-| **Total** | **12** | **12** |
+| **Total** | **13** | **13** |
 
 ---
 
 ## Fixed Bugs
+
+### BUG-13 (Critical): `CalendarController::json()` Access Level Fatal Error
+- **File:** `src/controllers/CalendarController.php:295`
+- **Problem:** The `CalendarController` declared a `private function json()` method, but the parent `Controller` class already has `protected function json()`. PHP forbids narrowing method visibility in child classes, causing a fatal error when opening the Calendar page.
+- **Fix:** Removed the duplicate `private json()` method from `CalendarController`, allowing it to inherit the `protected json()` from the parent `Controller` class. The private `jsonError()` helper was retained.
 
 ### BUG-01 (Critical): `formatDate()` M-to-F Replacement Corruption
 - **File:** `src/helpers/dates.php:132-143`

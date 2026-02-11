@@ -50,31 +50,13 @@ chown -R www-data:www-data public/uploads storage temp src/config
 
 3. **Login** with the admin credentials you created in Step 3.
 
-### Web Server Configuration Examples
+### Web Server Configuration
 
-#### Apache Virtual Host
+The application uses `.htaccess` files for URL rewriting and access control. Simply point your web server's document root to the `public/` directory and ensure `.htaccess` processing is enabled.
 
-```apache
-<VirtualHost *:80>
-    ServerName kindergarten.example.com
-    DocumentRoot /path/to/kindergartenctl/public
+**Apache**: Make sure `mod_rewrite` is enabled and `AllowOverride All` is set for the document root. The included `.htaccess` files handle URL rewriting and protect sensitive directories.
 
-    <Directory /path/to/kindergartenctl/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    # Recommended: Deny access to sensitive directories
-    <Directory /path/to/kindergartenctl/src>
-        Require all denied
-    </Directory>
-    <Directory /path/to/kindergartenctl/storage>
-        Require all denied
-    </Directory>
-</VirtualHost>
-```
-
-#### Nginx Configuration
+**Nginx**: Since nginx does not support `.htaccess`, use this configuration:
 
 ```nginx
 server {

@@ -383,6 +383,12 @@ return [
     'user.section' => 'User Account',
     'user.profile' => 'Profile',
     'user.settings' => 'My Account',
+    'user.management' => 'User Management',
+    'user.create_new' => 'New User',
+    'user.confirm_delete' => 'Are you sure you want to delete this user?',
+    'user.cannot_delete_self' => 'You cannot delete your own account.',
+    'user.current' => 'Current',
+    'user.username_readonly' => 'The username cannot be changed.',
 
     // Help
     'help.title' => 'Help',
