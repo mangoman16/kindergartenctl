@@ -13,16 +13,64 @@
     <div class="header-actions">
         <?php $user = currentUser(); ?>
         <?php if ($user): ?>
-        <div class="user-menu">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <span><?= e($user['username']) ?></span>
+        <div class="user-menu-wrapper" style="position: relative;">
+            <button class="user-menu-btn" onclick="this.closest('.user-menu-wrapper').classList.toggle('open')" style="display: flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--color-gray-200); border-radius: var(--radius-lg); padding: 6px 12px; cursor: pointer; color: var(--color-gray-700);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span><?= e(Auth::user()['username'] ?? 'User') ?></span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div class="user-dropdown" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 4px; background: white; border: 1px solid var(--color-gray-200); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); min-width: 180px; z-index: 1000;">
+                <a href="<?= url('/user/settings') ?>" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; color: var(--color-gray-700); text-decoration: none; font-size: 0.875rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <?= __('user.settings') ?>
+                </a>
+                <div style="border-top: 1px solid var(--color-gray-100);"></div>
+                <form action="<?= url('/logout') ?>" method="POST" style="margin: 0;">
+                    <?= csrfField() ?>
+                    <button type="submit" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; color: var(--color-danger); background: none; border: none; cursor: pointer; width: 100%; text-align: left; font-size: 0.875rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <?= __('auth.logout') ?>
+                    </button>
+                </form>
+            </div>
         </div>
         <?php endif; ?>
     </div>
 </header>
+
+<style<?= cspNonce() ?>>
+.user-menu-wrapper.open .user-dropdown {
+    display: block !important;
+}
+.user-dropdown a:hover,
+.user-dropdown button:hover {
+    background-color: var(--color-gray-50);
+}
+</style>
+
+<script<?= cspNonce() ?>>
+(function() {
+    document.addEventListener('click', function(e) {
+        document.querySelectorAll('.user-menu-wrapper.open').forEach(function(wrapper) {
+            if (!wrapper.contains(e.target)) {
+                wrapper.classList.remove('open');
+            }
+        });
+    });
+})();
+</script>
 
 <script<?= cspNonce() ?>>
 (function() {

@@ -1,4 +1,4 @@
-# Kindergarten Game Organizer - Development Progress
+# KindergartenOrganizer - Development Progress
 
 ## Project Status Summary
 
@@ -138,6 +138,28 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] 34 bugs found and fixed (see `BUG_AUDIT.md`)
 - [x] Code quality audit completed (see `CODE_QUALITY.md`)
 - [x] Comprehensive AI-readable comments added to all core files
+
+### February 2026 - Help System & UX Overhaul
+- [x] Removed copyright from footer
+- [x] Fixed missing translation keys (form.search, misc.search_placeholder, material.type, etc.)
+- [x] Added English language support (src/lang/en.php)
+- [x] Added language switching in settings
+- [x] Fixed logout (now works via POST form in header dropdown)
+- [x] Moved user settings to top-right dropdown
+- [x] Separated user settings (/user/settings) from app settings (/settings)
+- [x] Fixed calendar 500 error (missing model requires and data)
+- [x] Fixed image cropper modal (unique CSS classes, proper cancel button)
+- [x] Fixed form field autocomplete cross-contamination
+- [x] Added field-level help tooltips to all forms
+- [x] Added category help banners to all index pages
+- [x] Created help wizard under Settings (/settings/help)
+- [x] Added debug mode toggle (storage/debug.flag)
+- [x] Added customization (8 theme colors, 4 background patterns)
+- [x] Added favicon (SVG)
+- [x] Renamed project to KindergartenOrganizer on frontend
+- [x] Fixed changelog layout (proper card wrapping)
+- [x] Unified button and card design
+- [x] Updated CLAUDE.md with new patterns and instructions
 
 ---
 

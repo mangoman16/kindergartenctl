@@ -151,7 +151,11 @@ class App
         mb_internal_encoding(self::$config['app']['charset'] ?? 'UTF-8');
 
         // Error reporting based on debug mode
-        if (self::$config['app']['debug'] ?? false) {
+        $debug = self::$config['app']['debug'] ?? false;
+        if (file_exists(ROOT_PATH . '/storage/debug.flag')) {
+            $debug = true;
+        }
+        if ($debug) {
             error_reporting(E_ALL);
             ini_set('display_errors', '1');
         } else {

@@ -86,23 +86,16 @@ class AuthController extends Controller
 
     /**
      * Handle logout
-     * Requires POST request with CSRF token to prevent CSRF logout attacks
+     * Supports both POST (with CSRF verification) and GET (for backward compatibility)
      */
     public function logout(): void
     {
-        // Strictly require POST request with valid CSRF token
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            // GET requests should redirect to home - don't logout
-            Logger::warning('Logout attempted via GET request', [
-                'ip' => getClientIp(),
-                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
-            ]);
-            $this->redirect('/');
-            return;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // POST: verify CSRF token first
+            $this->requireCsrf();
         }
 
-        $this->requireCsrf();
-
+        // Log out for both GET and POST
         Auth::logout();
         Session::setFlash('success', __('auth.logged_out'));
         $this->redirect('/login');

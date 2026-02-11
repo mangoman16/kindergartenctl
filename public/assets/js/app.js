@@ -188,21 +188,22 @@
      * Show cropper modal
      */
     function showCropperModal(imageSrc, onCrop) {
-        // Create modal
+        // Create modal with unique class names to avoid conflicts with calendar modal
         const modal = document.createElement('div');
-        modal.className = 'modal-overlay active';
+        modal.className = 'cropper-modal-overlay';
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex !important;align-items:center;justify-content:center;z-index:2000;opacity:1 !important;visibility:visible !important;';
         modal.innerHTML = `
-            <div class="modal" style="max-width: 600px;">
-                <div class="modal-header">
-                    <h3 class="modal-title">Bild zuschneiden</h3>
-                    <button type="button" class="modal-close">&times;</button>
+            <div class="cropper-dialog" style="background:#fff;border-radius:0.75rem;width:90%;max-width:600px;max-height:90vh;overflow:hidden;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);transform:scale(1) !important;">
+                <div style="padding:1rem 1.25rem;border-bottom:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center;">
+                    <h3 style="font-size:1.125rem;font-weight:600;margin:0;">Bild zuschneiden</h3>
+                    <button type="button" class="cropper-modal-close" style="background:none;border:none;cursor:pointer;color:#9CA3AF;padding:0.25rem;font-size:1.5rem;line-height:1;">&times;</button>
                 </div>
-                <div class="modal-body">
+                <div style="padding:1.25rem;overflow-y:auto;max-height:calc(90vh - 140px);">
                     <div style="max-height: 400px; overflow: hidden;">
                         <img id="cropperImage" src="${imageSrc}" style="max-width: 100%;">
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div style="padding:1rem 1.25rem;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:0.75rem;">
                     <button type="button" class="btn btn-secondary" id="cancelCrop">Abbrechen</button>
                     <button type="button" class="btn btn-primary" id="applyCrop">Zuschneiden</button>
                 </div>
@@ -233,8 +234,15 @@
             modal.remove();
         }
 
-        modal.querySelector('.modal-close').addEventListener('click', closeModal);
+        modal.querySelector('.cropper-modal-close').addEventListener('click', closeModal);
         modal.querySelector('#cancelCrop').addEventListener('click', closeModal);
+
+        // Close on overlay click (clicking outside the dialog)
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
 
         // Apply crop
         modal.querySelector('#applyCrop').addEventListener('click', () => {
@@ -370,6 +378,29 @@
         initImageUpload();
         initDuplicateCheck();
         initSearch();
+
+        // Prevent browser autocomplete from cross-contaminating form fields
+        document.querySelectorAll('form textarea, form input[type="text"]').forEach(input => {
+            if (!input.hasAttribute('autocomplete')) {
+                input.setAttribute('autocomplete', 'off');
+            }
+        });
+
+        // Specifically fix description fields - use unique names for autocomplete
+        document.querySelectorAll('textarea[name="description"]').forEach(textarea => {
+            const form = textarea.closest('form');
+            const action = form ? form.getAttribute('action') : '';
+            textarea.setAttribute('autocomplete', 'off');
+            textarea.setAttribute('name', 'description');
+        });
+
+        // User dropdown
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.user-menu-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                wrapper.classList.remove('open');
+            }
+        });
     });
 
     // Expose utility functions

@@ -16,6 +16,7 @@
                     <div class="form-group">
                         <label for="name" class="form-label">
                             <?= __('form.name') ?> <span class="required">*</span>
+                            <span class="help-tooltip" data-help="<?= e(__('help.field_name')) ?>">?</span>
                         </label>
                         <input type="text" id="name" name="name"
                                class="form-control <?= hasError('name', $errors ?? []) ? 'is-invalid' : '' ?>"
@@ -31,6 +32,7 @@
                     <div class="form-group">
                         <label for="description" class="form-label">
                             <?= __('form.description') ?>
+                            <span class="help-tooltip" data-help="<?= e(__('help.field_description')) ?>">?</span>
                         </label>
                         <textarea id="description" name="description" class="form-control" rows="4"
                                   placeholder="Kurze Beschreibung des Spiels"><?= old('description', $game['description'] ?? '') ?></textarea>
@@ -53,7 +55,7 @@
                 <div class="card-body">
                     <div class="grid grid-cols-4 gap-4">
                         <div class="form-group">
-                            <label for="min_players" class="form-label"><?= __('game.min_players') ?></label>
+                            <label for="min_players" class="form-label"><?= __('game.min_players') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_players')) ?>">?</span></label>
                             <input type="number" id="min_players" name="min_players"
                                    class="form-control" min="1" max="100"
                                    value="<?= old('min_players', $game['min_players'] ?? '') ?>"
@@ -69,7 +71,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="duration_minutes" class="form-label"><?= __('game.duration') ?></label>
+                            <label for="duration_minutes" class="form-label"><?= __('game.duration') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_duration')) ?>">?</span></label>
                             <div class="flex items-center gap-2">
                                 <input type="number" id="duration_minutes" name="duration_minutes"
                                        class="form-control" min="1" max="999"
@@ -80,7 +82,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="difficulty" class="form-label"><?= __('game.difficulty') ?></label>
+                            <label for="difficulty" class="form-label"><?= __('game.difficulty') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_difficulty')) ?>">?</span></label>
                             <select id="difficulty" name="difficulty" class="form-control">
                                 <option value="1" <?= old('difficulty', $game['difficulty'] ?? 1) == 1 ? 'selected' : '' ?>>1 - <?= __('game.difficulty.1') ?></option>
                                 <option value="2" <?= old('difficulty', $game['difficulty'] ?? 1) == 2 ? 'selected' : '' ?>>2 - <?= __('game.difficulty.2') ?></option>
@@ -91,7 +93,7 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div class="form-group">
-                            <label for="box_id" class="form-label"><?= __('nav.boxes') ?></label>
+                            <label for="box_id" class="form-label"><?= __('nav.boxes') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_box')) ?>">?</span></label>
                             <select id="box_id" name="box_id" class="form-control">
                                 <option value="">-- Keine Box --</option>
                                 <?php foreach ($boxes as $box): ?>
@@ -103,7 +105,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="category_id" class="form-label"><?= __('game.age_group') ?></label>
+                            <label for="category_id" class="form-label"><?= __('game.age_group') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_age_group')) ?>">?</span></label>
                             <select id="category_id" name="category_id" class="form-control">
                                 <option value="">-- Keine Altersgruppe --</option>
                                 <?php foreach ($categories as $category): ?>
@@ -137,7 +139,7 @@
             <!-- Image Upload -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="card-title"><?= __('form.image') ?></h2>
+                    <h2 class="card-title"><?= __('form.image') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_image')) ?>">?</span></h2>
                 </div>
                 <div class="card-body">
                     <div class="image-upload-container" data-type="games">

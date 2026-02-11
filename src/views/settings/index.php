@@ -3,304 +3,165 @@
 </div>
 
 <div class="grid grid-cols-2 gap-4">
-    <!-- Profile Settings -->
-    <div class="card">
+    <!-- Language -->
+    <div class="card mb-4">
         <div class="card-header">
-            <h2 class="card-title"><?= __('settings.profile') ?></h2>
+            <h2 class="card-title"><?= __('settings.language') ?></h2>
         </div>
         <div class="card-body">
-            <dl class="detail-list">
-                <dt><?= __('form.name') ?></dt>
-                <dd><?= e($user['name']) ?></dd>
-
-                <dt><?= __('form.email') ?></dt>
-                <dd><?= e($user['email']) ?></dd>
-
-                <dt>Registriert seit</dt>
-                <dd><?= formatDate($user['created_at'], 'd.m.Y') ?></dd>
-            </dl>
-        </div>
-    </div>
-
-    <!-- Change Password -->
-    <div class="card">
-        <div class="card-header">
-            <h2 class="card-title"><?= __('settings.change_password') ?></h2>
-        </div>
-        <div class="card-body">
-            <form action="<?= url('/settings/password') ?>" method="POST">
+            <form action="<?= url('/settings/language') ?>" method="POST">
                 <?= csrfField() ?>
-
                 <div class="form-group">
-                    <label for="current_password" class="form-label"><?= __('settings.current_password') ?></label>
-                    <input type="password" id="current_password" name="current_password" class="form-control" required>
+                    <select name="language" class="form-control" onchange="this.form.submit()">
+                        <option value="de" <?= userPreference('language', 'de') === 'de' ? 'selected' : '' ?>>Deutsch</option>
+                        <option value="en" <?= userPreference('language', 'de') === 'en' ? 'selected' : '' ?>>English</option>
+                    </select>
                 </div>
-
-                <div class="form-group">
-                    <label for="new_password" class="form-label"><?= __('settings.new_password') ?></label>
-                    <input type="password" id="new_password" name="new_password" class="form-control" required minlength="8">
-                    <div class="form-hint">Mindestens 8 Zeichen</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="confirm_password" class="form-label"><?= __('settings.confirm_password') ?></label>
-                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    <?= __('settings.change_password') ?>
-                </button>
             </form>
         </div>
     </div>
 
-    <!-- Change Email -->
-    <div class="card">
+    <!-- Customization -->
+    <div class="card mb-4">
         <div class="card-header">
-            <h2 class="card-title"><?= __('settings.change_email') ?></h2>
+            <h2 class="card-title"><?= __('settings.customization') ?></h2>
         </div>
         <div class="card-body">
-            <form action="<?= url('/settings/email') ?>" method="POST">
+            <form action="<?= url('/settings/customization') ?>" method="POST">
                 <?= csrfField() ?>
-
                 <div class="form-group">
-                    <label for="email" class="form-label"><?= __('settings.new_email') ?></label>
-                    <input type="email" id="email" name="email" class="form-control"
-                           value="<?= e($user['email']) ?>" required>
+                    <label class="form-label"><?= __('settings.theme_color') ?></label>
+                    <div class="flex gap-2 flex-wrap">
+                        <?php
+                        $colors = ['#4F46E5', '#EC4899', '#F59E0B', '#22C55E', '#3B82F6', '#8B5CF6', '#EF4444', '#14B8A6'];
+                        $currentColor = userPreference('theme_color', '#4F46E5');
+                        foreach ($colors as $color): ?>
+                            <label style="cursor: pointer;">
+                                <input type="radio" name="theme_color" value="<?= $color ?>" <?= $currentColor === $color ? 'checked' : '' ?> style="display: none;">
+                                <span style="display: block; width: 36px; height: 36px; border-radius: 50%; background: <?= $color ?>; border: 3px solid <?= $currentColor === $color ? 'var(--color-gray-800)' : 'transparent' ?>; transition: border-color 0.2s;"></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-
                 <div class="form-group">
-                    <label for="password_email" class="form-label"><?= __('form.password') ?></label>
-                    <input type="password" id="password_email" name="password" class="form-control" required>
-                    <div class="form-hint">Zur Bestätigung</div>
+                    <label class="form-label"><?= __('settings.theme_pattern') ?></label>
+                    <select name="theme_pattern" class="form-control">
+                        <option value="none" <?= userPreference('theme_pattern', 'none') === 'none' ? 'selected' : '' ?>><?= __('settings.pattern_none') ?></option>
+                        <option value="dots" <?= userPreference('theme_pattern', 'none') === 'dots' ? 'selected' : '' ?>><?= __('settings.pattern_dots') ?></option>
+                        <option value="stars" <?= userPreference('theme_pattern', 'none') === 'stars' ? 'selected' : '' ?>><?= __('settings.pattern_stars') ?></option>
+                        <option value="hearts" <?= userPreference('theme_pattern', 'none') === 'hearts' ? 'selected' : '' ?>><?= __('settings.pattern_hearts') ?></option>
+                        <option value="clouds" <?= userPreference('theme_pattern', 'none') === 'clouds' ? 'selected' : '' ?>><?= __('settings.pattern_clouds') ?></option>
+                    </select>
                 </div>
-
-                <button type="submit" class="btn btn-primary">
-                    <?= __('settings.change_email') ?>
-                </button>
+                <button type="submit" class="btn btn-primary"><?= __('action.save') ?></button>
             </form>
         </div>
     </div>
 
-    <!-- Storage Info -->
-    <div class="card">
+    <!-- SMTP Settings -->
+    <div class="card mb-4">
         <div class="card-header">
-            <h2 class="card-title"><?= __('settings.storage') ?></h2>
+            <h2 class="card-title"><?= __('settings.email') ?></h2>
         </div>
         <div class="card-body">
-            <dl class="detail-list">
-                <dt>Uploads</dt>
-                <dd><?= $uploadsSize ?></dd>
+            <form action="<?= url('/settings/smtp') ?>" method="POST">
+                <?= csrfField() ?>
+                <div class="form-group">
+                    <label class="form-label"><?= __('settings.smtp_host') ?></label>
+                    <input type="text" name="smtp_host" class="form-control" value="<?= e($smtp['host'] ?? '') ?>" placeholder="smtp.example.com">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label"><?= __('settings.smtp_port') ?></label>
+                        <input type="number" name="smtp_port" class="form-control" value="<?= e($smtp['port'] ?? '587') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><?= __('settings.smtp_encryption') ?></label>
+                        <select name="smtp_encryption" class="form-control">
+                            <option value="tls" <?= ($smtp['encryption'] ?? '') === 'tls' ? 'selected' : '' ?>>TLS</option>
+                            <option value="ssl" <?= ($smtp['encryption'] ?? '') === 'ssl' ? 'selected' : '' ?>>SSL</option>
+                            <option value="" <?= empty($smtp['encryption'] ?? '') ? 'selected' : '' ?>>None</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><?= __('settings.smtp_username') ?></label>
+                    <input type="text" name="smtp_username" class="form-control" value="<?= e($smtp['username'] ?? '') ?>">
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><?= __('settings.smtp_password') ?></label>
+                    <input type="password" name="smtp_password" class="form-control" placeholder="<?= !empty($smtp['password']) ? '********' : '' ?>">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label"><?= __('settings.smtp_from_email') ?></label>
+                        <input type="email" name="smtp_from_email" class="form-control" value="<?= e($smtp['from_email'] ?? '') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><?= __('settings.smtp_from_name') ?></label>
+                        <input type="text" name="smtp_from_name" class="form-control" value="<?= e($smtp['from_name'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="btn btn-primary"><?= __('action.save') ?></button>
+                    <a href="<?= url('/settings/smtp/test') ?>" class="btn btn-secondary"><?= __('settings.smtp_test') ?></a>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                <dt>Temporäre Dateien</dt>
-                <dd><?= $tempSize ?></dd>
-            </dl>
+    <!-- Debug Mode -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="card-title"><?= __('settings.debug') ?></h2>
+        </div>
+        <div class="card-body">
+            <p class="text-muted text-sm mb-4">Aktiviert die Anzeige von PHP-Fehlern und SQL-Fehlermeldungen. Nur für Entwicklung!</p>
+            <form action="<?= url('/settings/debug') ?>" method="POST">
+                <?= csrfField() ?>
+                <?php $debugEnabled = file_exists(ROOT_PATH . '/storage/debug.flag'); ?>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="debug" value="1" <?= $debugEnabled ? 'checked' : '' ?> onchange="this.form.submit()">
+                    <span><?= $debugEnabled ? __('settings.debug_enabled') : __('settings.debug') ?></span>
+                </label>
+            </form>
+        </div>
+    </div>
 
-            <form action="<?= url('/settings/clear-temp') ?>" method="POST" class="mt-4"
-                  onsubmit="return confirm('Temporäre Dateien wirklich löschen?')">
+    <!-- Help -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="card-title"><?= __('help.title') ?></h2>
+        </div>
+        <div class="card-body">
+            <p class="text-muted text-sm mb-4"><?= __('help.wizard_welcome') ?></p>
+            <a href="<?= url('/settings/help') ?>" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <?= __('help.wizard_title') ?>
+            </a>
+        </div>
+    </div>
+
+    <!-- Data Management -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="card-title"><?= __('settings.data') ?></h2>
+        </div>
+        <div class="card-body">
+            <form action="<?= url('/settings/clear-temp') ?>" method="POST">
                 <?= csrfField() ?>
                 <button type="submit" class="btn btn-secondary">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                     </svg>
-                    Temp-Dateien löschen
+                    <?= __('settings.clear_temp') ?>
                 </button>
             </form>
         </div>
-    </div>
-</div>
-
-<!-- User Preferences -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h2 class="card-title"><?= __('settings.preferences') ?></h2>
-    </div>
-    <div class="card-body">
-        <form action="<?= url('/settings/preferences') ?>" method="POST">
-            <?= csrfField() ?>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="items_per_page" class="form-label"><?= __('settings.items_per_page') ?></label>
-                    <select id="items_per_page" name="items_per_page" class="form-control">
-                        <option value="12" <?= ($preferences['items_per_page'] ?? 24) == 12 ? 'selected' : '' ?>>12</option>
-                        <option value="24" <?= ($preferences['items_per_page'] ?? 24) == 24 ? 'selected' : '' ?>>24</option>
-                        <option value="48" <?= ($preferences['items_per_page'] ?? 24) == 48 ? 'selected' : '' ?>>48</option>
-                        <option value="96" <?= ($preferences['items_per_page'] ?? 24) == 96 ? 'selected' : '' ?>>96</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="default_view" class="form-label"><?= __('settings.default_view') ?></label>
-                    <select id="default_view" name="default_view" class="form-control">
-                        <option value="grid" <?= ($preferences['default_view'] ?? 'grid') === 'grid' ? 'selected' : '' ?>><?= __('settings.view_grid') ?></option>
-                        <option value="list" <?= ($preferences['default_view'] ?? 'grid') === 'list' ? 'selected' : '' ?>><?= __('settings.view_list') ?></option>
-                    </select>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                    <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-                Speichern
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- SMTP / Email Settings -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h2 class="card-title"><?= __('settings.email') ?></h2>
-    </div>
-    <div class="card-body">
-        <form action="<?= url('/settings/smtp') ?>" method="POST">
-            <?= csrfField() ?>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="smtp_host" class="form-label"><?= __('settings.smtp_host') ?></label>
-                    <input type="text" id="smtp_host" name="smtp_host" class="form-control"
-                           value="<?= e($smtpConfig['smtp_host'] ?? '') ?>" placeholder="smtp.example.com">
-                </div>
-
-                <div class="form-group">
-                    <label for="smtp_port" class="form-label"><?= __('settings.smtp_port') ?></label>
-                    <input type="number" id="smtp_port" name="smtp_port" class="form-control"
-                           value="<?= e($smtpConfig['smtp_port'] ?? 587) ?>">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="smtp_user" class="form-label"><?= __('settings.smtp_username') ?></label>
-                    <input type="text" id="smtp_user" name="smtp_user" class="form-control"
-                           value="<?= e($smtpConfig['smtp_user'] ?? '') ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="smtp_pass" class="form-label"><?= __('settings.smtp_password') ?></label>
-                    <input type="password" id="smtp_pass" name="smtp_pass" class="form-control"
-                           placeholder="<?= !empty($smtpConfig['smtp_pass']) ? '••••••••' : '' ?>">
-                    <div class="form-hint">Leer lassen um bestehendes Passwort zu behalten</div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="smtp_encryption" class="form-label"><?= __('settings.smtp_encryption') ?></label>
-                <select id="smtp_encryption" name="smtp_encryption" class="form-control">
-                    <option value="tls" <?= ($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls' ? 'selected' : '' ?>>TLS</option>
-                    <option value="ssl" <?= ($smtpConfig['smtp_encryption'] ?? '') === 'ssl' ? 'selected' : '' ?>>SSL</option>
-                </select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="smtp_from" class="form-label"><?= __('settings.smtp_from_email') ?></label>
-                    <input type="email" id="smtp_from" name="smtp_from" class="form-control"
-                           value="<?= e($smtpConfig['smtp_from'] ?? '') ?>" placeholder="noreply@example.com">
-                </div>
-
-                <div class="form-group">
-                    <label for="smtp_from_name" class="form-label"><?= __('settings.smtp_from_name') ?></label>
-                    <input type="text" id="smtp_from_name" name="smtp_from_name" class="form-control"
-                           value="<?= e($smtpConfig['smtp_from_name'] ?? 'Kindergarten Spiele Organizer') ?>">
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                    <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-                Speichern
-            </button>
-        </form>
-
-        <hr class="my-4">
-
-        <!-- Test SMTP -->
-        <form action="<?= url('/settings/smtp/test') ?>" method="POST" class="flex gap-3 items-end">
-            <?= csrfField() ?>
-            <div class="form-group mb-0 flex-1">
-                <label class="form-label"><?= __('settings.smtp_test') ?></label>
-                <input type="email" name="test_email" class="form-control"
-                       value="<?= e($user['email'] ?? '') ?>" placeholder="test@example.com" required>
-            </div>
-            <button type="submit" class="btn btn-secondary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-                Test-E-Mail senden
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- IP Bans -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h2 class="card-title"><?= __('settings.ip_bans') ?></h2>
-    </div>
-    <div class="card-body">
-        <!-- Add new ban -->
-        <form action="<?= url('/settings/ban') ?>" method="POST" class="flex gap-3 items-end mb-4">
-            <?= csrfField() ?>
-            <div class="form-group mb-0">
-                <label class="form-label">IP-Adresse</label>
-                <input type="text" name="ip" class="form-control" placeholder="z.B. 192.168.1.100" required
-                       pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
-            </div>
-            <div class="form-group mb-0 flex-1">
-                <label class="form-label">Grund</label>
-                <input type="text" name="reason" class="form-control" placeholder="Optional">
-            </div>
-            <button type="submit" class="btn btn-danger">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-                </svg>
-                IP sperren
-            </button>
-        </form>
-
-        <?php if (empty($bans)): ?>
-            <p class="text-muted">Keine IP-Sperren aktiv.</p>
-        <?php else: ?>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>IP-Adresse</th>
-                        <th>Grund</th>
-                        <th>Fehlversuche</th>
-                        <th>Gesperrt am</th>
-                        <th style="width: 100px;"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($bans as $ban): ?>
-                    <tr>
-                        <td><code><?= e($ban['ip_address']) ?></code></td>
-                        <td><?= e($ban['reason'] ?? '-') ?></td>
-                        <td><?= $ban['failed_attempts'] ?? 0 ?></td>
-                        <td class="text-muted"><?= formatDate($ban['created_at'], 'd.m.Y H:i') ?></td>
-                        <td>
-                            <form action="<?= url('/settings/unban') ?>" method="POST">
-                                <?= csrfField() ?>
-                                <input type="hidden" name="ip" value="<?= e($ban['ip_address']) ?>">
-                                <button type="submit" class="btn btn-sm btn-secondary">Entsperren</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php endif; ?>
     </div>
 </div>

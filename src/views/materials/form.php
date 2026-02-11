@@ -10,6 +10,7 @@
             <div class="form-group">
                 <label for="name" class="form-label">
                     <?= __('form.name') ?> <span class="required">*</span>
+                    <span class="help-tooltip" data-help="<?= e(__('help.field_name')) ?>">?</span>
                 </label>
                 <input type="text" id="name" name="name"
                        class="form-control <?= hasError('name', $errors ?? []) ? 'is-invalid' : '' ?>"
@@ -34,6 +35,7 @@
                 <div class="form-group">
                     <label for="quantity" class="form-label">
                         <?= __('material.quantity') ?>
+                        <span class="help-tooltip" data-help="<?= e(__('help.field_quantity')) ?>">?</span>
                     </label>
                     <input type="number" id="quantity" name="quantity"
                            class="form-control" style="width: 100px;"
@@ -43,7 +45,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label"><?= __('material.type') ?></label>
+                    <label class="form-label"><?= __('material.type') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_consumable')) ?>">?</span></label>
                     <div class="mt-2">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" name="is_consumable" value="1"

@@ -1,8 +1,18 @@
-# Claude Instructions: Kindergarten Spiele Organizer
+# Claude Instructions: KindergartenOrganizer
 
 ## Project Overview
 
-A PHP 8.0+ web application for kindergarten teachers to organize educational games, materials, and storage boxes. Custom MVC framework (no Laravel/Symfony). German-language UI.
+A PHP 8.0+ web application for kindergarten teachers to organize educational games, materials, and storage boxes. Custom MVC framework (no Laravel/Symfony). Multi-language UI (German/English) with customization options.
+
+## MD File Maintenance Instructions
+
+When making changes to the codebase, **always** update the relevant MD files:
+- **CLAUDE.md**: Update when architecture, patterns, file counts, or critical behaviors change
+- **BUG_AUDIT.md**: Add entries when bugs are found/fixed (include file:line references)
+- **SECURITY_AUDIT.md**: Update when security-related code is modified
+- **CODE_QUALITY.md**: Update when code quality patterns change
+- **todo.md**: Mark tasks complete, add new tasks discovered during implementation
+- **README.md**: Update when install steps, dependencies, or config changes occur
 
 ## Which MD Files to Check for What
 
@@ -28,7 +38,8 @@ src/core/Database.php     -> PDO singleton, schema, migrations
 src/core/Auth.php         -> Session-based auth, login/logout, remember-me
 src/core/Validator.php    -> Server-side form validation rules
 src/config/routes.php     -> All GET/POST route definitions
-src/lang/de.php           -> All German translation strings (flat key=>value)
+src/lang/de.php           -> German translation strings (flat key=>value)
+src/lang/en.php           -> English translation strings (flat key=>value)
 ```
 
 ## Critical Patterns to Follow
@@ -40,11 +51,30 @@ src/lang/de.php           -> All German translation strings (flat key=>value)
 `ATTR_EMULATE_PREPARES => false` means you CANNOT reuse named parameters in a single query. Use distinct names (`:start1`, `:start2`, etc.) like `CalendarEvent::getForRange()` does.
 
 ### 3. Translation Function `__()`
-- Loads `src/lang/de.php` once (static cache)
+- Supports multiple languages via `userPreference('language', 'de')`
+- Language files: `src/lang/de.php` (German), `src/lang/en.php` (English)
 - Keys use dot notation: `'game.title'`, `'auth.login'`
 - Returns the key string itself if not found (no exception)
+- Supports parameter replacement: `__('flash.created', ['item' => 'Spiel'])`
 - `auth.logout` = "Abmelden" (nav button label)
 - `auth.logged_out` = "Sie wurden abgemeldet." (flash message after logout)
+
+### 3b. User Preferences System
+- Preferences stored in `storage/preferences.php` (PHP array file)
+- Access via `userPreference('key', 'default')` helper function
+- Keys: `language`, `theme_color`, `theme_pattern`, `items_per_page`, `default_view`
+- SettingsController saves via `savePreferences()` method
+
+### 3c. Debug Mode
+- Toggle via Settings page (creates/removes `storage/debug.flag` file)
+- App.php checks for flag file in `setupEnvironment()`
+- When enabled: shows all PHP errors, SQL errors, and stack traces
+- Config value `app.debug` is also respected (flag file overrides)
+
+### 3d. Customization System
+- Theme color: CSS custom property `--color-primary` overridden in layout
+- Background patterns: `body[data-pattern="dots|stars|hearts|clouds"]` CSS patterns
+- 8 preset colors available in settings
 
 ### 4. Date Formatting
 - `formatDate()` replaces `F` before `M` to prevent cascading corruption
@@ -75,11 +105,25 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 6. **`random_bytes(float)`** - PHP 8.1+ deprecation warning; always pass int
 7. **Validation in update methods** - Must match create/store validation (don't skip)
 
+### 9. Navigation Structure
+- **Sidebar**: Main navigation (Dashboard, Games, Materials, Boxes, Categories, Tags, Groups, Calendar, Changelog, Settings)
+- **Header**: Search bar + User dropdown (Mein Konto, Abmelden via POST form)
+- **User settings** (`/user/settings`): Profile, password change, email change
+- **App settings** (`/settings`): Language, customization, SMTP, debug, help wizard, data management
+- **Help wizard** (`/settings/help`): Step-by-step guided tour of the application
+
+### 10. Help System
+- **Field tooltips**: `.help-tooltip` spans with `data-help` attribute on form labels
+- **Category banners**: `.category-help` divs at top of each index page
+- **Help wizard**: Step-by-step guide at `/settings/help`
+- Translation keys: `help.field_*` for field tooltips, `help.category_*` for category descriptions
+
 ## File Counts
 
 - 14 Controllers in `src/controllers/`
 - 9 Models in `src/models/`
 - 4 Services in `src/services/`
 - 3 Helpers in `src/helpers/`
-- 47 Views in `src/views/`
+- 50 Views in `src/views/` (including user.php, help.php)
 - 9 Core classes in `src/core/`
+- 2 Language files in `src/lang/`

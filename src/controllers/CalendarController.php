@@ -19,11 +19,13 @@ class CalendarController extends Controller
         require_once SRC_PATH . '/models/Game.php';
         require_once SRC_PATH . '/models/Group.php';
 
-        // Get initial month's events
+        // Get events for a 3-month range (previous, current, next) for FullCalendar
         $year = (int)($_GET['year'] ?? date('Y'));
         $month = (int)($_GET['month'] ?? date('m'));
 
-        $events = CalendarEvent::getForMonth($year, $month);
+        $startDate = date('Y-m-01', mktime(0, 0, 0, $month - 1, 1, $year));
+        $endDate = date('Y-m-t', mktime(0, 0, 0, $month + 1, 1, $year));
+        $events = CalendarEvent::getForRange($startDate, $endDate);
         $formattedEvents = array_map([CalendarEvent::class, 'formatForCalendar'], $events);
 
         // Get games and groups for event creation

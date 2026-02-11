@@ -12,6 +12,7 @@ return [
         'locale' => 'de_AT.UTF-8',
         'charset' => 'UTF-8',
         'debug' => false, // Set to true only for development
+        'language' => 'de',
     ],
 
     // Session settings
@@ -43,6 +44,12 @@ return [
         'full_width' => 600,
         'full_height' => 600,
         'quality' => 85,
+    ],
+
+    // Customization
+    'customization' => [
+        'theme_color' => '#4F46E5',
+        'theme_pattern' => 'none',
     ],
 
     // Pagination
