@@ -264,7 +264,7 @@ class SettingsController extends Controller
         // Validate email format for from address if provided
         if (!empty($smtpFrom) && !filter_var($smtpFrom, FILTER_VALIDATE_EMAIL)) {
             Session::setFlash('error', 'Ungültige Absender-E-Mail-Adresse.');
-            $this->redirect('/settings');
+            $this->redirect('/settings/email');
             return;
         }
 
@@ -295,7 +295,7 @@ class SettingsController extends Controller
         if (file_put_contents($configPath, $content, LOCK_EX) === false) {
             Logger::error('Failed to save SMTP config', ['path' => $configPath]);
             Session::setFlash('error', 'E-Mail-Einstellungen konnten nicht gespeichert werden.');
-            $this->redirect('/settings');
+            $this->redirect('/settings/email');
             return;
         }
 
@@ -303,7 +303,7 @@ class SettingsController extends Controller
         chmod($configPath, 0640);
 
         Session::setFlash('success', 'E-Mail-Einstellungen wurden gespeichert.');
-        $this->redirect('/settings');
+        $this->redirect('/settings/email');
     }
 
     /**
@@ -317,7 +317,7 @@ class SettingsController extends Controller
 
         if (!filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
             Session::setFlash('error', 'Bitte geben Sie eine gültige E-Mail-Adresse ein.');
-            $this->redirect('/settings');
+            $this->redirect('/settings/email');
             return;
         }
 
@@ -327,7 +327,7 @@ class SettingsController extends Controller
 
         if (!$mailer->isConfigured()) {
             Session::setFlash('error', 'SMTP ist nicht konfiguriert. Bitte speichern Sie zuerst die Einstellungen.');
-            $this->redirect('/settings');
+            $this->redirect('/settings/email');
             return;
         }
 
@@ -339,7 +339,7 @@ class SettingsController extends Controller
             Session::setFlash('error', str_replace(':error', $errorMsg, __('settings.smtp_test_failed')));
         }
 
-        $this->redirect('/settings');
+        $this->redirect('/settings/email');
     }
 
     /**
@@ -354,7 +354,7 @@ class SettingsController extends Controller
 
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
             Session::setFlash('error', 'Ungültige IP-Adresse.');
-            $this->redirect('/settings');
+            $this->redirect('/settings/data');
             return;
         }
 
@@ -365,7 +365,7 @@ class SettingsController extends Controller
         $stmt->execute(['ip' => $ip]);
         if ($stmt->fetch()) {
             Session::setFlash('error', 'Diese IP-Adresse ist bereits gesperrt.');
-            $this->redirect('/settings');
+            $this->redirect('/settings/data');
             return;
         }
 
@@ -374,7 +374,7 @@ class SettingsController extends Controller
         $stmt->execute(['ip' => $ip, 'reason' => $reason]);
 
         Session::setFlash('success', 'IP-Adresse wurde gesperrt.');
-        $this->redirect('/settings');
+        $this->redirect('/settings/data');
     }
 
     /**
@@ -388,7 +388,7 @@ class SettingsController extends Controller
 
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
             Session::setFlash('error', 'Ungültige IP-Adresse.');
-            $this->redirect('/settings');
+            $this->redirect('/settings/data');
             return;
         }
 
@@ -397,7 +397,89 @@ class SettingsController extends Controller
         $stmt->execute(['ip' => $ip]);
 
         Session::setFlash('success', 'IP-Sperre wurde aufgehoben.');
-        $this->redirect('/settings');
+        $this->redirect('/settings/data');
+    }
+
+    /**
+     * Show customization page
+     */
+    public function showCustomization(): void
+    {
+        $this->setTitle(__('settings.customization'));
+        $this->addBreadcrumb(__('settings.title'), '/settings');
+        $this->addBreadcrumb(__('settings.customization'));
+
+        $this->render('settings/customization');
+    }
+
+    /**
+     * Show language page
+     */
+    public function showLanguage(): void
+    {
+        $this->setTitle(__('settings.language'));
+        $this->addBreadcrumb(__('settings.title'), '/settings');
+        $this->addBreadcrumb(__('settings.language'));
+
+        $this->render('settings/language');
+    }
+
+    /**
+     * Show email settings page
+     */
+    public function showEmail(): void
+    {
+        $smtpConfig = $this->getSmtpConfig();
+
+        $this->setTitle(__('settings.email'));
+        $this->addBreadcrumb(__('settings.title'), '/settings');
+        $this->addBreadcrumb(__('settings.email'));
+
+        $this->render('settings/email', [
+            'smtp' => [
+                'host' => $smtpConfig['smtp_host'] ?? '',
+                'port' => $smtpConfig['smtp_port'] ?? 587,
+                'username' => $smtpConfig['smtp_user'] ?? '',
+                'password' => $smtpConfig['smtp_pass'] ?? '',
+                'from_email' => $smtpConfig['smtp_from'] ?? '',
+                'from_name' => $smtpConfig['smtp_from_name'] ?? '',
+                'encryption' => $smtpConfig['smtp_encryption'] ?? 'tls',
+            ],
+        ]);
+    }
+
+    /**
+     * Show debug page
+     */
+    public function showDebug(): void
+    {
+        $this->setTitle(__('settings.debug'));
+        $this->addBreadcrumb(__('settings.title'), '/settings');
+        $this->addBreadcrumb(__('settings.debug'));
+
+        $this->render('settings/debug');
+    }
+
+    /**
+     * Show data management page
+     */
+    public function showData(): void
+    {
+        $db = Database::getInstance();
+        $bans = $db->query("SELECT * FROM ip_bans ORDER BY created_at DESC")->fetchAll();
+
+        $uploadsSize = $this->getDirectorySize(UPLOADS_PATH);
+        $tempSize = $this->getDirectorySize(TEMP_PATH);
+
+        $this->setTitle(__('settings.data'));
+        $this->addBreadcrumb(__('settings.title'), '/settings');
+        $this->addBreadcrumb(__('settings.data'));
+
+        $this->render('settings/data', [
+            'bans' => $bans,
+            'uploadsSize' => $this->formatBytes($uploadsSize),
+            'tempSize' => $this->formatBytes($tempSize),
+        ]);
     }
 
     /**
@@ -428,13 +510,141 @@ class SettingsController extends Controller
 
         $preferences = $this->getUserPreferences();
 
+        // Load all users for user management
+        $db = Database::getInstance();
+        $users = $db->query("SELECT id, username, email, created_at FROM users ORDER BY id ASC")->fetchAll();
+
         $this->setTitle(__('user.settings'));
         $this->addBreadcrumb(__('user.settings'));
 
         $this->render('settings/user', [
             'user' => $user,
             'preferences' => $preferences,
+            'users' => $users,
         ]);
+    }
+
+    /**
+     * Update language from user settings page
+     */
+    public function updateUserLanguage(): void
+    {
+        $this->requireCsrf();
+
+        $language = $_POST['language'] ?? 'de';
+
+        $allowedLanguages = ['de', 'en'];
+        if (!in_array($language, $allowedLanguages, true)) {
+            $language = 'de';
+        }
+
+        $preferences = $this->getUserPreferences();
+        $preferences['language'] = $language;
+        $this->savePreferences($preferences);
+
+        Session::setFlash('success', __('settings.language_changed'));
+        $this->redirect('/user/settings');
+    }
+
+    /**
+     * Create a new user
+     */
+    public function createUser(): void
+    {
+        $this->requireCsrf();
+
+        require_once SRC_PATH . '/models/User.php';
+
+        $username = trim($_POST['username'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $passwordConfirm = $_POST['password_confirm'] ?? '';
+
+        // Validate
+        if (empty($username) || strlen($username) < 3) {
+            Session::setFlash('error', __('validation.min_length', ['min' => 3]));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Session::setFlash('error', __('validation.invalid_email'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if (strlen($password) < 8) {
+            Session::setFlash('error', __('validation.password_min_length'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if ($password !== $passwordConfirm) {
+            Session::setFlash('error', __('validation.passwords_dont_match'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if (User::usernameExists($username)) {
+            Session::setFlash('error', __('validation.duplicate'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if (User::emailExists($email)) {
+            Session::setFlash('error', __('validation.duplicate'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        $userId = User::createUser($username, $email, $password);
+
+        if ($userId) {
+            Session::setFlash('success', __('flash.created', ['item' => $username]));
+        } else {
+            Session::setFlash('error', __('flash.error'));
+        }
+
+        $this->redirect('/user/settings');
+    }
+
+    /**
+     * Delete a user
+     */
+    public function deleteUser(): void
+    {
+        $this->requireCsrf();
+
+        require_once SRC_PATH . '/models/User.php';
+
+        $userId = (int)($_POST['user_id'] ?? 0);
+
+        // Cannot delete yourself
+        if ($userId === Auth::id()) {
+            Session::setFlash('error', __('user.cannot_delete_self'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        if ($userId <= 0) {
+            Session::setFlash('error', __('validation.invalid_value'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        $user = User::find($userId);
+        if (!$user) {
+            Session::setFlash('error', __('validation.invalid_value'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        $db = Database::getInstance();
+        $stmt = $db->prepare("DELETE FROM users WHERE id = :id");
+        $stmt->execute(['id' => $userId]);
+
+        Session::setFlash('success', __('flash.deleted', ['item' => $user['username']]));
+        $this->redirect('/user/settings');
     }
 
     /**
@@ -458,7 +668,7 @@ class SettingsController extends Controller
         $this->savePreferences($preferences);
 
         Session::setFlash('success', 'Sprache wurde geändert.');
-        $this->redirect('/settings');
+        $this->redirect('/settings/language');
     }
 
     /**
@@ -489,7 +699,7 @@ class SettingsController extends Controller
         $this->savePreferences($preferences);
 
         Session::setFlash('success', 'Design wurde aktualisiert.');
-        $this->redirect('/settings');
+        $this->redirect('/settings/customization');
     }
 
     /**
@@ -511,7 +721,25 @@ class SettingsController extends Controller
             Session::setFlash('success', 'Debug-Modus wurde aktiviert.');
         }
 
-        $this->redirect('/settings');
+        $this->redirect('/settings/debug');
+    }
+
+    /**
+     * Toggle dark mode (AJAX endpoint)
+     */
+    public function toggleDarkMode(): void
+    {
+        $this->requireCsrf();
+
+        $darkMode = $_POST['dark_mode'] ?? '0';
+        $preferences = $this->getUserPreferences();
+        $preferences['dark_mode'] = $darkMode === '1' ? '1' : '0';
+        $this->savePreferences($preferences);
+
+        // Return JSON for AJAX requests
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
+        exit;
     }
 
     /**
@@ -540,7 +768,7 @@ class SettingsController extends Controller
         $this->deleteDirectory(TEMP_PATH, false);
 
         Session::setFlash('success', 'Temporäre Dateien wurden gelöscht.');
-        $this->redirect('/settings');
+        $this->redirect('/settings/data');
     }
 
     /**

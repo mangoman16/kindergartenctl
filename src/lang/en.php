@@ -323,6 +323,27 @@ return [
     'settings.pattern_hearts' => 'Hearts',
     'settings.pattern_clouds' => 'Clouds',
     'settings.saved' => 'Settings saved',
+    'settings.custom_color' => 'Custom Color',
+    'settings.debug_description' => 'Enables display of PHP errors and SQL error messages. For development only!',
+    'settings.debug_enable' => 'Enable Debug Mode',
+    'settings.debug_disable' => 'Disable Debug Mode',
+    'settings.smtp_test_email' => 'Test Email Address',
+    'settings.dark_mode' => 'Dark Mode',
+
+    // Navigation
+    'nav.inventory' => 'Inventory',
+
+    // Help guides
+    'help.guide_dashboard' => 'The dashboard shows an overview of all your games, materials, and boxes. You\'ll see current statistics, recently added games, a mini calendar, and a random game picker. Use the quick actions to create new entries.',
+    'help.guide_games' => 'Here you manage all games. You can create, edit, favorite, and filter games. Each game can be assigned to a box and age groups. Use tags and categories for better organization.',
+    'help.guide_materials' => 'Materials are the individual components of a game. Record all game pieces, cards, dice, and other accessories here. Materials can be assigned to games.',
+    'help.guide_boxes' => 'Boxes are the physical containers where games are stored. Assign games to boxes to keep track of their storage location.',
+    'help.guide_categories' => 'Age groups help you filter games by the recommended age of children. Create groups like "3-4 years" or "Preschool".',
+    'help.guide_tags' => 'Tags allow flexible labeling of games. Create tags like "Outdoor", "Indoor", "Creative", or "Movement" and assign them to games.',
+    'help.guide_groups' => 'Groups are kindergarten groups or classes. Assign games to specific groups and plan activities.',
+    'help.guide_calendar' => 'Plan when games are played in the calendar. Create events and assign games. The month and week views help with planning.',
+    'help.guide_changelog' => 'The changelog shows all changes to games, materials, and boxes. Keep track of what was created, changed, or deleted and when.',
+    'help.guide_settings' => 'In settings, customize the application: language, design, email sending, debug mode, and data management. You can also block IP addresses and delete temporary files.',
 
     // Installation
     'install.title' => 'Installation',
@@ -383,6 +404,12 @@ return [
     'user.section' => 'User Account',
     'user.profile' => 'Profile',
     'user.settings' => 'My Account',
+    'user.management' => 'User Management',
+    'user.create_new' => 'New User',
+    'user.confirm_delete' => 'Are you sure you want to delete this user?',
+    'user.cannot_delete_self' => 'You cannot delete your own account.',
+    'user.current' => 'Current',
+    'user.username_readonly' => 'The username cannot be changed.',
 
     // Help
     'help.title' => 'Help',

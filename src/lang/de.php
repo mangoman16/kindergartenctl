@@ -323,6 +323,27 @@ return [
     'settings.pattern_hearts' => 'Herzen',
     'settings.pattern_clouds' => 'Wolken',
     'settings.saved' => 'Einstellungen gespeichert',
+    'settings.custom_color' => 'Eigene Farbe',
+    'settings.debug_description' => 'Aktiviert die Anzeige von PHP-Fehlern und SQL-Fehlermeldungen. Nur für Entwicklung!',
+    'settings.debug_enable' => 'Debug-Modus aktivieren',
+    'settings.debug_disable' => 'Debug-Modus deaktivieren',
+    'settings.smtp_test_email' => 'Test-E-Mail-Adresse',
+    'settings.dark_mode' => 'Dunkelmodus',
+
+    // Navigation
+    'nav.inventory' => 'Inventar',
+
+    // Help guides
+    'help.guide_dashboard' => 'Das Dashboard zeigt eine Übersicht aller Ihrer Spiele, Materialien und Boxen. Sie sehen aktuelle Statistiken, kürzlich hinzugefügte Spiele, einen Mini-Kalender und einen Zufallsspiel-Picker. Nutzen Sie die Schnellaktionen, um neue Einträge zu erstellen.',
+    'help.guide_games' => 'Hier verwalten Sie alle Spiele. Sie können Spiele erstellen, bearbeiten, als Favorit markieren und filtern. Jedes Spiel kann einer Box und Altersgruppen zugeordnet werden. Nutzen Sie Tags und Kategorien für bessere Organisation.',
+    'help.guide_materials' => 'Materialien sind die einzelnen Bestandteile eines Spiels. Erfassen Sie hier alle Spielfiguren, Karten, Würfel und sonstiges Zubehör. Materialien können Spielen zugeordnet werden.',
+    'help.guide_boxes' => 'Boxen sind die physischen Behälter, in denen Spiele aufbewahrt werden. Ordnen Sie Spiele Boxen zu, um den Überblick über den Aufbewahrungsort zu behalten.',
+    'help.guide_categories' => 'Altersgruppen helfen Ihnen, Spiele nach dem empfohlenen Alter der Kinder zu filtern. Erstellen Sie Gruppen wie "3-4 Jahre" oder "Vorschule".',
+    'help.guide_tags' => 'Tags ermöglichen eine flexible Verschlagwortung von Spielen. Erstellen Sie Tags wie "Draußen", "Drinnen", "Kreativ" oder "Bewegung" und weisen Sie sie Spielen zu.',
+    'help.guide_groups' => 'Gruppen sind Kindergartengruppen oder Klassen. Ordnen Sie Spiele bestimmten Gruppen zu und planen Sie Aktivitäten.',
+    'help.guide_calendar' => 'Im Kalender planen Sie, wann welche Spiele gespielt werden. Erstellen Sie Termine und ordnen Sie Spiele zu. Die Monats- und Wochenansicht hilft bei der Planung.',
+    'help.guide_changelog' => 'Das Änderungsprotokoll zeigt alle Änderungen an Spielen, Materialien und Boxen. So behalten Sie den Überblick, was wann erstellt, geändert oder gelöscht wurde.',
+    'help.guide_settings' => 'In den Einstellungen passen Sie die Anwendung an: Sprache, Design, E-Mail-Versand, Debug-Modus und Datenverwaltung. Sie können auch IP-Adressen sperren und temporäre Dateien löschen.',
 
     // Installation
     'install.title' => 'Installation',
@@ -383,6 +404,12 @@ return [
     'user.section' => 'Benutzerkonto',
     'user.profile' => 'Profil',
     'user.settings' => 'Mein Konto',
+    'user.management' => 'Benutzerverwaltung',
+    'user.create_new' => 'Neuer Benutzer',
+    'user.confirm_delete' => 'Möchten Sie diesen Benutzer wirklich löschen?',
+    'user.cannot_delete_self' => 'Sie können Ihr eigenes Konto nicht löschen.',
+    'user.current' => 'Aktuell',
+    'user.username_readonly' => 'Der Benutzername kann nicht geändert werden.',
 
     // Help
     'help.title' => 'Hilfe',

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="<?= e(userPreference('dark_mode', '') === '1' ? 'dark' : 'light') ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,17 +30,11 @@ $themePattern = userPreference('theme_pattern', 'none');
     --color-primary-light: <?= e($themeColor) ?>88;
     --color-primary-bg: <?= e($themeColor) ?>11;
 }
-<?php if ($themePattern !== 'none'): ?>
-.page-content {
-    background-image: var(--pattern-bg);
-    background-size: 60px 60px;
-}
-<?php endif; ?>
 </style>
 </head>
 <body data-pattern="<?= e($themePattern) ?>">
     <div class="app-wrapper">
-        <!-- Sidebar -->
+        <!-- Sidebar (Icon Rail + Context Sidebar) -->
         <?php include SRC_PATH . '/views/partials/sidebar.php'; ?>
 
         <!-- Main Content -->
@@ -65,6 +59,9 @@ $themePattern = userPreference('theme_pattern', 'none');
             <!-- Footer -->
             <?php include SRC_PATH . '/views/partials/footer.php'; ?>
         </main>
+
+        <!-- Help Panel -->
+        <?php include SRC_PATH . '/views/partials/help-panel.php'; ?>
     </div>
 
     <!-- Scripts -->

@@ -161,6 +161,45 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Unified button and card design
 - [x] Updated CLAUDE.md with new patterns and instructions
 
+### February 2026 - UI Redesign & Feature Additions
+- [x] Fixed CalendarController::json() access level fatal error (removed duplicate private method)
+- [x] Redesigned account menu - username dropdown with avatar, settings, and logout
+- [x] Removed "KindergartenOrganizer" text from sidebar (icon-only logo)
+- [x] Removed duplicate settings from sidebar navigation
+- [x] Apple-inspired CSS overhaul: removed borders/lines, shadow-based cards, rounded-2xl, cleaner spacing
+- [x] Custom styled select dropdowns (appearance:none with SVG chevron)
+- [x] Redesigned dashboard with stat cards, quick action tiles, and mini month calendar
+- [x] Dashboard mini-calendar: month navigation, day click popovers, AJAX event loading
+- [x] Redesigned "Zuletzt hinzugefügt" with image thumbnails and cleaner layout
+- [x] Added language change option in user settings (/user/settings/language)
+- [x] Added user creation functionality (/user/settings/create-user)
+- [x] Added user deletion functionality (/user/settings/delete-user)
+- [x] Added user management section to user settings page
+- [x] Updated README: removed VirtualHost config, recommend .htaccess instead
+- [x] Added new translation keys for user management (de + en)
+- [x] Updated CLAUDE.md with new navigation structure and routes
+
+### February 2026 - Settings Redesign & Asana-style Navigation
+- [x] Settings redesigned: iOS-style list menu with separate sub-pages (customization, language, email, debug, data)
+- [x] Debug mode: replaced auto-submit checkbox with explicit enable/disable button page
+- [x] Accent color: added native color picker + hex input alongside preset swatches
+- [x] Background pattern: fixed conflicting inline style in main.php that overrode CSS patterns
+- [x] SMTP test: changed from GET link (404) to POST form with CSRF and test email input
+- [x] Logo alignment: fixed sidebar-header to left-align
+- [x] Asana-style navigation: icon rail (56px) + expandable context sidebar (200px)
+- [x] Context sidebar sections: games (games, categories, tags, groups), inventory (materials, boxes), calendar, changelog
+- [x] Quick create popup: plus button at bottom of icon rail with shortcuts to create games, materials, boxes, groups, events
+- [x] Help panel: right-side sliding handbook with table of contents and per-page guide content
+- [x] Dark mode: toggle button in header, AJAX persistence via POST /settings/dark-mode, full dark color scheme CSS
+- [x] Responsive CSS: updated mobile breakpoints for new icon rail + context sidebar layout
+- [x] New routes: GET /settings/customization, /settings/language, /settings/email, /settings/debug, /settings/data, POST /settings/dark-mode
+- [x] New controller methods: showCustomization(), showLanguage(), showEmail(), showDebug(), showData(), toggleDarkMode()
+- [x] New views: settings/customization.php, settings/language.php, settings/email.php, settings/debug.php, settings/data.php
+- [x] New partials: partials/help-panel.php
+- [x] Sidebar rewritten: partials/sidebar.php now uses icon rail + context sidebar
+- [x] Header rewritten: partials/header.php now includes help toggle, dark mode toggle, search
+- [x] Translation keys added for all new features (de + en)
+
 ---
 
 ## Technical Debt / Improvements
@@ -241,4 +280,4 @@ All tables from specification are present:
 
 ---
 
-*Last updated: 2026-02-10*
+*Last updated: 2026-02-11*

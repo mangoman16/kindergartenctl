@@ -11,15 +11,20 @@
 
 | Severity | Found | Fixed |
 |----------|-------|-------|
-| Critical | 3 | 3 |
+| Critical | 4 | 4 |
 | High | 2 | 2 |
-| Medium | 6 | 6 |
+| Medium | 8 | 8 |
 | Low | 1 | 1 |
-| **Total** | **12** | **12** |
+| **Total** | **15** | **15** |
 
 ---
 
 ## Fixed Bugs
+
+### BUG-13 (Critical): `CalendarController::json()` Access Level Fatal Error
+- **File:** `src/controllers/CalendarController.php:295`
+- **Problem:** The `CalendarController` declared a `private function json()` method, but the parent `Controller` class already has `protected function json()`. PHP forbids narrowing method visibility in child classes, causing a fatal error when opening the Calendar page.
+- **Fix:** Removed the duplicate `private json()` method from `CalendarController`, allowing it to inherit the `protected json()` from the parent `Controller` class. The private `jsonError()` helper was retained.
 
 ### BUG-01 (Critical): `formatDate()` M-to-F Replacement Corruption
 - **File:** `src/helpers/dates.php:132-143`
@@ -80,6 +85,16 @@
 - **File:** `src/helpers/dates.php:379-400`
 - **Problem:** `DateTime::createFromFormat('d.m.Y', '31.02.2026')` silently overflows to March 3rd instead of returning an error.
 - **Fix:** Added `DateTime::getLastErrors()` check to reject dates with warnings or errors.
+
+### BUG-14 (Medium): Background Pattern Not Applied
+- **File:** `src/views/layouts/main.php` (inline `<style>`)
+- **Problem:** An inline `<style>` block set `background-image: var(--pattern-bg)` on `.page-content`, but `--pattern-bg` was never defined as a CSS variable. This inline style overrode the actual pattern CSS selectors (`body[data-pattern="dots"] .page-content`, etc.) in style.css, so no pattern was ever visible.
+- **Fix:** Removed the conflicting inline style block from main.php.
+
+### BUG-15 (Medium): SMTP Test Link Sends GET to POST-Only Route (404)
+- **File:** `src/views/settings/index.php` (old version)
+- **Problem:** The "Test SMTP" button was an `<a href>` link, sending a GET request to `/settings/smtp/test`. The route was defined as POST only, resulting in a 404 error.
+- **Fix:** Replaced with a `<form method="POST">` including CSRF token and a test email address input field.
 
 ---
 

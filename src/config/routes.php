@@ -103,6 +103,11 @@ return [
 
     // Settings
     'GET /settings' => ['SettingsController', 'index'],
+    'GET /settings/customization' => ['SettingsController', 'showCustomization'],
+    'GET /settings/language' => ['SettingsController', 'showLanguage'],
+    'GET /settings/email' => ['SettingsController', 'showEmail'],
+    'GET /settings/debug' => ['SettingsController', 'showDebug'],
+    'GET /settings/data' => ['SettingsController', 'showData'],
     'GET /settings/help' => ['SettingsController', 'help'],
     'POST /settings/password' => ['SettingsController', 'updatePassword'],
     'POST /settings/email' => ['SettingsController', 'updateEmail'],
@@ -115,11 +120,15 @@ return [
     'POST /settings/language' => ['SettingsController', 'updateLanguage'],
     'POST /settings/customization' => ['SettingsController', 'updateCustomization'],
     'POST /settings/debug' => ['SettingsController', 'toggleDebug'],
+    'POST /settings/dark-mode' => ['SettingsController', 'toggleDarkMode'],
 
     // User settings / profile
     'GET /user/settings' => ['SettingsController', 'userSettings'],
     'POST /user/settings/password' => ['SettingsController', 'updatePassword'],
     'POST /user/settings/email' => ['SettingsController', 'updateEmail'],
+    'POST /user/settings/language' => ['SettingsController', 'updateUserLanguage'],
+    'POST /user/settings/create-user' => ['SettingsController', 'createUser'],
+    'POST /user/settings/delete-user' => ['SettingsController', 'deleteUser'],
 
     // API routes
     'GET /api/health' => ['ApiController', 'health'],
