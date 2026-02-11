@@ -323,6 +323,11 @@ return [
     'settings.pattern_hearts' => 'Hearts',
     'settings.pattern_clouds' => 'Clouds',
     'settings.saved' => 'Settings saved',
+    'settings.custom_color' => 'Custom Color',
+    'settings.debug_description' => 'Enables display of PHP errors and SQL error messages. For development only!',
+    'settings.debug_enable' => 'Enable Debug Mode',
+    'settings.debug_disable' => 'Disable Debug Mode',
+    'settings.smtp_test_email' => 'Test Email Address',
 
     // Installation
     'install.title' => 'Installation',

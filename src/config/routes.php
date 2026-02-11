@@ -103,6 +103,11 @@ return [
 
     // Settings
     'GET /settings' => ['SettingsController', 'index'],
+    'GET /settings/customization' => ['SettingsController', 'showCustomization'],
+    'GET /settings/language' => ['SettingsController', 'showLanguage'],
+    'GET /settings/email' => ['SettingsController', 'showEmail'],
+    'GET /settings/debug' => ['SettingsController', 'showDebug'],
+    'GET /settings/data' => ['SettingsController', 'showData'],
     'GET /settings/help' => ['SettingsController', 'help'],
     'POST /settings/password' => ['SettingsController', 'updatePassword'],
     'POST /settings/email' => ['SettingsController', 'updateEmail'],

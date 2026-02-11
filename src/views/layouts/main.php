@@ -30,12 +30,6 @@ $themePattern = userPreference('theme_pattern', 'none');
     --color-primary-light: <?= e($themeColor) ?>88;
     --color-primary-bg: <?= e($themeColor) ?>11;
 }
-<?php if ($themePattern !== 'none'): ?>
-.page-content {
-    background-image: var(--pattern-bg);
-    background-size: 60px 60px;
-}
-<?php endif; ?>
 </style>
 </head>
 <body data-pattern="<?= e($themePattern) ?>">

@@ -323,6 +323,11 @@ return [
     'settings.pattern_hearts' => 'Herzen',
     'settings.pattern_clouds' => 'Wolken',
     'settings.saved' => 'Einstellungen gespeichert',
+    'settings.custom_color' => 'Eigene Farbe',
+    'settings.debug_description' => 'Aktiviert die Anzeige von PHP-Fehlern und SQL-Fehlermeldungen. Nur für Entwicklung!',
+    'settings.debug_enable' => 'Debug-Modus aktivieren',
+    'settings.debug_disable' => 'Debug-Modus deaktivieren',
+    'settings.smtp_test_email' => 'Test-E-Mail-Adresse',
 
     // Installation
     'install.title' => 'Installation',

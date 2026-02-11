@@ -2,166 +2,95 @@
     <h1 class="page-title"><?= __('settings.title') ?></h1>
 </div>
 
-<div class="grid grid-cols-2 gap-4">
-    <!-- Language -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2 class="card-title"><?= __('settings.language') ?></h2>
-        </div>
-        <div class="card-body">
-            <form action="<?= url('/settings/language') ?>" method="POST">
-                <?= csrfField() ?>
-                <div class="form-group">
-                    <select name="language" class="form-control" onchange="this.form.submit()">
-                        <option value="de" <?= userPreference('language', 'de') === 'de' ? 'selected' : '' ?>>Deutsch</option>
-                        <option value="en" <?= userPreference('language', 'de') === 'en' ? 'selected' : '' ?>>English</option>
-                    </select>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="settings-menu">
+    <a href="<?= url('/settings/customization') ?>" class="settings-menu-item">
+        <span class="settings-menu-icon" style="background: #EEF2FF; color: #4F46E5;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="13.5" cy="6.5" r="2.5"></circle>
+                <circle cx="17.5" cy="15.5" r="2.5"></circle>
+                <circle cx="8.5" cy="15.5" r="2.5"></circle>
+                <path d="M3 19.5V4.5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            </svg>
+        </span>
+        <span class="settings-menu-text">
+            <span class="settings-menu-label"><?= __('settings.customization') ?></span>
+            <span class="settings-menu-desc"><?= __('settings.theme_color') ?>, <?= __('settings.theme_pattern') ?></span>
+        </span>
+        <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
 
-    <!-- Customization -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2 class="card-title"><?= __('settings.customization') ?></h2>
-        </div>
-        <div class="card-body">
-            <form action="<?= url('/settings/customization') ?>" method="POST">
-                <?= csrfField() ?>
-                <div class="form-group">
-                    <label class="form-label"><?= __('settings.theme_color') ?></label>
-                    <div class="flex gap-2 flex-wrap">
-                        <?php
-                        $colors = ['#4F46E5', '#EC4899', '#F59E0B', '#22C55E', '#3B82F6', '#8B5CF6', '#EF4444', '#14B8A6'];
-                        $currentColor = userPreference('theme_color', '#4F46E5');
-                        foreach ($colors as $color): ?>
-                            <label style="cursor: pointer;">
-                                <input type="radio" name="theme_color" value="<?= $color ?>" <?= $currentColor === $color ? 'checked' : '' ?> style="display: none;">
-                                <span style="display: block; width: 36px; height: 36px; border-radius: 50%; background: <?= $color ?>; border: 3px solid <?= $currentColor === $color ? 'var(--color-gray-800)' : 'transparent' ?>; transition: border-color 0.2s;"></span>
-                            </label>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label"><?= __('settings.theme_pattern') ?></label>
-                    <select name="theme_pattern" class="form-control">
-                        <option value="none" <?= userPreference('theme_pattern', 'none') === 'none' ? 'selected' : '' ?>><?= __('settings.pattern_none') ?></option>
-                        <option value="dots" <?= userPreference('theme_pattern', 'none') === 'dots' ? 'selected' : '' ?>><?= __('settings.pattern_dots') ?></option>
-                        <option value="stars" <?= userPreference('theme_pattern', 'none') === 'stars' ? 'selected' : '' ?>><?= __('settings.pattern_stars') ?></option>
-                        <option value="hearts" <?= userPreference('theme_pattern', 'none') === 'hearts' ? 'selected' : '' ?>><?= __('settings.pattern_hearts') ?></option>
-                        <option value="clouds" <?= userPreference('theme_pattern', 'none') === 'clouds' ? 'selected' : '' ?>><?= __('settings.pattern_clouds') ?></option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary"><?= __('action.save') ?></button>
-            </form>
-        </div>
-    </div>
+    <a href="<?= url('/settings/language') ?>" class="settings-menu-item">
+        <span class="settings-menu-icon" style="background: #F0FDF4; color: #22C55E;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+        </span>
+        <span class="settings-menu-text">
+            <span class="settings-menu-label"><?= __('settings.language') ?></span>
+            <span class="settings-menu-desc"><?= userPreference('language', 'de') === 'de' ? 'Deutsch' : 'English' ?></span>
+        </span>
+        <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
 
-    <!-- SMTP Settings -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2 class="card-title"><?= __('settings.email') ?></h2>
-        </div>
-        <div class="card-body">
-            <form action="<?= url('/settings/smtp') ?>" method="POST">
-                <?= csrfField() ?>
-                <div class="form-group">
-                    <label class="form-label"><?= __('settings.smtp_host') ?></label>
-                    <input type="text" name="smtp_host" class="form-control" value="<?= e($smtp['host'] ?? '') ?>" placeholder="smtp.example.com">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label"><?= __('settings.smtp_port') ?></label>
-                        <input type="number" name="smtp_port" class="form-control" value="<?= e($smtp['port'] ?? '587') ?>">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label"><?= __('settings.smtp_encryption') ?></label>
-                        <select name="smtp_encryption" class="form-control">
-                            <option value="tls" <?= ($smtp['encryption'] ?? '') === 'tls' ? 'selected' : '' ?>>TLS</option>
-                            <option value="ssl" <?= ($smtp['encryption'] ?? '') === 'ssl' ? 'selected' : '' ?>>SSL</option>
-                            <option value="" <?= empty($smtp['encryption'] ?? '') ? 'selected' : '' ?>>None</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label"><?= __('settings.smtp_username') ?></label>
-                    <input type="text" name="smtp_username" class="form-control" value="<?= e($smtp['username'] ?? '') ?>">
-                </div>
-                <div class="form-group">
-                    <label class="form-label"><?= __('settings.smtp_password') ?></label>
-                    <input type="password" name="smtp_password" class="form-control" placeholder="<?= !empty($smtp['password']) ? '********' : '' ?>">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label"><?= __('settings.smtp_from_email') ?></label>
-                        <input type="email" name="smtp_from_email" class="form-control" value="<?= e($smtp['from_email'] ?? '') ?>">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label"><?= __('settings.smtp_from_name') ?></label>
-                        <input type="text" name="smtp_from_name" class="form-control" value="<?= e($smtp['from_name'] ?? '') ?>">
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="btn btn-primary"><?= __('action.save') ?></button>
-                    <a href="<?= url('/settings/smtp/test') ?>" class="btn btn-secondary"><?= __('settings.smtp_test') ?></a>
-                </div>
-            </form>
-        </div>
-    </div>
+    <a href="<?= url('/settings/email') ?>" class="settings-menu-item">
+        <span class="settings-menu-icon" style="background: #FEF3C7; color: #D97706;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+        </span>
+        <span class="settings-menu-text">
+            <span class="settings-menu-label"><?= __('settings.email') ?></span>
+            <span class="settings-menu-desc"><?= !empty($smtp['host']) ? e($smtp['host']) : __('form.optional') ?></span>
+        </span>
+        <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
 
-    <!-- Debug Mode -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2 class="card-title"><?= __('settings.debug') ?></h2>
-        </div>
-        <div class="card-body">
-            <p class="text-muted text-sm mb-4">Aktiviert die Anzeige von PHP-Fehlern und SQL-Fehlermeldungen. Nur für Entwicklung!</p>
-            <form action="<?= url('/settings/debug') ?>" method="POST">
-                <?= csrfField() ?>
-                <?php $debugEnabled = file_exists(ROOT_PATH . '/storage/debug.flag'); ?>
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="debug" value="1" <?= $debugEnabled ? 'checked' : '' ?> onchange="this.form.submit()">
-                    <span><?= $debugEnabled ? __('settings.debug_enabled') : __('settings.debug') ?></span>
-                </label>
-            </form>
-        </div>
-    </div>
+    <a href="<?= url('/settings/debug') ?>" class="settings-menu-item">
+        <span class="settings-menu-icon" style="background: #FEF2F2; color: #EF4444;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                <path d="M12 8v4"></path>
+                <path d="M12 16h.01"></path>
+            </svg>
+        </span>
+        <span class="settings-menu-text">
+            <span class="settings-menu-label"><?= __('settings.debug') ?></span>
+            <?php $debugEnabled = file_exists(ROOT_PATH . '/storage/debug.flag'); ?>
+            <span class="settings-menu-desc"><?= $debugEnabled ? __('settings.debug_enabled') : __('settings.debug_disabled') ?></span>
+        </span>
+        <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
 
-    <!-- Help -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2 class="card-title"><?= __('help.title') ?></h2>
-        </div>
-        <div class="card-body">
-            <p class="text-muted text-sm mb-4"><?= __('help.wizard_welcome') ?></p>
-            <a href="<?= url('/settings/help') ?>" class="btn btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                <?= __('help.wizard_title') ?>
-            </a>
-        </div>
-    </div>
+    <a href="<?= url('/settings/data') ?>" class="settings-menu-item">
+        <span class="settings-menu-icon" style="background: #EFF6FF; color: #3B82F6;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+            </svg>
+        </span>
+        <span class="settings-menu-text">
+            <span class="settings-menu-label"><?= __('settings.data') ?></span>
+            <span class="settings-menu-desc"><?= __('settings.clear_temp') ?>, <?= __('settings.ip_bans') ?></span>
+        </span>
+        <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
 
-    <!-- Data Management -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2 class="card-title"><?= __('settings.data') ?></h2>
-        </div>
-        <div class="card-body">
-            <form action="<?= url('/settings/clear-temp') ?>" method="POST">
-                <?= csrfField() ?>
-                <button type="submit" class="btn btn-secondary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                    <?= __('settings.clear_temp') ?>
-                </button>
-            </form>
-        </div>
-    </div>
+    <a href="<?= url('/settings/help') ?>" class="settings-menu-item">
+        <span class="settings-menu-icon" style="background: #F5F3FF; color: #8B5CF6;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+        </span>
+        <span class="settings-menu-text">
+            <span class="settings-menu-label"><?= __('help.title') ?></span>
+            <span class="settings-menu-desc"><?= __('help.wizard_welcome') ?></span>
+        </span>
+        <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
 </div>
