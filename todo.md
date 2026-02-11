@@ -179,6 +179,27 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Added new translation keys for user management (de + en)
 - [x] Updated CLAUDE.md with new navigation structure and routes
 
+### February 2026 - Settings Redesign & Asana-style Navigation
+- [x] Settings redesigned: iOS-style list menu with separate sub-pages (customization, language, email, debug, data)
+- [x] Debug mode: replaced auto-submit checkbox with explicit enable/disable button page
+- [x] Accent color: added native color picker + hex input alongside preset swatches
+- [x] Background pattern: fixed conflicting inline style in main.php that overrode CSS patterns
+- [x] SMTP test: changed from GET link (404) to POST form with CSRF and test email input
+- [x] Logo alignment: fixed sidebar-header to left-align
+- [x] Asana-style navigation: icon rail (56px) + expandable context sidebar (200px)
+- [x] Context sidebar sections: games (games, categories, tags, groups), inventory (materials, boxes), calendar, changelog
+- [x] Quick create popup: plus button at bottom of icon rail with shortcuts to create games, materials, boxes, groups, events
+- [x] Help panel: right-side sliding handbook with table of contents and per-page guide content
+- [x] Dark mode: toggle button in header, AJAX persistence via POST /settings/dark-mode, full dark color scheme CSS
+- [x] Responsive CSS: updated mobile breakpoints for new icon rail + context sidebar layout
+- [x] New routes: GET /settings/customization, /settings/language, /settings/email, /settings/debug, /settings/data, POST /settings/dark-mode
+- [x] New controller methods: showCustomization(), showLanguage(), showEmail(), showDebug(), showData(), toggleDarkMode()
+- [x] New views: settings/customization.php, settings/language.php, settings/email.php, settings/debug.php, settings/data.php
+- [x] New partials: partials/help-panel.php
+- [x] Sidebar rewritten: partials/sidebar.php now uses icon rail + context sidebar
+- [x] Header rewritten: partials/header.php now includes help toggle, dark mode toggle, search
+- [x] Translation keys added for all new features (de + en)
+
 ---
 
 ## Technical Debt / Improvements
@@ -259,4 +280,4 @@ All tables from specification are present:
 
 ---
 
-*Last updated: 2026-02-10*
+*Last updated: 2026-02-11*

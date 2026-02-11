@@ -120,6 +120,7 @@ return [
     'POST /settings/language' => ['SettingsController', 'updateLanguage'],
     'POST /settings/customization' => ['SettingsController', 'updateCustomization'],
     'POST /settings/debug' => ['SettingsController', 'toggleDebug'],
+    'POST /settings/dark-mode' => ['SettingsController', 'toggleDarkMode'],
 
     // User settings / profile
     'GET /user/settings' => ['SettingsController', 'userSettings'],

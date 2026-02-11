@@ -13,9 +13,9 @@
 |----------|-------|-------|
 | Critical | 4 | 4 |
 | High | 2 | 2 |
-| Medium | 6 | 6 |
+| Medium | 8 | 8 |
 | Low | 1 | 1 |
-| **Total** | **13** | **13** |
+| **Total** | **15** | **15** |
 
 ---
 
@@ -85,6 +85,16 @@
 - **File:** `src/helpers/dates.php:379-400`
 - **Problem:** `DateTime::createFromFormat('d.m.Y', '31.02.2026')` silently overflows to March 3rd instead of returning an error.
 - **Fix:** Added `DateTime::getLastErrors()` check to reject dates with warnings or errors.
+
+### BUG-14 (Medium): Background Pattern Not Applied
+- **File:** `src/views/layouts/main.php` (inline `<style>`)
+- **Problem:** An inline `<style>` block set `background-image: var(--pattern-bg)` on `.page-content`, but `--pattern-bg` was never defined as a CSS variable. This inline style overrode the actual pattern CSS selectors (`body[data-pattern="dots"] .page-content`, etc.) in style.css, so no pattern was ever visible.
+- **Fix:** Removed the conflicting inline style block from main.php.
+
+### BUG-15 (Medium): SMTP Test Link Sends GET to POST-Only Route (404)
+- **File:** `src/views/settings/index.php` (old version)
+- **Problem:** The "Test SMTP" button was an `<a href>` link, sending a GET request to `/settings/smtp/test`. The route was defined as POST only, resulting in a 404 error.
+- **Fix:** Replaced with a `<form method="POST">` including CSRF token and a test email address input field.
 
 ---
 

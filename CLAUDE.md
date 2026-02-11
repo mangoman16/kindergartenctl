@@ -105,11 +105,16 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 6. **`random_bytes(float)`** - PHP 8.1+ deprecation warning; always pass int
 7. **Validation in update methods** - Must match create/store validation (don't skip)
 
-### 9. Navigation Structure
-- **Sidebar**: Main navigation (Dashboard, Games, Materials, Boxes, Categories, Tags, Groups, Calendar, Changelog) - icon-only logo at top, no settings link (settings accessible from user dropdown)
-- **Header**: Search bar + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
+### 9. Navigation Structure (Asana-style)
+- **Icon Rail** (56px fixed left): Logo, Home, Games, Inventory, Calendar, Changelog buttons + Quick Create (plus) and Settings at bottom
+- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes. Calendar and Changelog sections have their own links.
+- **Header**: Search bar + Dark mode toggle + Help toggle + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
+- **Help Panel** (380px right-side slide): Handbook-style guide with table of contents, auto-scrolls to current page guide
+- **Quick Create Popup**: Accessible from plus button on icon rail, shortcuts to create games, materials, boxes, groups, calendar events
+- **Dark Mode**: Toggle in header, persisted via AJAX POST to `/settings/dark-mode`, CSS variables in `[data-theme="dark"]`
 - **User settings** (`/user/settings`): Profile, language change, password change, email change, user management (create/delete users)
-- **App settings** (`/settings`): Language, customization, SMTP, debug, help wizard, data management
+- **App settings** (`/settings`): Menu with links to sub-pages: customization, language, email, debug, data, help wizard
+- **Settings sub-pages**: `GET /settings/customization`, `/settings/language`, `/settings/email`, `/settings/debug`, `/settings/data`
 - **Help wizard** (`/settings/help`): Step-by-step guided tour of the application
 - **User management routes**: `POST /user/settings/language`, `POST /user/settings/create-user`, `POST /user/settings/delete-user`
 
@@ -117,7 +122,8 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 - **Field tooltips**: `.help-tooltip` spans with `data-help` attribute on form labels
 - **Category banners**: `.category-help` divs at top of each index page
 - **Help wizard**: Step-by-step guide at `/settings/help`
-- Translation keys: `help.field_*` for field tooltips, `help.category_*` for category descriptions
+- **Help panel**: Right-side sliding panel (`.help-panel`) with TOC and per-page guides. Toggle via header button. Auto-scrolls to current page section.
+- Translation keys: `help.field_*` for field tooltips, `help.category_*` for category descriptions, `help.guide_*` for help panel guides
 
 ## File Counts
 
@@ -125,6 +131,6 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 - 9 Models in `src/models/`
 - 4 Services in `src/services/`
 - 3 Helpers in `src/helpers/`
-- 50 Views in `src/views/` (including user.php, help.php)
+- 56 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages)
 - 9 Core classes in `src/core/`
 - 2 Language files in `src/lang/`

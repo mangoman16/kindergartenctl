@@ -725,6 +725,24 @@ class SettingsController extends Controller
     }
 
     /**
+     * Toggle dark mode (AJAX endpoint)
+     */
+    public function toggleDarkMode(): void
+    {
+        $this->requireCsrf();
+
+        $darkMode = $_POST['dark_mode'] ?? '0';
+        $preferences = $this->getUserPreferences();
+        $preferences['dark_mode'] = $darkMode === '1' ? '1' : '0';
+        $this->savePreferences($preferences);
+
+        // Return JSON for AJAX requests
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
+    /**
      * Save preferences to file
      */
     private function savePreferences(array $config): bool
