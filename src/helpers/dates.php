@@ -129,16 +129,18 @@ function formatDate($date, string $format = 'd.m.Y'): string
         return '';
     }
 
-    // Replace 'M' with German short month name (not preceded by backslash escape)
-    if (strpos($format, 'M') !== false) {
-        $monthsShort = getGermanMonthsShort();
-        $format = str_replace('M', '\\' . implode('\\', str_split($monthsShort[(int)$date->format('n')])), $format);
-    }
-
-    // Replace 'F' with German full month name
+    // Replace 'F' with German full month name FIRST to avoid M-replacement
+    // introducing 'F' characters (e.g., "Feb." contains 'F') that would then
+    // be incorrectly matched by the F replacement.
     if (strpos($format, 'F') !== false) {
         $months = getGermanMonths();
         $format = str_replace('F', '\\' . implode('\\', str_split($months[(int)$date->format('n')])), $format);
+    }
+
+    // Replace 'M' with German short month name AFTER F replacement
+    if (strpos($format, 'M') !== false) {
+        $monthsShort = getGermanMonthsShort();
+        $format = str_replace('M', '\\' . implode('\\', str_split($monthsShort[(int)$date->format('n')])), $format);
     }
 
     return $date->format($format);
@@ -231,22 +233,22 @@ function formatTimeAgo($date): string
     }
 
     if ($diff < 3600) {
-        $minutes = floor($diff / 60);
+        $minutes = (int)floor($diff / 60);
         return sprintf('vor %d %s', $minutes, $minutes === 1 ? 'Minute' : 'Minuten');
     }
 
     if ($diff < 86400) {
-        $hours = floor($diff / 3600);
+        $hours = (int)floor($diff / 3600);
         return sprintf('vor %d %s', $hours, $hours === 1 ? 'Stunde' : 'Stunden');
     }
 
     if ($diff < 604800) {
-        $days = floor($diff / 86400);
+        $days = (int)floor($diff / 86400);
         return sprintf('vor %d %s', $days, $days === 1 ? 'Tag' : 'Tagen');
     }
 
     if ($diff < 2592000) {
-        $weeks = floor($diff / 604800);
+        $weeks = (int)floor($diff / 604800);
         return sprintf('vor %d %s', $weeks, $weeks === 1 ? 'Woche' : 'Wochen');
     }
 
@@ -381,18 +383,30 @@ function parseGermanDate(string $dateStr): ?DateTime
     // Try DD.MM.YYYY format
     $date = DateTime::createFromFormat('d.m.Y', $dateStr);
     if ($date !== false) {
+        $errors = DateTime::getLastErrors();
+        if ($errors && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
+            return null; // Reject impossible dates like Feb 31
+        }
         return $date;
     }
 
     // Try DD.MM.YY format
     $date = DateTime::createFromFormat('d.m.y', $dateStr);
     if ($date !== false) {
+        $errors = DateTime::getLastErrors();
+        if ($errors && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
+            return null;
+        }
         return $date;
     }
 
     // Try ISO format
     $date = DateTime::createFromFormat('Y-m-d', $dateStr);
     if ($date !== false) {
+        $errors = DateTime::getLastErrors();
+        if ($errors && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
+            return null;
+        }
         return $date;
     }
 

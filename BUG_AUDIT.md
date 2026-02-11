@@ -2,181 +2,89 @@
 
 **Application:** Kindergarten Spiele Organizer v1.0.0
 **Technology Stack:** PHP 8.0+, MySQL 8.x, Custom MVC Framework
-**Codebase Size:** ~122 PHP files, ~12,000 lines of code
-
-**Audit History:**
-| Date | Type | Auditor |
-|------|------|---------|
-| 2026-01-08 | Initial bug audit (with security audit) | Claude Code |
-| 2026-01-16 | Follow-up audit + schema alignment fixes | Claude Code |
-| 2026-02-06 | Comprehensive PDO parameter + logic bug audit | Claude Code |
-| 2026-02-09 | Full re-audit, all files, all categories | Claude Code |
-| 2026-02-10 | Deep sweep: undefined methods, missing fields, logic errors | Claude Code |
+**Audit Date:** 2026-02-11
+**Status:** All bugs fixed
 
 ---
 
-## Executive Summary
+## Summary
 
-### Bug Status: **ALL BUGS FIXED**
-
-All 34 bugs discovered across five audit rounds have been identified and fixed. The codebase is stable and production-ready.
-
-| Severity | Total Found | Fixed | Open |
-|----------|-------------|-------|------|
-| Critical | 4 | 4 | 0 |
-| High | 4 | 4 | 0 |
-| Medium | 19 | 19 | 0 |
-| Low | 7 | 7 | 0 |
-| **Total** | **34** | **34** | **0** |
+| Severity | Found | Fixed |
+|----------|-------|-------|
+| Critical | 3 | 3 |
+| High | 2 | 2 |
+| Medium | 6 | 6 |
+| Low | 1 | 1 |
+| **Total** | **12** | **12** |
 
 ---
 
-## Complete Bug Tracking
+## Fixed Bugs
 
-### Critical Bugs
+### BUG-01 (Critical): `formatDate()` M-to-F Replacement Corruption
+- **File:** `src/helpers/dates.php:132-143`
+- **Problem:** When replacing `M` with German short month names, the result (e.g., "Feb.") introduces an `F` character. The subsequent `F` replacement then corrupts the output. Every February date was affected.
+- **Fix:** Reversed the replacement order -- `F` is now replaced before `M`, preventing cascading substitution.
 
-| ID | Description | Location | Found | Status |
-|----|-------------|----------|-------|--------|
-| BUG-001 | Password update fails silently (wrong field name `current_password` vs `password`) | SettingsController.php | 2026-01-16 | FIXED 2026-01-16 |
-| BUG-002 | User::findByLogin() reused `:login` PDO param - crashes on every login attempt | User.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-018 | `formatDate()` undefined - called 13x in views but function didn't exist | dates.php, views/*.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-027 | `Box::getGames()` undefined - API endpoint calls non-existent method | ApiController.php, Box.php | 2026-02-10 | FIXED 2026-02-10 |
+### BUG-02 (Critical): `verifyTransaction()` Checksum Always Fails
+- **File:** `src/services/TransactionService.php:269`
+- **Problem:** `entity_id` is stored as `int` during `logTransaction()` but read back as `string` from PDO. `json_encode(123)` != `json_encode("123")`, so the SHA-256 checksum never matches. All transaction verifications were reported as failed.
+- **Fix:** Cast `entity_id` to `(int)` (or null) in `verifyTransaction()` before checksum calculation.
 
-### High Bugs
+### BUG-03 (Critical): InstallController Stores SMTP Password in Plaintext
+- **File:** `src/controllers/InstallController.php:237`
+- **Problem:** During installation, the SMTP password was saved as plaintext. `SettingsController` saves it encrypted. The `Mailer` uses `decryptValue()`, which treats plaintext as a legacy value, but this inconsistency was a security risk.
+- **Fix:** Added `encryptValue()` call in `InstallController::saveEmail()` to match `SettingsController` behavior.
 
-| ID | Description | Location | Found | Status |
-|----|-------------|----------|-------|--------|
-| BUG-012 | User::createUser() password_hash filtered by $fillable (regression from security fix) | User.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-016 | App.php loads services from wrong path (`/core/` instead of `/services/`) | App.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-028 | GameController store/update never reads `difficulty` from POST (silently dropped) | GameController.php | 2026-02-10 | FIXED 2026-02-10 |
-| BUG-029 | BoxController store/update never reads `label` from POST (silently dropped) | BoxController.php | 2026-02-10 | FIXED 2026-02-10 |
+### BUG-04 (High): `sanitizeFilename()` Dangerous File Check Broken
+- **File:** `src/helpers/security.php:220-241`
+- **Problem:** `pathinfo('.htaccess', PATHINFO_FILENAME)` returns `""` (empty), not `.htaccess`. Similarly, `pathinfo('config.php', PATHINFO_FILENAME)` returns `config`, not `config.php`. So dotfiles (`.htaccess`, `.env`, `.htpasswd`) and files with extensions (`config.php`, `database.php`, `web.config`) were never blocked.
+- **Fix:** Split the list into extensionless names (checked against `PATHINFO_FILENAME`) and full-name entries (checked against the full lowercase filename).
 
-### Medium Bugs
+### BUG-05 (High): `encryptValue()` Silently Returns Plaintext on Failure
+- **File:** `src/helpers/security.php:490-491`
+- **Problem:** If `openssl_encrypt()` fails, the function returned the original plaintext value without any indication. Sensitive data (e.g., SMTP passwords) could be stored unencrypted.
+- **Fix:** Replaced plaintext fallback with `throw new RuntimeException()` and error logging.
 
-| ID | Description | Location | Found | Status |
-|----|-------------|----------|-------|--------|
-| BUG-003 | CalendarEvent::getForRange() reused `:start`/`:end` PDO params | CalendarEvent.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-004 | Game::updateTags()/updateMaterials() delete+insert not transactional | Game.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-005 | Game::duplicate() missing difficulty/is_favorite columns in INSERT | Game.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-006 | Game::search() incompatible method signature with parent Model::search() | Game.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-007 | Tag/Material quickCreate() trim after nameExists() causes potential duplicates | Tag.php, Material.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-008 | Material::allWithGameCount() reused `:search` PDO param | Material.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-009 | Game::allWithRelations() reused `:search` PDO param | Game.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-010 | SearchController 3x reused `:query` PDO params across 3 queries | SearchController.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-011 | ApiController boxes search reused `:q` PDO param | ApiController.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-013 | Game::fulltextSearch() reused `:query` PDO param | Game.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-014 | Model::search() reused `:query` PDO param | Model.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-015 | Game::fulltextSearch() fallback calls `search()` with wrong arg count | Game.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-019 | Category queries only count junction table games, miss primary category_id FK | Category.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-020 | Model.php implicit nullable type hints (PHP 8.0 deprecation, PHP 8.4 fatal) | Model.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-021 | ApiController::getGroups() inconsistent JSON response format | ApiController.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-022 | formatDifficulty() uses 3-star scale but difficulty stored as 1-5 | functions.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-030 | Controller::getPost()/getQuery() implicit nullable (PHP 8.1 deprecation) | Controller.php | 2026-02-10 | FIXED 2026-02-10 |
-| BUG-031 | Validator::validateInteger() rejects value `0` (falsy comparison) | Validator.php | 2026-02-10 | FIXED 2026-02-10 |
-| BUG-032 | TransactionService checksum includes timestamp not stored, verification always passes | TransactionService.php | 2026-02-10 | FIXED 2026-02-10 |
+### BUG-06 (Medium): `formatTimeAgo()` Singular Forms Never Used
+- **File:** `src/helpers/dates.php:234-250`
+- **Problem:** `floor()` returns a `float` (e.g., `1.0`). The strict comparison `=== 1` (int) is always `false`. So "vor 1 Minuten" was shown instead of "vor 1 Minute".
+- **Fix:** Added `(int)` cast to all `floor()` results.
 
-### Low Bugs
+### BUG-07 (Medium): Duplicate `auth.logout` Translation Key
+- **File:** `src/lang/de.php:192,211`
+- **Problem:** `auth.logout` was defined twice: first as "Abmelden" (button label), then as "Sie wurden abgemeldet." (flash message). The second silently overwrote the first. Any navigation logout button displayed the flash message text.
+- **Fix:** Renamed the second occurrence to `auth.logged_out` and updated `AuthController.php` to use the new key.
 
-| ID | Description | Location | Found | Status |
-|----|-------------|----------|-------|--------|
-| BUG-017 | ChangelogController ignores action filter when type filter also set | ChangelogController.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-023 | Category.php duplicate docblock on getGames() method | Category.php | 2026-02-09 | FIXED 2026-02-09 |
-| BUG-024 | Group::addGame() comment says "INSERT IGNORE" but code uses SELECT FOR UPDATE | Game.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-025 | PasswordReset::cleanupExpired() comment says "expired" but also deletes used tokens | PasswordReset.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-026 | Group::addItem()/removeItem() in_array() without strict mode | Group.php | 2026-02-06 | FIXED 2026-02-06 |
-| BUG-033 | ApiController addItemToGroup() in_array() without strict mode | ApiController.php | 2026-02-10 | FIXED 2026-02-10 |
-| BUG-034 | Model::getDb() declares `PDO` return but Database::getInstance() returns `?PDO` | Model.php | 2026-02-10 | FIXED 2026-02-10 |
+### BUG-08 (Medium): `randomString()` Fails on Odd Lengths
+- **File:** `src/helpers/functions.php:251`
+- **Problem:** `$length / 2` for odd numbers produces a float. `random_bytes()` in PHP 8.1+ emits a deprecation warning for floats, and the returned string is 1 char shorter than requested.
+- **Fix:** Used `(int)ceil($length / 2)` and `substr()` to get exact requested length.
 
----
+### BUG-09 (Medium): `__()` Translation Function Returns Null on Null Input
+- **File:** `src/helpers/functions.php:54,67`
+- **Problem:** Parameter is `?string` (nullable), return type is `string` (non-nullable). Passing `null` returns `null`, violating the return type and causing a `TypeError` in strict mode.
+- **Fix:** Added early `null` check returning empty string.
 
-## Bug Categories
+### BUG-10 (Medium): CalendarController::update() Has No Input Validation
+- **File:** `src/controllers/CalendarController.php:170-213`
+- **Problem:** The `store()` method validated title, description length, date formats, and color. The `update()` method performed none of these checks, accepting arbitrary data.
+- **Fix:** Added the same validation logic from `store()` to `update()`.
 
-### 1. PDO Parameter Reuse (11 instances)
+### BUG-11 (Medium): Missing Translation Keys for ImageProcessor
+- **File:** `src/services/ImageProcessor.php` + `src/lang/de.php`
+- **Problem:** `validation.file_too_large` and `validation.invalid_image` were used in code but not defined in the language file. Users saw raw key strings.
+- **Fix:** Added both keys to `de.php`.
 
-**Root Cause:** MySQL PDO with `EMULATE_PREPARES=false` does not allow reusing named parameters (`:param`) in the same query. This is a common gotcha when the same value is needed in multiple query clauses.
-
-**Impact:** Every affected query would throw a PDOException at runtime, causing 500 errors.
-
-**Files Affected:**
-- `User.php` - findByLogin() `:login` used 2x
-- `CalendarEvent.php` - getForRange() `:start`/`:end` used 3x each
-- `Material.php` - allWithGameCount() `:search` used 2x
-- `Game.php` - allWithRelations() `:search` 2x, fulltextSearch() `:query` 2x
-- `Model.php` - search() `:query` 2x
-- `SearchController.php` - `:query` reused across 3 model calls
-- `ApiController.php` - boxes search `:q` used 2x
-
-**Fix Pattern:** Rename reused params to unique suffixes (`:param1`, `:param2`) and bind each separately.
-
-### 2. Missing/Undefined Functions (1 instance)
-
-**Root Cause:** `formatDate()` was called 13 times across view templates but was never defined. Only `formatDateGerman()` existed, which has an incompatible API (named presets vs PHP format strings).
-
-**Impact:** Fatal error on any page rendering date output. Not caught earlier because affected code paths were inside `foreach` loops over initially-empty collections.
-
-**Fix:** Created `formatDate()` function in `dates.php` accepting PHP date format strings with German month name substitution.
-
-### 3. Data Loss / Integrity Bugs (5 instances)
-
-- `Game::updateTags()/updateMaterials()` - Delete+insert without transaction risked orphaned records on crash
-- `Game::duplicate()` - Missing columns in INSERT caused data loss on game duplication
-- `Tag/Material::quickCreate()` - Trim after existence check could create duplicate entries
-- `GameController` - `difficulty` field never read from POST, silently dropped on save
-- `BoxController` - `label` field never read from POST despite form having the input
-
-### 4. Regression Bugs (1 instance)
-
-- `User::createUser()` - Removing `password_hash` from `$fillable` (correct security fix) broke user creation since `Model::create()` filters by `$fillable`. Fixed with direct SQL INSERT.
-
-### 5. Logic / Display Bugs (5 instances)
-
-- Category queries missed primary FK relationship
-- ChangelogController filter logic
-- formatDifficulty() scale mismatch (1-3 vs 1-5)
-- API response format inconsistency
-- Validator::validateInteger() rejects `0` due to falsy comparison (used `!` instead of `=== false`)
-
-### 6. PHP Compatibility (2 instances)
-
-- Model.php implicit nullable type hints (`string $param = null`) deprecated in PHP 8.0, fatal in PHP 8.4
-- Controller.php getPost()/getQuery() same implicit nullable issue
-
-### 7. Undefined Methods / Missing Code (1 instance)
-
-- `Box::getGames()` called from API endpoint but method didn't exist on Box model
-
-### 8. Broken Verification (1 instance)
-
-- TransactionService checksum included `microtime(true)` timestamp that was never stored, making verification always pass without actual comparison. Fixed by removing timestamp from checksum and adding real comparison.
+### BUG-12 (Low): `parseGermanDate()` Accepts Impossible Dates
+- **File:** `src/helpers/dates.php:379-400`
+- **Problem:** `DateTime::createFromFormat('d.m.Y', '31.02.2026')` silently overflows to March 3rd instead of returning an error.
+- **Fix:** Added `DateTime::getLastErrors()` check to reject dates with warnings or errors.
 
 ---
 
-## Verification Status
+## Notes for Future Audits
 
-All 34 fixed bugs have been verified by:
-1. Code inspection confirming the fix is present in the source file
-2. Pattern analysis ensuring no similar bugs exist elsewhere
-3. Cross-referencing with the security audit for overlap
-
-### Remaining Items
-
-None - all bugs are fixed. The only open items are in the Security Audit (5 optional security hardening suggestions).
-
----
-
-## Bug Discovery Timeline
-
-| Date | Bugs Found | Bugs Fixed | Cumulative Fixed |
-|------|-----------|------------|-----------------|
-| 2026-01-08 | 0 (security only) | 0 | 0 |
-| 2026-01-16 | 1 critical | 1 | 1 |
-| 2026-02-06 | 11 (1 critical, 10 medium) | 11 | 12 |
-| 2026-02-09 | 15 (1 critical, 2 high, 8 medium, 4 low) | 15 | 26 |
-| 2026-02-10 | 8 (1 critical, 2 high, 3 medium, 2 low) | 8 | 34 |
-
-*Note: Some BUG-0xx IDs from earlier audits were originally tracked in the security audit. This report assigns them unique BUG IDs retroactively.
-
----
-
-*This report consolidates all bug findings from audits conducted between 2026-01-08 and 2026-02-10.*
-*Next recommended audit: After major feature additions or dependency upgrades.*
+- **Router::redirect() and Router::back()** both call `exit`, so `requireAuth()` and `requireCsrf()` in the base Controller DO halt execution. These were falsely flagged as bugs in earlier reviews.
+- **Box::allWithMaterialCount()** validates sort direction with `strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC'`, so the `$direction` parameter from `BoxController` is NOT a SQL injection risk.
+- The `InstallController` POST endpoints lack CSRF tokens, but the installer runs before any user account exists and is locked out after `installed.lock` is created. This is acceptable for the installation flow.

@@ -229,12 +229,18 @@ class InstallController extends Controller
      */
     public function saveEmail(): void
     {
+        require_once SRC_PATH . '/helpers/security.php';
+
+        // Encrypt SMTP password before storage (consistent with SettingsController)
+        $smtpPass = $this->getPost('smtp_password');
+        $encryptedPass = !empty($smtpPass) ? encryptValue($smtpPass) : '';
+
         // Use same key names as Mailer.php expects
         $config = [
             'smtp_host' => $this->getPost('smtp_host'),
             'smtp_port' => (int)$this->getPost('smtp_port', 587),
             'smtp_user' => $this->getPost('smtp_username'),
-            'smtp_pass' => $this->getPost('smtp_password'),
+            'smtp_pass' => $encryptedPass,
             'smtp_from' => $this->getPost('smtp_from_email'),
             'smtp_from_name' => $this->getPost('smtp_from_name', 'Kindergarten Spiele Organizer'),
             'smtp_encryption' => $this->getPost('smtp_encryption', 'tls'),

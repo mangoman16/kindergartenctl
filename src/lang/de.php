@@ -208,7 +208,7 @@ return [
     'auth.set_new_password' => 'Neues Passwort setzen',
     'auth.welcome_back' => 'Willkommen zurück!',
     'auth.login_to_continue' => 'Bitte melden Sie sich an, um fortzufahren.',
-    'auth.logout' => 'Sie wurden abgemeldet.',
+    'auth.logged_out' => 'Sie wurden abgemeldet.',
 
     // Search
     'search.title' => 'Suche',
@@ -248,6 +248,8 @@ return [
     'validation.invalid_email' => 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
     'validation.invalid_date' => 'Bitte geben Sie ein gültiges Datum ein',
     'validation.invalid_value' => 'Der eingegebene Wert ist ungültig',
+    'validation.file_too_large' => 'Die Datei ist zu groß',
+    'validation.invalid_image' => 'Ungültiges Bildformat',
 
     // Email / SMTP Settings
     'settings.title' => 'Einstellungen',
