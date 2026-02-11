@@ -217,8 +217,9 @@ function resetFailedAttempts(string $ip): void
 function sanitizeFilename(string $filename): string
 {
     // Dangerous system files that should never be allowed
-    $dangerousFiles = [
-        'passwd', 'shadow', 'group', 'hosts', 'sudoers',
+    // Check both the full lowercase filename and the name-without-extension
+    $dangerousNames = ['passwd', 'shadow', 'group', 'hosts', 'sudoers'];
+    $dangerousFullNames = [
         '.htaccess', '.htpasswd', 'web.config', '.env',
         'config.php', 'database.php'
     ];
@@ -232,9 +233,12 @@ function sanitizeFilename(string $filename): string
     // Strip any remaining tags
     $filename = strip_tags($filename);
 
-    // Check if the filename (without extension) is a dangerous system file
+    // Check dangerous files: match full filename for dotfiles/extension entries,
+    // and name-without-extension for extensionless entries
+    $lowerFilename = strtolower($filename);
     $nameWithoutExt = strtolower(pathinfo($filename, PATHINFO_FILENAME));
-    if (in_array($nameWithoutExt, $dangerousFiles, true)) {
+    if (in_array($lowerFilename, $dangerousFullNames, true) ||
+        in_array($nameWithoutExt, $dangerousNames, true)) {
         Logger::security('Dangerous filename blocked', ['filename' => $filename]);
         // Return a safe default name with the original extension
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
@@ -488,7 +492,10 @@ function encryptValue(string $plaintext): string
     $ciphertext = openssl_encrypt($plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
 
     if ($ciphertext === false) {
-        return $plaintext; // Fallback to plaintext if encryption fails
+        Logger::error('Encryption failed - value NOT stored', [
+            'error' => openssl_error_string()
+        ]);
+        throw new RuntimeException('Encryption failed. Value was not stored to prevent plaintext leakage.');
     }
 
     // Prepend IV + tag + ciphertext, then base64 encode

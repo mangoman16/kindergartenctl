@@ -193,6 +193,47 @@ class CalendarController extends Controller
             'group_id' => isset($data['group_id']) ? (!empty($data['group_id']) ? (int)$data['group_id'] : null) : $event['group_id'],
         ];
 
+        // Validate (same rules as store())
+        if (empty($eventData['title'])) {
+            $this->jsonError('Titel ist erforderlich.', 400);
+            return;
+        }
+
+        if (mb_strlen($eventData['title']) > 255) {
+            $this->jsonError('Titel darf maximal 255 Zeichen lang sein.', 400);
+            return;
+        }
+
+        if (mb_strlen($eventData['description']) > 5000) {
+            $this->jsonError('Beschreibung darf maximal 5000 Zeichen lang sein.', 400);
+            return;
+        }
+
+        if (empty($eventData['start_date'])) {
+            $this->jsonError('Startdatum ist erforderlich.', 400);
+            return;
+        }
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{2}:\d{2}(:\d{2})?)?$/', $eventData['start_date'])) {
+            $this->jsonError('Ungültiges Datumsformat.', 400);
+            return;
+        }
+
+        if (!empty($eventData['end_date'])) {
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{2}:\d{2}(:\d{2})?)?$/', $eventData['end_date'])) {
+                $this->jsonError('Ungültiges Enddatumsformat.', 400);
+                return;
+            }
+            if ($eventData['end_date'] < $eventData['start_date']) {
+                $this->jsonError('Enddatum muss nach dem Startdatum liegen.', 400);
+                return;
+            }
+        }
+
+        if (!empty($eventData['color']) && !preg_match('/^#[0-9A-Fa-f]{6}$/', $eventData['color'])) {
+            $eventData['color'] = null;
+        }
+
         // Track changes
         $changelog = ChangelogService::getInstance();
         $changes = $changelog->getChanges($event, $eventData, ['title', 'description', 'start_date', 'end_date', 'all_day', 'color']);

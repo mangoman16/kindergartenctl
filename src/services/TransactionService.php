@@ -266,9 +266,14 @@ class TransactionService
             return false;
         }
 
+        // Cast entity_id to int (or null) to match the original type used during
+        // logTransaction(), since PDO returns all columns as strings by default
+        // and json_encode produces different output for int vs string values.
+        $entityId = $transaction['entity_id'] !== null ? (int)$transaction['entity_id'] : null;
+
         $checksumData = [
             'entity_type' => $transaction['entity_type'],
-            'entity_id' => $transaction['entity_id'],
+            'entity_id' => $entityId,
             'operation' => $transaction['operation'],
             'data_before' => $transaction['data_before'] ? json_decode($transaction['data_before'], true) : null,
             'data_after' => $transaction['data_after'] ? json_decode($transaction['data_after'], true) : null,

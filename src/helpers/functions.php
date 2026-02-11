@@ -53,6 +53,10 @@ function e(string $string): string
  */
 function __(?string $key, array $replace = []): string
 {
+    if ($key === null) {
+        return '';
+    }
+
     static $lang = null;
 
     if ($lang === null) {
@@ -248,7 +252,7 @@ function formatFileSize(int $bytes): string
  */
 function randomString(int $length = 32): string
 {
-    return bin2hex(random_bytes($length / 2));
+    return substr(bin2hex(random_bytes((int)ceil($length / 2))), 0, $length);
 }
 
 /**
