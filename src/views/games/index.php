@@ -22,7 +22,7 @@
         <?php endforeach; ?>
     </select>
     <select name="category" class="inline-filter-select" onchange="this.form.submit()">
-        <option value="">Alle Altersgruppen</option>
+        <option value=""><?= __('misc.all') ?> <?= __('nav.categories') ?></option>
         <?php foreach ($categories as $category): ?>
             <option value="<?= $category['id'] ?>" <?= ($filters['category_id'] ?? '') == $category['id'] ? 'selected' : '' ?>>
                 <?= e($category['name']) ?>

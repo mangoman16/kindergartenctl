@@ -9,7 +9,7 @@ return [
     'nav.games' => 'Games',
     'nav.materials' => 'Materials',
     'nav.boxes' => 'Boxes',
-    'nav.categories' => 'Age Groups',
+    'nav.categories' => 'Categories',
     'nav.tags' => 'Topics',
     'nav.groups' => 'Groups',
     'nav.calendar' => 'Calendar',

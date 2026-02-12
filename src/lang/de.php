@@ -9,7 +9,7 @@ return [
     'nav.games' => 'Spiele',
     'nav.materials' => 'Material',
     'nav.boxes' => 'Boxen',
-    'nav.categories' => 'Altersgruppen',
+    'nav.categories' => 'Kategorien',
     'nav.tags' => 'Themen',
     'nav.groups' => 'Gruppen',
     'nav.calendar' => 'Kalender',
@@ -124,8 +124,8 @@ return [
     'box.empty' => 'Diese Box ist leer',
 
     // Categories
-    'category.title' => 'Altersgruppe',
-    'category.title_plural' => 'Altersgruppen',
+    'category.title' => 'Kategorie',
+    'category.title_plural' => 'Kategorien',
     'category.add_new' => 'Neue Altersgruppe',
     'category.edit' => 'Altersgruppe bearbeiten',
     'category.create' => 'Altersgruppe erstellen',

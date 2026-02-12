@@ -194,6 +194,26 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
 
 (function() {
     var contextSidebar = document.getElementById('contextSidebar');
+    // Restore sidebar state on pages without a context sidebar (e.g. home)
+    if (contextSidebar && !contextSidebar.classList.contains('open')) {
+        var savedSection = localStorage.getItem('ctxSidebarSection');
+        if (savedSection) {
+            var savedTarget = contextSidebar.querySelector('.ctx-section[data-for="' + savedSection + '"]');
+            if (savedTarget) {
+                savedTarget.classList.add('visible');
+                contextSidebar.classList.add('open');
+                contextSidebar.dataset.active = savedSection;
+                // Also update icon rail active state
+                document.querySelectorAll('.rail-btn[data-section]').forEach(function(b) { b.classList.remove('active'); });
+                var matchBtn = document.querySelector('.rail-btn[data-section="' + savedSection + '"]');
+                if (matchBtn) matchBtn.classList.add('active');
+            }
+        }
+    } else if (contextSidebar && contextSidebar.dataset.active) {
+        // Save the current sidebar state
+        localStorage.setItem('ctxSidebarSection', contextSidebar.dataset.active);
+    }
+
     document.querySelectorAll('.rail-btn[data-section]').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var section = this.dataset.section;
@@ -203,7 +223,12 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
             if (contextSidebar.classList.contains('open') && contextSidebar.dataset.active === section && href) { window.location.href = href; return; }
             contextSidebar.querySelectorAll('.ctx-section').forEach(function(s) { s.classList.remove('visible'); });
             var targetSection = contextSidebar.querySelector('.ctx-section[data-for="' + section + '"]');
-            if (targetSection) { targetSection.classList.add('visible'); contextSidebar.classList.add('open'); contextSidebar.dataset.active = section; }
+            if (targetSection) {
+                targetSection.classList.add('visible');
+                contextSidebar.classList.add('open');
+                contextSidebar.dataset.active = section;
+                localStorage.setItem('ctxSidebarSection', section);
+            }
             if (href) { window.location.href = href; return; }
             document.querySelectorAll('.rail-btn[data-section]').forEach(function(b) { b.classList.remove('active'); });
             this.classList.add('active');

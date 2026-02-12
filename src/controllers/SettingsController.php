@@ -679,6 +679,10 @@ class SettingsController extends Controller
         $this->requireCsrf();
 
         $themeColor = $_POST['theme_color'] ?? '';
+        // Fallback to color picker value if no preset radio was selected
+        if (empty($themeColor) && !empty($_POST['theme_color_picker'])) {
+            $themeColor = $_POST['theme_color_picker'];
+        }
         $themePattern = $_POST['theme_pattern'] ?? '';
 
         // Validate color format (hex color)
