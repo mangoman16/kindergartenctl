@@ -135,10 +135,11 @@ class SearchController extends Controller
     {
         $db = Database::getInstance();
         $stmt = $db->prepare("
-            SELECT b.*, COUNT(m.id) as material_count
+            SELECT b.*, COUNT(m.id) as material_count, l.name as location_name
             FROM boxes b
             LEFT JOIN materials m ON m.box_id = b.id
-            WHERE b.name LIKE :query1 OR b.label LIKE :query2 OR b.location LIKE :query3
+            LEFT JOIN locations l ON l.id = b.location_id
+            WHERE b.name LIKE :query1 OR b.label LIKE :query2 OR l.name LIKE :query3
             GROUP BY b.id
             ORDER BY b.name ASC
             LIMIT 50

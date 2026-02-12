@@ -1,8 +1,3 @@
-<div class="category-help">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-    <span><?= __('help.category_materials') ?></span>
-</div>
-
 <div class="page-header">
     <h1 class="page-title"><?= __('material.title_plural') ?></h1>
     <div class="page-actions">
@@ -16,39 +11,20 @@
     </div>
 </div>
 
-<!-- Filters -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form action="<?= url('/materials') ?>" method="GET" class="filter-form">
-            <div class="flex gap-4 items-end">
-                <div class="form-group mb-0 flex-1">
-                    <label class="form-label"><?= __('form.search') ?></label>
-                    <input type="text" name="q" class="form-control" placeholder="<?= __('misc.search_placeholder') ?>"
-                           value="<?= e($filters['search'] ?? '') ?>">
-                </div>
-                <label class="form-check mb-0">
-                    <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?>>
-                    <span class="form-check-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning); vertical-align: -2px;">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                        </svg>
-                        Nur Favoriten
-                    </span>
-                </label>
-                <div class="flex gap-2">
-                    <button type="submit" class="btn btn-secondary">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        Filtern
-                    </button>
-                    <a href="<?= url('/materials') ?>" class="btn btn-secondary">Zurücksetzen</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+<!-- Inline Filters -->
+<form action="<?= url('/materials') ?>" method="GET" class="inline-filters">
+    <label class="inline-filter-check">
+        <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span>Nur Favoriten</span>
+    </label>
+    <?php if (!empty($filters['search']) || !empty($filters['is_favorite'])): ?>
+        <a href="<?= url('/materials') ?>" class="inline-filter-reset"><?= __('misc.reset') ?? 'Zurücksetzen' ?></a>
+    <?php endif; ?>
+    <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
+</form>
 
 <?php if (empty($materials)): ?>
 <!-- Empty State -->

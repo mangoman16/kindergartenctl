@@ -1,8 +1,3 @@
-<div class="category-help">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-    <span><?= __('help.category_categories') ?></span>
-</div>
-
 <div class="page-header">
     <h1 class="page-title"><?= __('category.title_plural') ?></h1>
     <div class="page-actions">
@@ -29,8 +24,8 @@
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
             </div>
-            <h3 class="empty-state-title">Noch keine Altersgruppen vorhanden</h3>
-            <p class="empty-state-text">Erstellen Sie Altersgruppen, um Spiele zu kategorisieren.</p>
+            <h3 class="empty-state-title">Noch keine Kategorien vorhanden</h3>
+            <p class="empty-state-text">Erstellen Sie Kategorien, um Spiele zu kategorisieren.</p>
             <a href="<?= url('/categories/create') ?>" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>

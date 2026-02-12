@@ -70,6 +70,8 @@ class BoxController extends Controller
      */
     public function create(): void
     {
+        require_once SRC_PATH . '/models/Location.php';
+
         $this->setTitle(__('box.create'));
         $this->addBreadcrumb(__('box.title_plural'), url('/boxes'));
         $this->addBreadcrumb(__('box.create'));
@@ -77,6 +79,7 @@ class BoxController extends Controller
         $this->render('boxes/form', [
             'box' => null,
             'isEdit' => false,
+            'locations' => Location::getForSelect(),
         ]);
     }
 
@@ -89,11 +92,12 @@ class BoxController extends Controller
 
         require_once SRC_PATH . '/models/Box.php';
 
+        $locationId = $this->getPost('location_id', '');
         $data = [
             'name' => trim($this->getPost('name', '')),
             'number' => trim($this->getPost('number', '')),
             'label' => trim($this->getPost('label', '')),
-            'location' => trim($this->getPost('location', '')),
+            'location_id' => $locationId !== '' ? (int)$locationId : null,
             'description' => trim($this->getPost('description', '')),
             'notes' => trim($this->getPost('notes', '')),
             'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
@@ -104,7 +108,6 @@ class BoxController extends Controller
             'name' => 'required|max:100',
             'number' => 'max:20',
             'label' => 'max:50',
-            'location' => 'max:255',
         ]);
 
         // Check duplicate name
@@ -142,6 +145,7 @@ class BoxController extends Controller
     public function edit(string $id): void
     {
         require_once SRC_PATH . '/models/Box.php';
+        require_once SRC_PATH . '/models/Location.php';
 
         $box = Box::find((int)$id);
 
@@ -159,6 +163,7 @@ class BoxController extends Controller
         $this->render('boxes/form', [
             'box' => $box,
             'isEdit' => true,
+            'locations' => Location::getForSelect(),
         ]);
     }
 
@@ -179,11 +184,12 @@ class BoxController extends Controller
             return;
         }
 
+        $locationId = $this->getPost('location_id', '');
         $data = [
             'name' => trim($this->getPost('name', '')),
             'number' => trim($this->getPost('number', '')),
             'label' => trim($this->getPost('label', '')),
-            'location' => trim($this->getPost('location', '')),
+            'location_id' => $locationId !== '' ? (int)$locationId : null,
             'description' => trim($this->getPost('description', '')),
             'notes' => trim($this->getPost('notes', '')),
             'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $box['image_path'],
@@ -194,7 +200,6 @@ class BoxController extends Controller
             'name' => 'required|max:100',
             'number' => 'max:20',
             'label' => 'max:50',
-            'location' => 'max:255',
         ]);
 
         // Check duplicate name (excluding current)
@@ -321,7 +326,7 @@ class BoxController extends Controller
     private function getChanges(array $old, array $new): array
     {
         $changes = [];
-        $trackFields = ['name', 'number', 'label', 'location', 'description', 'notes', 'image_path'];
+        $trackFields = ['name', 'number', 'label', 'location_id', 'description', 'notes', 'image_path'];
 
         foreach ($trackFields as $field) {
             $oldValue = $old[$field] ?? '';

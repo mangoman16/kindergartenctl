@@ -21,6 +21,7 @@ class Box extends Model
         'number',
         'label',
         'location',
+        'location_id',
         'description',
         'notes',
         'image_path',
@@ -44,9 +45,10 @@ class Box extends Model
             $orderBy = 'name';
         }
 
-        $sql = "SELECT b.*, COUNT(m.id) as material_count
+        $sql = "SELECT b.*, COUNT(m.id) as material_count, l.name as location_name
                 FROM boxes b
                 LEFT JOIN materials m ON m.box_id = b.id
+                LEFT JOIN locations l ON l.id = b.location_id
                 GROUP BY b.id
                 ORDER BY b.{$orderBy} {$direction}";
 
@@ -62,9 +64,10 @@ class Box extends Model
         $db = self::getDb();
 
         $stmt = $db->prepare("
-            SELECT b.*, COUNT(m.id) as material_count
+            SELECT b.*, COUNT(m.id) as material_count, l.name as location_name
             FROM boxes b
             LEFT JOIN materials m ON m.box_id = b.id
+            LEFT JOIN locations l ON l.id = b.location_id
             WHERE b.id = :id
             GROUP BY b.id
         ");

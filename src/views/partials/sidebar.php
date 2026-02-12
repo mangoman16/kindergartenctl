@@ -3,7 +3,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $navSection = 'home';
 if (strpos($currentPath, '/games') === 0 || strpos($currentPath, '/categories') === 0 || strpos($currentPath, '/tags') === 0 || strpos($currentPath, '/groups') === 0) {
     $navSection = 'games';
-} elseif (strpos($currentPath, '/materials') === 0 || strpos($currentPath, '/boxes') === 0) {
+} elseif (strpos($currentPath, '/materials') === 0 || strpos($currentPath, '/boxes') === 0 || strpos($currentPath, '/locations') === 0) {
     $navSection = 'inventory';
 } elseif (strpos($currentPath, '/calendar') === 0) {
     $navSection = 'calendar';
@@ -18,9 +18,9 @@ $hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar', 'c
 <!-- Icon Rail -->
 <nav class="icon-rail" id="iconRail">
     <div class="rail-top">
-        <a href="<?= url('/') ?>" class="rail-logo" title="KindergartenOrganizer">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
-        </a>
+        <button class="rail-btn sidebar-toggle-btn" id="sidebarToggleBtn" title="<?= __('nav.toggle_sidebar') ?>">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
 
         <button class="rail-btn <?= $navSection === 'home' ? 'active' : '' ?>" data-section="home" data-href="<?= url('/') ?>" title="<?= __('nav.dashboard') ?>">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -113,6 +113,10 @@ $hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar', 'c
             <a href="<?= url('/boxes') ?>" class="ctx-link <?= isActiveNav('/boxes') ? 'active' : '' ?>">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="M3.3 7l8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
                 <?= __('nav.boxes') ?>
+            </a>
+            <a href="<?= url('/locations') ?>" class="ctx-link <?= isActiveNav('/locations') ? 'active' : '' ?>">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <?= __('nav.locations') ?>
             </a>
         </nav>
     </div>

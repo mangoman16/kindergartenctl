@@ -4,6 +4,7 @@ $helpPage = 'dashboard';
 if (strpos($currentPath, '/games') === 0) $helpPage = 'games';
 elseif (strpos($currentPath, '/materials') === 0) $helpPage = 'materials';
 elseif (strpos($currentPath, '/boxes') === 0) $helpPage = 'boxes';
+elseif (strpos($currentPath, '/locations') === 0) $helpPage = 'locations';
 elseif (strpos($currentPath, '/categories') === 0) $helpPage = 'categories';
 elseif (strpos($currentPath, '/tags') === 0) $helpPage = 'tags';
 elseif (strpos($currentPath, '/groups') === 0) $helpPage = 'groups';
@@ -27,6 +28,7 @@ elseif (strpos($currentPath, '/search') === 0) $helpPage = 'search';
         <a href="#help-games" class="help-toc-item <?= $helpPage === 'games' ? 'active' : '' ?>" data-page="games"><?= __('nav.games') ?></a>
         <a href="#help-materials" class="help-toc-item <?= $helpPage === 'materials' ? 'active' : '' ?>" data-page="materials"><?= __('nav.materials') ?></a>
         <a href="#help-boxes" class="help-toc-item <?= $helpPage === 'boxes' ? 'active' : '' ?>" data-page="boxes"><?= __('nav.boxes') ?></a>
+        <a href="#help-locations" class="help-toc-item <?= $helpPage === 'locations' ? 'active' : '' ?>" data-page="locations"><?= __('nav.locations') ?></a>
         <a href="#help-categories" class="help-toc-item <?= $helpPage === 'categories' ? 'active' : '' ?>" data-page="categories"><?= __('nav.categories') ?></a>
         <a href="#help-tags" class="help-toc-item <?= $helpPage === 'tags' ? 'active' : '' ?>" data-page="tags"><?= __('nav.tags') ?></a>
         <a href="#help-groups" class="help-toc-item <?= $helpPage === 'groups' ? 'active' : '' ?>" data-page="groups"><?= __('nav.groups') ?></a>
@@ -43,36 +45,49 @@ elseif (strpos($currentPath, '/search') === 0) $helpPage = 'search';
 
         <section id="help-games" class="help-section" data-page="games">
             <h3><?= __('nav.games') ?></h3>
+            <div class="help-category-hint"><?= __('help.category_games') ?></div>
             <p><?= __('help.guide_games') ?></p>
         </section>
 
         <section id="help-materials" class="help-section" data-page="materials">
             <h3><?= __('nav.materials') ?></h3>
+            <div class="help-category-hint"><?= __('help.category_materials') ?></div>
             <p><?= __('help.guide_materials') ?></p>
         </section>
 
         <section id="help-boxes" class="help-section" data-page="boxes">
             <h3><?= __('nav.boxes') ?></h3>
+            <div class="help-category-hint"><?= __('help.category_boxes') ?></div>
             <p><?= __('help.guide_boxes') ?></p>
+        </section>
+
+        <section id="help-locations" class="help-section" data-page="locations">
+            <h3><?= __('nav.locations') ?></h3>
+            <div class="help-category-hint"><?= __('help.category_locations') ?></div>
+            <p><?= __('help.guide_locations') ?></p>
         </section>
 
         <section id="help-categories" class="help-section" data-page="categories">
             <h3><?= __('nav.categories') ?></h3>
+            <div class="help-category-hint"><?= __('help.category_categories') ?></div>
             <p><?= __('help.guide_categories') ?></p>
         </section>
 
         <section id="help-tags" class="help-section" data-page="tags">
             <h3><?= __('nav.tags') ?></h3>
+            <div class="help-category-hint"><?= __('help.category_tags') ?></div>
             <p><?= __('help.guide_tags') ?></p>
         </section>
 
         <section id="help-groups" class="help-section" data-page="groups">
             <h3><?= __('nav.groups') ?></h3>
+            <div class="help-category-hint"><?= __('help.category_groups') ?></div>
             <p><?= __('help.guide_groups') ?></p>
         </section>
 
         <section id="help-calendar" class="help-section" data-page="calendar">
             <h3><?= __('nav.calendar') ?></h3>
+            <div class="help-category-hint"><?= __('help.category_calendar') ?></div>
             <p><?= __('help.guide_calendar') ?></p>
         </section>
 

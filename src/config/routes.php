@@ -62,6 +62,15 @@ return [
     'POST /boxes/{id}/delete' => ['BoxController', 'delete'],
     'GET /boxes/{id}/print' => ['BoxController', 'print'],
 
+    // Locations (Standorte)
+    'GET /locations' => ['LocationController', 'index'],
+    'GET /locations/create' => ['LocationController', 'create'],
+    'POST /locations' => ['LocationController', 'store'],
+    'GET /locations/{id}' => ['LocationController', 'show'],
+    'GET /locations/{id}/edit' => ['LocationController', 'edit'],
+    'POST /locations/{id}' => ['LocationController', 'update'],
+    'POST /locations/{id}/delete' => ['LocationController', 'delete'],
+
     // Categories
     'GET /categories' => ['CategoryController', 'index'],
     'GET /categories/create' => ['CategoryController', 'create'],

@@ -137,218 +137,223 @@
     </a>
 </div>
 
-<!-- Row: Mini Calendar + Recently Added -->
-<div class="grid grid-cols-2 gap-4 mt-6">
-    <!-- Mini Calendar -->
-    <div class="card dash-card">
-        <div class="dash-card-header">
-            <h3 class="dash-card-title"><?= __('nav.calendar') ?></h3>
-            <a href="<?= url('/calendar') ?>" class="dash-card-link"><?= __('nav.calendar') ?> &rarr;</a>
-        </div>
-        <div class="dash-card-body">
-            <div id="mini-cal">
-                <div class="mini-cal-nav">
-                    <button type="button" id="mini-cal-prev" class="mini-cal-arrow" aria-label="Previous month">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    </button>
-                    <span id="mini-cal-title" class="mini-cal-month-title"></span>
-                    <button type="button" id="mini-cal-next" class="mini-cal-arrow" aria-label="Next month">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                </div>
-                <div class="mini-cal-weekdays">
-                    <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
-                </div>
-                <div id="mini-cal-days" class="mini-cal-days"></div>
+<!-- Dashboard Widgets -->
+<div class="dash-layout" id="dashLayout">
+    <!-- Left Column (collapsible) -->
+    <div class="dash-col-left" id="dashColLeft">
+        <!-- Mini Calendar -->
+        <div class="card dash-card dash-card-fixed">
+            <div class="dash-card-header">
+                <h3 class="dash-card-title"><?= __('nav.calendar') ?></h3>
+                <a href="<?= url('/calendar') ?>" class="dash-card-link"><?= __('nav.calendar') ?> &rarr;</a>
             </div>
-            <!-- Popover for day events -->
-            <div id="mini-cal-popover" class="mini-cal-popover" style="display:none;">
-                <div class="mini-cal-popover-header">
-                    <span id="mini-cal-popover-date"></span>
-                    <button type="button" id="mini-cal-popover-close" class="mini-cal-popover-close" aria-label="Close">&times;</button>
-                </div>
-                <div id="mini-cal-popover-body" class="mini-cal-popover-body"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recently Added -->
-    <div class="card dash-card">
-        <div class="dash-card-header">
-            <h3 class="dash-card-title"><?= __('dashboard.recent_games') ?></h3>
-            <a href="<?= url('/games') ?>" class="dash-card-link"><?= __('misc.show_more') ?> &rarr;</a>
-        </div>
-        <div class="dash-card-body">
-            <?php if (empty($recentGames)): ?>
-                <p class="text-muted"><?= __('dashboard.recently_added') ?></p>
-            <?php else: ?>
-                <div class="dash-item-list">
-                    <?php foreach ($recentGames as $game): ?>
-                        <a href="<?= url('/games/' . $game['id']) ?>" class="dash-item">
-                            <?php if ($game['image_path']): ?>
-                                <img src="<?= upload($game['image_path']) ?>" alt="" class="dash-item-thumb">
-                            <?php else: ?>
-                                <div class="dash-item-thumb dash-item-thumb-placeholder">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                                    </svg>
-                                </div>
-                            <?php endif; ?>
-                            <div class="dash-item-info">
-                                <div class="dash-item-name"><?= e($game['name']) ?></div>
-                                <div class="dash-item-meta"><?= e($game['box_name'] ?? 'Keine Box') ?></div>
-                            </div>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
-
-<!-- Row: Recent Changes + Recently Played -->
-<div class="grid grid-cols-2 gap-4 mt-4">
-    <!-- Recent Changes -->
-    <div class="card dash-card">
-        <div class="dash-card-header">
-            <h3 class="dash-card-title"><?= __('dashboard.recent_changes') ?></h3>
-            <a href="<?= url('/changelog') ?>" class="dash-card-link"><?= __('misc.show_more') ?> &rarr;</a>
-        </div>
-        <div class="dash-card-body">
-            <?php if (empty($recentChanges)): ?>
-                <p class="text-muted">Noch keine Änderungen.</p>
-            <?php else: ?>
-                <div class="dash-change-list">
-                    <?php foreach ($recentChanges as $change): ?>
-                        <div class="dash-change-item">
-                            <span class="dash-change-badge dash-change-badge--<?= $change['action'] === 'create' ? 'create' : ($change['action'] === 'delete' ? 'delete' : 'update') ?>">
-                                <?= ChangelogService::getActionLabel($change['action']) ?>
-                            </span>
-                            <div class="dash-change-info">
-                                <span class="dash-change-name"><?= e($change['entity_name']) ?></span>
-                                <span class="dash-change-type"><?= ChangelogService::getEntityTypeLabel($change['entity_type']) ?></span>
-                            </div>
-                            <span class="dash-change-time"><?= formatDate($change['created_at'], 'd.m. H:i') ?></span>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
-
-    <!-- Recently Played -->
-    <div class="card dash-card">
-        <div class="dash-card-header">
-            <h3 class="dash-card-title"><?= __('dashboard.recently_played') ?></h3>
-            <a href="<?= url('/calendar') ?>" class="dash-card-link"><?= __('nav.calendar') ?> &rarr;</a>
-        </div>
-        <div class="dash-card-body">
-            <?php if (empty($recentlyPlayed)): ?>
-                <p class="text-muted">Noch keine Spiele gespielt.</p>
-            <?php else: ?>
-                <div class="dash-item-list">
-                    <?php foreach ($recentlyPlayed as $played): ?>
-                        <a href="<?= url('/games/' . $played['game_id']) ?>" class="dash-item">
-                            <?php if ($played['image_path']): ?>
-                                <img src="<?= upload($played['image_path']) ?>" alt="" class="dash-item-thumb">
-                            <?php else: ?>
-                                <div class="dash-item-thumb dash-item-thumb-placeholder" style="color: var(--color-success);">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                    </svg>
-                                </div>
-                            <?php endif; ?>
-                            <div class="dash-item-info">
-                                <div class="dash-item-name"><?= e($played['game_name']) ?></div>
-                                <div class="dash-item-meta"><?= e($played['box_name'] ?? 'Keine Box') ?></div>
-                            </div>
-                            <span class="dash-item-date"><?= formatDate($played['start_date'], 'd.m.') ?></span>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
-
-<!-- Row: Random Game + Favorites -->
-<div class="grid grid-cols-2 gap-4 mt-4">
-    <!-- Random Game Picker -->
-    <div class="card dash-card">
-        <div class="dash-card-header">
-            <h3 class="dash-card-title"><?= __('dashboard.random_game') ?></h3>
-        </div>
-        <div class="dash-card-body">
-            <div class="dash-picker-filters">
-                <select id="random-category" class="dash-picker-select">
-                    <option value=""><?= __('misc.all') ?> <?= __('nav.categories') ?></option>
-                    <?php foreach ($categories as $category): ?>
-                        <option value="<?= $category['id'] ?>"><?= e($category['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <select id="random-tag" class="dash-picker-select">
-                    <option value=""><?= __('misc.all') ?> <?= __('nav.tags') ?></option>
-                    <?php foreach ($tags as $tag): ?>
-                        <option value="<?= $tag['id'] ?>"><?= e($tag['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <button type="button" id="random-game-btn" class="btn btn-primary w-full mt-4">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="23 4 23 10 17 10"></polyline>
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                </svg>
-                <?= __('dashboard.pick_random') ?>
-            </button>
-            <div id="random-game-result" class="dash-picker-result" style="display: none;">
-                <a id="random-game-link" href="#" class="dash-item">
-                    <img id="random-game-image" src="" alt="" class="dash-picker-result-img">
-                    <div class="dash-item-info">
-                        <div id="random-game-name" class="dash-item-name"></div>
-                        <div id="random-game-box" class="dash-item-meta"></div>
+            <div class="dash-card-body">
+                <div id="mini-cal">
+                    <div class="mini-cal-nav">
+                        <button type="button" id="mini-cal-prev" class="mini-cal-arrow" aria-label="Previous month">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <span id="mini-cal-title" class="mini-cal-month-title"></span>
+                        <button type="button" id="mini-cal-next" class="mini-cal-arrow" aria-label="Next month">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
                     </div>
-                </a>
+                    <div class="mini-cal-weekdays">
+                        <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
+                    </div>
+                    <div id="mini-cal-days" class="mini-cal-days"></div>
+                </div>
+                <!-- Popover for day events -->
+                <div id="mini-cal-popover" class="mini-cal-popover" style="display:none;">
+                    <div class="mini-cal-popover-header">
+                        <span id="mini-cal-popover-date"></span>
+                        <button type="button" id="mini-cal-popover-close" class="mini-cal-popover-close" aria-label="Close">&times;</button>
+                    </div>
+                    <div id="mini-cal-popover-body" class="mini-cal-popover-body"></div>
+                </div>
             </div>
-            <p id="random-game-empty" class="text-muted mt-4" style="display: none;">
-                Kein passendes Spiel gefunden.
-            </p>
+        </div>
+
+        <!-- Recent Changes -->
+        <div class="card dash-card dash-card-fixed">
+            <div class="dash-card-header">
+                <h3 class="dash-card-title"><?= __('dashboard.recent_changes') ?></h3>
+                <a href="<?= url('/changelog') ?>" class="dash-card-link"><?= __('misc.show_more') ?> &rarr;</a>
+            </div>
+            <div class="dash-card-body">
+                <?php if (empty($recentChanges)): ?>
+                    <p class="text-muted">Noch keine Änderungen.</p>
+                <?php else: ?>
+                    <div class="dash-change-list">
+                        <?php foreach (array_slice($recentChanges, 0, 4) as $change): ?>
+                            <div class="dash-change-item">
+                                <span class="dash-change-badge dash-change-badge--<?= $change['action'] === 'create' ? 'create' : ($change['action'] === 'delete' ? 'delete' : 'update') ?>">
+                                    <?= ChangelogService::getActionLabel($change['action']) ?>
+                                </span>
+                                <div class="dash-change-info">
+                                    <span class="dash-change-name"><?= e($change['entity_name']) ?></span>
+                                    <span class="dash-change-type"><?= ChangelogService::getEntityTypeLabel($change['entity_type']) ?></span>
+                                </div>
+                                <span class="dash-change-time"><?= formatDate($change['created_at'], 'd.m. H:i') ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Random Game Picker -->
+        <div class="card dash-card dash-card-fixed">
+            <div class="dash-card-header">
+                <h3 class="dash-card-title"><?= __('dashboard.random_game') ?></h3>
+            </div>
+            <div class="dash-card-body">
+                <div class="dash-picker-filters">
+                    <select id="random-category" class="dash-picker-select">
+                        <option value=""><?= __('misc.all') ?> <?= __('nav.categories') ?></option>
+                        <?php foreach ($categories as $category): ?>
+                            <option value="<?= $category['id'] ?>"><?= e($category['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <select id="random-tag" class="dash-picker-select">
+                        <option value=""><?= __('misc.all') ?> <?= __('nav.tags') ?></option>
+                        <?php foreach ($tags as $tag): ?>
+                            <option value="<?= $tag['id'] ?>"><?= e($tag['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <button type="button" id="random-game-btn" class="btn btn-primary w-full mt-4">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                    <?= __('dashboard.pick_random') ?>
+                </button>
+                <div id="random-game-result" class="dash-picker-result" style="display: none;">
+                    <a id="random-game-link" href="#" class="dash-item">
+                        <img id="random-game-image" src="" alt="" class="dash-picker-result-img">
+                        <div class="dash-item-info">
+                            <div id="random-game-name" class="dash-item-name"></div>
+                            <div id="random-game-box" class="dash-item-meta"></div>
+                        </div>
+                    </a>
+                </div>
+                <p id="random-game-empty" class="text-muted mt-4" style="display: none;">
+                    Kein passendes Spiel gefunden.
+                </p>
+            </div>
         </div>
     </div>
 
-    <!-- Favorites -->
-    <div class="card dash-card">
-        <div class="dash-card-header">
-            <h3 class="dash-card-title"><?= __('dashboard.favorites') ?> (<?= $stats['favorites'] ?>)</h3>
-            <?php if ($stats['favorites'] > 8): ?>
-                <a href="<?= url('/games?favorites=1') ?>" class="dash-card-link"><?= __('misc.show_more') ?> &rarr;</a>
-            <?php endif; ?>
-        </div>
-        <div class="dash-card-body">
-            <?php if (empty($favoriteGames)): ?>
-                <p class="text-muted">Noch keine Favoriten.</p>
-            <?php else: ?>
-                <div class="dash-item-list">
-                    <?php foreach ($favoriteGames as $game): ?>
-                        <a href="<?= url('/games/' . $game['id']) ?>" class="dash-item">
-                            <?php if ($game['image_path']): ?>
-                                <img src="<?= upload($game['image_path']) ?>" alt="" class="dash-item-thumb">
-                            <?php else: ?>
-                                <div class="dash-item-thumb dash-item-thumb-placeholder" style="color: var(--color-warning);">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                    </svg>
+    <!-- Toggle Button for Left Column -->
+    <button type="button" class="dash-col-toggle" id="dashColToggle" title="Seitenleiste ein-/ausblenden">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+
+    <!-- Right Column -->
+    <div class="dash-col-right">
+        <!-- Recently Added -->
+        <div class="card dash-card dash-card-fixed">
+            <div class="dash-card-header">
+                <h3 class="dash-card-title"><?= __('dashboard.recent_games') ?></h3>
+                <a href="<?= url('/games') ?>" class="dash-card-link"><?= __('misc.show_more') ?> &rarr;</a>
+            </div>
+            <div class="dash-card-body">
+                <?php if (empty($recentGames)): ?>
+                    <p class="text-muted"><?= __('dashboard.recently_added') ?></p>
+                <?php else: ?>
+                    <div class="dash-item-list">
+                        <?php foreach (array_slice($recentGames, 0, 4) as $game): ?>
+                            <a href="<?= url('/games/' . $game['id']) ?>" class="dash-item">
+                                <?php if ($game['image_path']): ?>
+                                    <img src="<?= upload($game['image_path']) ?>" alt="" class="dash-item-thumb">
+                                <?php else: ?>
+                                    <div class="dash-item-thumb dash-item-thumb-placeholder">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                        </svg>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="dash-item-info">
+                                    <div class="dash-item-name"><?= e($game['name']) ?></div>
+                                    <div class="dash-item-meta"><?= e($game['box_name'] ?? 'Keine Box') ?></div>
                                 </div>
-                            <?php endif; ?>
-                            <div class="dash-item-info">
-                                <div class="dash-item-name"><?= e($game['name']) ?></div>
-                                <div class="dash-item-meta"><?= e($game['box_name'] ?? 'Keine Box') ?></div>
-                            </div>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Recently Played -->
+        <div class="card dash-card dash-card-fixed">
+            <div class="dash-card-header">
+                <h3 class="dash-card-title"><?= __('dashboard.recently_played') ?></h3>
+                <a href="<?= url('/calendar') ?>" class="dash-card-link"><?= __('nav.calendar') ?> &rarr;</a>
+            </div>
+            <div class="dash-card-body">
+                <?php if (empty($recentlyPlayed)): ?>
+                    <p class="text-muted">Noch keine Spiele gespielt.</p>
+                <?php else: ?>
+                    <div class="dash-item-list">
+                        <?php foreach (array_slice($recentlyPlayed, 0, 4) as $played): ?>
+                            <a href="<?= url('/games/' . $played['game_id']) ?>" class="dash-item">
+                                <?php if ($played['image_path']): ?>
+                                    <img src="<?= upload($played['image_path']) ?>" alt="" class="dash-item-thumb">
+                                <?php else: ?>
+                                    <div class="dash-item-thumb dash-item-thumb-placeholder" style="color: var(--color-success);">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="dash-item-info">
+                                    <div class="dash-item-name"><?= e($played['game_name']) ?></div>
+                                    <div class="dash-item-meta"><?= e($played['box_name'] ?? 'Keine Box') ?></div>
+                                </div>
+                                <span class="dash-item-date"><?= formatDate($played['start_date'], 'd.m.') ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Favorites -->
+        <div class="card dash-card dash-card-fixed">
+            <div class="dash-card-header">
+                <h3 class="dash-card-title"><?= __('dashboard.favorites') ?> (<?= $stats['favorites'] ?>)</h3>
+                <?php if ($stats['favorites'] > 4): ?>
+                    <a href="<?= url('/games?favorites=1') ?>" class="dash-card-link"><?= __('misc.show_more') ?> &rarr;</a>
+                <?php endif; ?>
+            </div>
+            <div class="dash-card-body">
+                <?php if (empty($favoriteGames)): ?>
+                    <p class="text-muted">Noch keine Favoriten.</p>
+                <?php else: ?>
+                    <div class="dash-item-list">
+                        <?php foreach (array_slice($favoriteGames, 0, 4) as $game): ?>
+                            <a href="<?= url('/games/' . $game['id']) ?>" class="dash-item">
+                                <?php if ($game['image_path']): ?>
+                                    <img src="<?= upload($game['image_path']) ?>" alt="" class="dash-item-thumb">
+                                <?php else: ?>
+                                    <div class="dash-item-thumb dash-item-thumb-placeholder" style="color: var(--color-warning);">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="dash-item-info">
+                                    <div class="dash-item-name"><?= e($game['name']) ?></div>
+                                    <div class="dash-item-meta"><?= e($game['box_name'] ?? 'Keine Box') ?></div>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
@@ -443,6 +448,75 @@
     font-weight: var(--font-weight-medium);
     text-align: center;
     line-height: 1.3;
+}
+
+/* === Dashboard Layout === */
+.dash-layout {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    margin-top: 1.5rem;
+    align-items: start;
+}
+.dash-col-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 0.5rem;
+    transition: width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+}
+.dash-col-left.collapsed {
+    width: 0 !important;
+    opacity: 0;
+    padding: 0;
+    pointer-events: none;
+}
+.dash-layout.left-collapsed {
+    grid-template-columns: 0 auto 1fr;
+}
+.dash-col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-left: 0.5rem;
+}
+.dash-col-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 40px;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    color: var(--color-gray-400);
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: color 0.15s ease, background 0.15s ease;
+    flex-shrink: 0;
+    align-self: start;
+}
+.dash-col-toggle:hover {
+    color: var(--color-gray-700);
+    background: var(--color-gray-50);
+}
+.dash-col-toggle svg {
+    transition: transform 0.3s ease;
+}
+.dash-layout.left-collapsed .dash-col-toggle svg {
+    transform: rotate(180deg);
+}
+
+/* === Fixed-height Dashboard Cards === */
+.dash-card-fixed {
+    height: 340px;
+    display: flex;
+    flex-direction: column;
+}
+.dash-card-fixed .dash-card-body {
+    flex: 1;
+    overflow: hidden;
 }
 
 /* === Dashboard Cards === */
@@ -815,6 +889,23 @@
     .quick-action-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+    .dash-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .dash-col-left {
+        padding-right: 0;
+    }
+    .dash-col-right {
+        padding-left: 0;
+    }
+    .dash-col-toggle {
+        display: none;
+    }
+    .dash-card-fixed {
+        height: auto;
+        min-height: 280px;
+    }
 }
 @media (max-width: 768px) {
     .dash-stats-row {
@@ -1109,6 +1200,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     randomBtn.disabled = false;
                     randomBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> <?= __('dashboard.pick_random') ?>';
                 });
+        });
+    })();
+
+    // ============================
+    // Dashboard Left Column Toggle
+    // ============================
+    (function() {
+        var toggleBtn = document.getElementById('dashColToggle');
+        var layout = document.getElementById('dashLayout');
+        var colLeft = document.getElementById('dashColLeft');
+        if (!toggleBtn || !layout || !colLeft) return;
+
+        // Restore state from localStorage
+        var collapsed = localStorage.getItem('dashLeftCollapsed') === '1';
+        if (collapsed) {
+            layout.classList.add('left-collapsed');
+            colLeft.classList.add('collapsed');
+        }
+
+        toggleBtn.addEventListener('click', function() {
+            var isCollapsed = layout.classList.toggle('left-collapsed');
+            colLeft.classList.toggle('collapsed');
+            localStorage.setItem('dashLeftCollapsed', isCollapsed ? '1' : '0');
         });
     })();
 

@@ -41,6 +41,30 @@
         </div>
     </div>
 
+    <!-- Dark Mode -->
+    <div class="card mb-4" style="grid-column: span 2;">
+        <div class="card-header">
+            <h2 class="card-title"><?= __('settings.dark_mode') ?></h2>
+        </div>
+        <div class="card-body">
+            <?php $darkPref = userPreference('dark_mode_preference', 'system'); ?>
+            <div class="dark-mode-options" id="darkModeOptions">
+                <button type="button" class="dark-mode-option <?= $darkPref === 'system' ? 'active' : '' ?>" data-mode="system">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    <span class="dark-mode-option-label"><?= __('settings.dark_mode_system') ?></span>
+                </button>
+                <button type="button" class="dark-mode-option <?= $darkPref === 'light' ? 'active' : '' ?>" data-mode="light">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    <span class="dark-mode-option-label"><?= __('settings.dark_mode_light') ?></span>
+                </button>
+                <button type="button" class="dark-mode-option <?= $darkPref === 'dark' ? 'active' : '' ?>" data-mode="dark">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <span class="dark-mode-option-label"><?= __('settings.dark_mode_dark') ?></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Change Password -->
     <div class="card mb-4">
         <div class="card-header">
@@ -157,6 +181,37 @@
 </div>
 
 <style<?= cspNonce() ?>>
+.dark-mode-options {
+    display: flex;
+    gap: 0.75rem;
+}
+.dark-mode-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-xl);
+    background: var(--color-gray-50);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--color-gray-500);
+}
+.dark-mode-option:hover {
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-700);
+}
+.dark-mode-option.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-bg);
+    color: var(--color-primary);
+}
+.dark-mode-option-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
 .user-list {
     display: flex;
     flex-direction: column;
@@ -207,5 +262,50 @@
             showBtn.style.display = '';
         });
     }
+})();
+
+/* Dark mode toggle */
+(function() {
+    var options = document.getElementById('darkModeOptions');
+    if (!options) return;
+    var html = document.documentElement;
+
+    function getSystemTheme() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(pref) {
+        html.setAttribute('data-dark-mode-pref', pref);
+        if (pref === 'system') {
+            html.setAttribute('data-theme', getSystemTheme());
+        } else {
+            html.setAttribute('data-theme', pref);
+        }
+    }
+
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+            if (html.getAttribute('data-dark-mode-pref') === 'system') {
+                html.setAttribute('data-theme', getSystemTheme());
+            }
+        });
+    }
+
+    options.querySelectorAll('.dark-mode-option').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var mode = this.dataset.mode;
+            options.querySelectorAll('.dark-mode-option').forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            applyTheme(mode);
+            var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) {
+                fetch('<?= url('/settings/dark-mode') ?>', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfMeta.content},
+                    body: 'csrf_token=' + encodeURIComponent(csrfMeta.content) + '&dark_mode_preference=' + encodeURIComponent(mode)
+                });
+            }
+        });
+    });
 })();
 </script>

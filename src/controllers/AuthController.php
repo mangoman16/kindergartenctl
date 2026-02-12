@@ -37,16 +37,10 @@ class AuthController extends Controller
         $ip = getClientIp();
         $banStatus = isIpBanned($ip);
 
-        if ($banStatus === 'permanent') {
-            Session::setFlash('error', __('auth.ip_banned_permanent'));
-            $this->redirect('/login');
-            return;
-        }
-
-        if ($banStatus === 'temporary') {
-            Session::setFlash('error', __('auth.ip_banned'));
-            $this->redirect('/login');
-            return;
+        if ($banStatus === 'permanent' || $banStatus === 'temporary') {
+            http_response_code(403);
+            echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>403</title><style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f9fafb;color:#374151;}div{text-align:center;}h1{font-size:4rem;margin:0;color:#9ca3af;}p{margin-top:0.5rem;font-size:1.125rem;}</style></head><body><div><h1>403</h1><p>Access Denied</p></div></body></html>';
+            exit;
         }
 
         $login = $this->getPost('login');
