@@ -106,13 +106,14 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 7. **Validation in update methods** - Must match create/store validation (don't skip)
 
 ### 9. Navigation Structure (Asana-style)
-- **Icon Rail** (56px fixed left): Home, Games, Inventory, Calendar, Changelog buttons + Quick Create (plus) and Settings at bottom
+- **Icon Rail** (56px fixed left): Sidebar toggle (hamburger) at top, then Home, Games, Inventory, Calendar, Changelog buttons + Quick Create (plus) and Settings at bottom
+- **Sidebar Toggle**: Hamburger button at top of icon rail (`#sidebarToggleBtn`). Collapses/expands context sidebar. State persisted in localStorage (`sidebarCollapsed`). Always visible across all pages.
 - **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes, locations (Standorte). Calendar and Changelog sections have their own links.
-- **Header**: Context-aware search bar (detects section, adjusts placeholder/results) + Dark mode toggle + Help toggle + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
+- **Header**: Search trigger button (opens command palette, Ctrl+K shortcut) + Help toggle + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
 - **Help Panel** (380px right-side slide): Handbook-style guide with table of contents, auto-scrolls to current page guide
 - **Quick Create Popup**: Accessible from plus button on icon rail, shortcuts to create games, materials, boxes, groups, calendar events
-- **Dark Mode**: Toggle in header cycles through system/light/dark, persisted via AJAX POST to `/settings/dark-mode` as `dark_mode_preference` (system|light|dark). System mode uses `prefers-color-scheme` media query. CSS variables in `[data-theme="dark"]`
-- **User settings** (`/user/settings`): Profile, language change, password change, email change, user management (create/delete users)
+- **Dark Mode**: Settings in user settings page (`/user/settings`) with three buttons: System, Light, Dark. Persisted via AJAX POST to `/settings/dark-mode` as `dark_mode_preference` (system|light|dark). System mode uses `prefers-color-scheme` media query. CSS variables in `[data-theme="dark"]`
+- **User settings** (`/user/settings`): Profile, language change, dark mode, password change, email change, user management (create/delete users)
 - **App settings** (`/settings`): Menu with links to sub-pages: customization, language, email, debug, data, help wizard
 - **Settings sub-pages**: `GET /settings/customization`, `/settings/language`, `/settings/email`, `/settings/debug`, `/settings/data`
 - **Help wizard** (`/settings/help`): Step-by-step guided tour of the application
@@ -126,9 +127,10 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 - Translation keys: `help.field_*` for field tooltips, `help.category_*` for category descriptions, `help.guide_*` for help panel guides
 
 ### 11. Search System
-- **Global search**: Context-aware header search. Detects current section and adjusts placeholder text and result priority.
-- When on games-related pages, search context is `game`; on materials pages, context is `material`; on boxes/locations pages, context is `box`.
-- Context results appear first in dropdown, with higher limits.
+- **Command palette (Asana-style)**: Search trigger button in header opens a centered modal overlay (`.search-palette-overlay`). Keyboard shortcut: Ctrl+K / Cmd+K.
+- **Context-aware**: Detects current section and adjusts placeholder text and result priority. Games pages → `game` context; materials → `material`; boxes/locations → `box`.
+- Context results appear first in results, with higher limits.
+- **Keyboard navigation**: Arrow keys to navigate, Enter to open, Escape to close.
 - **Inline filters**: Per-page filters use `.inline-filters` with pill-style dropdowns and checkboxes (auto-submit on change). No more card-wrapped filter forms.
 
 ### 12. Dashboard Layout

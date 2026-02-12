@@ -233,6 +233,10 @@ return [
     'search.all' => 'Alle',
     'search.show_all' => 'Alle Ergebnisse anzeigen',
     'search.min_chars' => 'Mindestens 3 Zeichen eingeben',
+    'search.hint' => 'Tippen Sie, um Spiele, Materialien, Boxen und mehr zu finden.',
+    'search.navigate' => 'Navigieren',
+    'search.open' => 'Öffnen',
+    'search.close' => 'Schließen',
 
     // Misc
     'misc.favorite' => 'Favorit',
@@ -352,6 +356,7 @@ return [
     // Navigation
     'nav.inventory' => 'Inventar',
     'nav.locations' => 'Standorte',
+    'nav.toggle_sidebar' => 'Seitenleiste ein-/ausblenden',
 
     // Help guides
     'help.category_locations' => 'Standorte sind feste Orte, an denen Boxen aufbewahrt werden. Erstellen Sie Standorte und weisen Sie ihnen Boxen zu.',

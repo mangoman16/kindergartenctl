@@ -250,6 +250,65 @@
     box-shadow: 0 0 0 2px var(--color-gray-100), 0 0 0 4px var(--color-gray-600);
 }
 
+[data-theme="dark"] .search-trigger {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .search-trigger:hover {
+    background: var(--color-gray-200);
+    border-color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .search-trigger-kbd {
+    background: var(--color-gray-200);
+    border-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .search-palette-overlay {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .search-palette {
+    border: 1px solid var(--color-gray-300);
+}
+
+[data-theme="dark"] .search-palette-header input {
+    color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .search-palette-esc,
+[data-theme="dark"] .search-palette-footer kbd {
+    background: var(--color-gray-200);
+    border-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .search-palette-item:hover,
+[data-theme="dark"] .search-palette-item.active {
+    background: var(--color-gray-100);
+}
+
+[data-theme="dark"] .search-palette-item-name mark {
+    background: rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="dark"] .dark-mode-option {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .dark-mode-option:hover {
+    border-color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .dark-mode-option.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-bg);
+    color: var(--color-primary);
+}
+
 /* ============================================
    Reset & Base Styles
    ============================================ */
@@ -515,6 +574,14 @@ small {
     margin-left: calc(var(--rail-width) + var(--ctx-sidebar-width));
 }
 
+.sidebar-collapsed .context-sidebar.open ~ .main-content {
+    margin-left: var(--sidebar-width);
+}
+
+.context-sidebar.collapsed {
+    width: 0 !important;
+}
+
 /* Header icon buttons */
 .header-icon-btn {
     width: 36px;
@@ -535,11 +602,224 @@ small {
     color: var(--color-gray-700);
 }
 
-/* Dark mode toggle icon visibility - show icon based on preference, not theme */
-.icon-sun, .icon-moon, .icon-system { display: none; }
-[data-dark-mode-pref="light"] .icon-sun { display: block; }
-[data-dark-mode-pref="dark"] .icon-moon { display: block; }
-[data-dark-mode-pref="system"] .icon-system { display: block; }
+/* Sidebar Toggle Button */
+.sidebar-toggle-btn {
+    margin-bottom: var(--spacing-2);
+}
+
+/* Search Trigger (Asana-style) */
+.search-trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2) var(--spacing-4);
+    color: var(--color-gray-400);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    min-width: 260px;
+    transition: all var(--transition-fast);
+}
+
+.search-trigger:hover {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-600);
+}
+
+.search-trigger-text {
+    flex: 1;
+    text-align: left;
+}
+
+.search-trigger-kbd {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-sm);
+    padding: 1px 6px;
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-400);
+    font-family: inherit;
+    line-height: 1.4;
+}
+
+/* Search Command Palette */
+.search-palette-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 12vh;
+}
+
+.search-palette-overlay.active {
+    display: flex;
+}
+
+.search-palette {
+    width: 100%;
+    max-width: 640px;
+    background: var(--color-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: paletteSlideIn 0.15s ease-out;
+}
+
+@keyframes paletteSlideIn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.search-palette-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-bottom: 1px solid var(--color-gray-100);
+    color: var(--color-gray-400);
+}
+
+.search-palette-header input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: var(--font-size-lg);
+    color: var(--color-gray-900);
+    outline: none;
+}
+
+.search-palette-header input::placeholder {
+    color: var(--color-gray-400);
+}
+
+.search-palette-esc {
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-sm);
+    padding: 2px 8px;
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-400);
+    font-family: inherit;
+}
+
+.search-palette-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-palette-hint {
+    padding: var(--spacing-8) var(--spacing-5);
+    text-align: center;
+    color: var(--color-gray-400);
+    font-size: var(--font-size-sm);
+}
+
+.search-palette-empty {
+    padding: var(--spacing-8) var(--spacing-5);
+    text-align: center;
+    color: var(--color-gray-500);
+    font-size: var(--font-size-sm);
+}
+
+.search-palette-results {
+    padding: var(--spacing-2) 0;
+}
+
+.search-palette-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-5);
+    color: var(--color-gray-700);
+    text-decoration: none;
+    transition: background-color 0.1s;
+}
+
+.search-palette-item:hover,
+.search-palette-item.active {
+    background: var(--color-gray-50);
+}
+
+.search-palette-item.active {
+    background: var(--color-primary-bg);
+}
+
+.search-palette-item-icon {
+    flex-shrink: 0;
+    color: var(--color-gray-400);
+    display: flex;
+    align-items: center;
+}
+
+.search-palette-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-palette-item-name {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-weight: 500;
+    color: var(--color-gray-900);
+}
+
+.search-palette-item-name mark {
+    background: rgba(245, 158, 11, 0.25);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.search-palette-item-type {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+}
+
+.search-palette-more {
+    display: block;
+    padding: var(--spacing-3) var(--spacing-5);
+    text-align: center;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    border-top: 1px solid var(--color-gray-100);
+}
+
+.search-palette-more:hover {
+    background: var(--color-gray-50);
+}
+
+.search-palette-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-5);
+    padding: var(--spacing-3) var(--spacing-5);
+    border-top: 1px solid var(--color-gray-100);
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-400);
+}
+
+.search-palette-footer kbd {
+    display: inline-block;
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-200);
+    border-radius: 3px;
+    padding: 0 4px;
+    font-size: 10px;
+    font-family: inherit;
+    line-height: 1.5;
+    min-width: 18px;
+    text-align: center;
+}
 
 /* Help Toggle Button */
 .help-toggle-btn {
@@ -2895,6 +3175,24 @@ body[data-pattern="clouds"] .page-content {
     .help-panel {
         width: 100%;
         right: -100%;
+    }
+
+    .search-trigger {
+        min-width: auto;
+    }
+
+    .search-trigger-text,
+    .search-trigger-kbd {
+        display: none;
+    }
+
+    .search-palette {
+        margin: 0 var(--spacing-3);
+        max-width: calc(100vw - var(--spacing-6));
+    }
+
+    .dark-mode-options {
+        flex-direction: column;
     }
 
     .grid-cols-2,

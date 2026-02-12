@@ -233,6 +233,10 @@ return [
     'search.all' => 'All',
     'search.show_all' => 'Show all results',
     'search.min_chars' => 'Enter at least 3 characters',
+    'search.hint' => 'Type to find games, materials, boxes and more.',
+    'search.navigate' => 'Navigate',
+    'search.open' => 'Open',
+    'search.close' => 'Close',
 
     // Misc
     'misc.favorite' => 'Favorite',
@@ -352,6 +356,7 @@ return [
     // Navigation
     'nav.inventory' => 'Inventory',
     'nav.locations' => 'Locations',
+    'nav.toggle_sidebar' => 'Toggle sidebar',
 
     // Help guides
     'help.category_locations' => 'Locations are fixed places where boxes are stored. Create locations and assign boxes to them.',

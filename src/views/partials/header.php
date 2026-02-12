@@ -14,29 +14,18 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
 }
 ?>
 <header class="top-header">
-    <div class="search-container">
-        <form action="<?= url('/search') ?>" method="GET" class="search-form" id="headerSearchForm">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" name="q" id="headerSearchInput" placeholder="<?= e($searchPlaceholder) ?>" autocomplete="off" data-context="<?= $searchContext ?>">
-            <?php if ($searchContext !== 'all'): ?>
-                <input type="hidden" name="type" value="<?= $searchContext ?>">
-            <?php endif; ?>
-        </form>
-        <div class="search-dropdown" id="searchDropdown"></div>
-    </div>
+    <button class="search-trigger" id="searchTrigger">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span class="search-trigger-text"><?= __('search.placeholder') ?></span>
+        <kbd class="search-trigger-kbd">Ctrl+K</kbd>
+    </button>
 
     <div class="header-actions">
         <button class="header-icon-btn help-toggle-btn" id="helpToggleBtn" title="<?= __('help.title') ?>">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><circle cx="12" cy="17" r="0.5" fill="currentColor"></circle></svg>
-        </button>
-
-        <button class="header-icon-btn" id="darkModeToggle" title="<?= __('settings.dark_mode') ?>" data-pref="<?= e(userPreference('dark_mode_preference', 'system')) ?>">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-system"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         </button>
 
         <?php $user = currentUser(); ?>
@@ -68,7 +57,7 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
                     <a href="<?= url('/settings') ?>" class="user-dropdown-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                         </svg>
                         <?= __('nav.settings') ?>
                     </a>
@@ -92,6 +81,30 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
     </div>
 </header>
 
+<!-- Search Command Palette -->
+<div class="search-palette-overlay" id="searchPaletteOverlay">
+    <div class="search-palette" id="searchPalette">
+        <div class="search-palette-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchPaletteInput" placeholder="<?= e($searchPlaceholder) ?>" autocomplete="off" data-context="<?= $searchContext ?>">
+            <kbd class="search-palette-esc">Esc</kbd>
+        </div>
+        <div class="search-palette-body" id="searchPaletteBody">
+            <div class="search-palette-hint">
+                <p><?= __('search.hint') ?></p>
+            </div>
+        </div>
+        <div class="search-palette-footer">
+            <span class="search-palette-footer-item"><kbd>&uarr;</kbd><kbd>&darr;</kbd> <?= __('search.navigate') ?></span>
+            <span class="search-palette-footer-item"><kbd>&crarr;</kbd> <?= __('search.open') ?></span>
+            <span class="search-palette-footer-item"><kbd>Esc</kbd> <?= __('search.close') ?></span>
+        </div>
+    </div>
+</div>
+
 <script<?= cspNonce() ?>>
 (function() {
     var btn = document.getElementById('userMenuBtn');
@@ -106,51 +119,6 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
         if (!e.target.closest('.user-menu-wrapper')) {
             dropdown.classList.remove('open');
             btn.classList.remove('active');
-        }
-    });
-})();
-
-(function() {
-    var toggle = document.getElementById('darkModeToggle');
-    if (!toggle) return;
-    var html = document.documentElement;
-    var currentPref = toggle.getAttribute('data-pref') || 'system';
-
-    function getSystemTheme() {
-        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-
-    function applyTheme(pref) {
-        currentPref = pref;
-        toggle.setAttribute('data-pref', pref);
-        html.setAttribute('data-dark-mode-pref', pref);
-        if (pref === 'system') {
-            html.setAttribute('data-theme', getSystemTheme());
-        } else {
-            html.setAttribute('data-theme', pref);
-        }
-    }
-
-    // Listen for system theme changes when in system mode
-    if (window.matchMedia) {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
-            if (currentPref === 'system') {
-                html.setAttribute('data-theme', getSystemTheme());
-            }
-        });
-    }
-
-    toggle.addEventListener('click', function() {
-        // Cycle: system -> light -> dark -> system
-        var nextPref = currentPref === 'system' ? 'light' : (currentPref === 'light' ? 'dark' : 'system');
-        applyTheme(nextPref);
-        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
-        if (csrfMeta) {
-            fetch('<?= url('/settings/dark-mode') ?>', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfMeta.content},
-                body: 'csrf_token=' + encodeURIComponent(csrfMeta.content) + '&dark_mode_preference=' + encodeURIComponent(nextPref)
-            });
         }
     });
 })();
@@ -192,26 +160,63 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
     });
 })();
 
+/* Sidebar toggle + context sidebar persistence */
 (function() {
     var contextSidebar = document.getElementById('contextSidebar');
-    // Restore sidebar state on pages without a context sidebar (e.g. home)
-    if (contextSidebar && !contextSidebar.classList.contains('open')) {
-        var savedSection = localStorage.getItem('ctxSidebarSection');
-        if (savedSection) {
-            var savedTarget = contextSidebar.querySelector('.ctx-section[data-for="' + savedSection + '"]');
-            if (savedTarget) {
-                savedTarget.classList.add('visible');
-                contextSidebar.classList.add('open');
-                contextSidebar.dataset.active = savedSection;
-                // Also update icon rail active state
-                document.querySelectorAll('.rail-btn[data-section]').forEach(function(b) { b.classList.remove('active'); });
-                var matchBtn = document.querySelector('.rail-btn[data-section="' + savedSection + '"]');
-                if (matchBtn) matchBtn.classList.add('active');
+    var toggleBtn = document.getElementById('sidebarToggleBtn');
+    var sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+    // Apply collapsed state on load
+    if (sidebarCollapsed && contextSidebar) {
+        contextSidebar.classList.remove('open');
+        contextSidebar.classList.add('collapsed');
+        document.body.classList.add('sidebar-collapsed');
+    }
+
+    // Restore sidebar section on pages without a context sidebar (e.g. home)
+    if (contextSidebar && !sidebarCollapsed) {
+        if (!contextSidebar.classList.contains('open')) {
+            var savedSection = localStorage.getItem('ctxSidebarSection');
+            if (savedSection) {
+                var savedTarget = contextSidebar.querySelector('.ctx-section[data-for="' + savedSection + '"]');
+                if (savedTarget) {
+                    savedTarget.classList.add('visible');
+                    contextSidebar.classList.add('open');
+                    contextSidebar.dataset.active = savedSection;
+                    document.querySelectorAll('.rail-btn[data-section]').forEach(function(b) { b.classList.remove('active'); });
+                    var matchBtn = document.querySelector('.rail-btn[data-section="' + savedSection + '"]');
+                    if (matchBtn) matchBtn.classList.add('active');
+                }
             }
+        } else if (contextSidebar.dataset.active) {
+            localStorage.setItem('ctxSidebarSection', contextSidebar.dataset.active);
         }
-    } else if (contextSidebar && contextSidebar.dataset.active) {
-        // Save the current sidebar state
-        localStorage.setItem('ctxSidebarSection', contextSidebar.dataset.active);
+    }
+
+    // Toggle button handler
+    if (toggleBtn && contextSidebar) {
+        toggleBtn.addEventListener('click', function() {
+            sidebarCollapsed = !sidebarCollapsed;
+            localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+            if (sidebarCollapsed) {
+                contextSidebar.classList.remove('open');
+                contextSidebar.classList.add('collapsed');
+                document.body.classList.add('sidebar-collapsed');
+            } else {
+                contextSidebar.classList.remove('collapsed');
+                document.body.classList.remove('sidebar-collapsed');
+                // Restore last section
+                var savedSection = localStorage.getItem('ctxSidebarSection');
+                if (savedSection) {
+                    var savedTarget = contextSidebar.querySelector('.ctx-section[data-for="' + savedSection + '"]');
+                    if (savedTarget) {
+                        savedTarget.classList.add('visible');
+                        contextSidebar.classList.add('open');
+                        contextSidebar.dataset.active = savedSection;
+                    }
+                }
+            }
+        });
     }
 
     document.querySelectorAll('.rail-btn[data-section]').forEach(function(btn) {
@@ -220,6 +225,13 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
             var href = this.dataset.href;
             if (section === 'home') { window.location.href = href; return; }
             if (!contextSidebar) { if (href) window.location.href = href; return; }
+            // If sidebar is collapsed, expand it first
+            if (sidebarCollapsed) {
+                sidebarCollapsed = false;
+                localStorage.setItem('sidebarCollapsed', false);
+                contextSidebar.classList.remove('collapsed');
+                document.body.classList.remove('sidebar-collapsed');
+            }
             if (contextSidebar.classList.contains('open') && contextSidebar.dataset.active === section && href) { window.location.href = href; return; }
             contextSidebar.querySelectorAll('.ctx-section').forEach(function(s) { s.classList.remove('visible'); });
             var targetSection = contextSidebar.querySelector('.ctx-section[data-for="' + section + '"]');
@@ -238,12 +250,18 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
 </script>
 
 <script<?= cspNonce() ?>>
+/* Search Command Palette */
 (function() {
-    var searchInput = document.getElementById('headerSearchInput');
-    var searchDropdown = document.getElementById('searchDropdown');
+    var trigger = document.getElementById('searchTrigger');
+    var overlay = document.getElementById('searchPaletteOverlay');
+    var palette = document.getElementById('searchPalette');
+    var input = document.getElementById('searchPaletteInput');
+    var body = document.getElementById('searchPaletteBody');
+    if (!trigger || !overlay || !input || !body) return;
+
     var debounceTimer = null;
     var currentQuery = '';
-    if (!searchInput || !searchDropdown) return;
+    var searchContext = input.getAttribute('data-context') || 'all';
 
     var typeIcons = {
         game: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>',
@@ -259,42 +277,95 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
         return text.replace(new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>');
     }
 
-    function showDropdown(results, query, moreUrl) {
-        if (results.length === 0) { searchDropdown.innerHTML = '<div class="search-dropdown-empty"><?= __('search.no_results') ?></div>'; searchDropdown.classList.add('active'); return; }
-        var html = '<div class="search-dropdown-results">';
-        results.forEach(function(item) {
+    function openPalette() {
+        overlay.classList.add('active');
+        setTimeout(function() { input.focus(); }, 50);
+    }
+
+    function closePalette() {
+        overlay.classList.remove('active');
+        input.value = '';
+        currentQuery = '';
+        body.innerHTML = '<div class="search-palette-hint"><p><?= __('search.hint') ?></p></div>';
+    }
+
+    function showResults(results, query, moreUrl) {
+        if (results.length === 0) {
+            body.innerHTML = '<div class="search-palette-empty"><?= __('search.no_results') ?></div>';
+            return;
+        }
+        var html = '<div class="search-palette-results">';
+        results.forEach(function(item, idx) {
             var icon = typeIcons[item.type] || '';
             var label = typeLabels[item.type] || item.type;
             var colorDot = item.color ? '<span class="color-dot" style="background:' + item.color + '"></span>' : '';
-            html += '<a href="' + item.url + '" class="search-dropdown-item"><span class="search-item-icon">' + icon + '</span><span class="search-item-content"><span class="search-item-name">' + colorDot + highlightMatch(item.name, query) + '</span><span class="search-item-type">' + label + '</span></span></a>';
+            html += '<a href="' + item.url + '" class="search-palette-item' + (idx === 0 ? ' active' : '') + '"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + colorDot + highlightMatch(item.name, query) + '</span><span class="search-palette-item-type">' + label + '</span></span></a>';
         });
-        html += '</div><a href="' + moreUrl + '" class="search-dropdown-more"><?= __('search.show_all') ?></a>';
-        searchDropdown.innerHTML = html;
-        searchDropdown.classList.add('active');
+        html += '</div>';
+        html += '<a href="' + moreUrl + '" class="search-palette-more"><?= __('search.show_all') ?></a>';
+        body.innerHTML = html;
     }
-
-    function hideDropdown() { searchDropdown.classList.remove('active'); }
-
-    var searchContext = searchInput.getAttribute('data-context') || 'all';
 
     function performSearch(query) {
-        if (query.length < 2) { hideDropdown(); return; }
+        if (query.length < 2) {
+            body.innerHTML = '<div class="search-palette-hint"><p><?= __('search.hint') ?></p></div>';
+            return;
+        }
         var url = '/api/search?q=' + encodeURIComponent(query);
         if (searchContext !== 'all') url += '&context=' + encodeURIComponent(searchContext);
-        fetch(url).then(function(r) { return r.json(); }).then(function(data) { if (query === currentQuery) showDropdown(data.results, data.query, data.more_url); }).catch(function() { hideDropdown(); });
+        fetch(url).then(function(r) { return r.json(); }).then(function(data) {
+            if (query === currentQuery) showResults(data.results, data.query, data.more_url);
+        }).catch(function() {});
     }
 
-    searchInput.addEventListener('input', function() { var q = this.value.trim(); currentQuery = q; clearTimeout(debounceTimer); if (q.length < 2) { hideDropdown(); return; } debounceTimer = setTimeout(function() { performSearch(q); }, 200); });
-    searchInput.addEventListener('focus', function() { var q = this.value.trim(); if (q.length >= 2) performSearch(q); });
-    document.addEventListener('click', function(e) { if (!e.target.closest('.search-container')) hideDropdown(); });
-    searchInput.addEventListener('keydown', function(e) {
-        var items = searchDropdown.querySelectorAll('.search-dropdown-item, .search-dropdown-more');
-        var activeItem = searchDropdown.querySelector('.search-dropdown-item.active');
+    // Trigger button opens palette
+    trigger.addEventListener('click', openPalette);
+
+    // Ctrl+K / Cmd+K shortcut
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            if (overlay.classList.contains('active')) { closePalette(); } else { openPalette(); }
+        }
+    });
+
+    // Close on overlay click
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closePalette();
+    });
+
+    // Input handling
+    input.addEventListener('input', function() {
+        var q = this.value.trim();
+        currentQuery = q;
+        clearTimeout(debounceTimer);
+        if (q.length < 2) {
+            body.innerHTML = '<div class="search-palette-hint"><p><?= __('search.hint') ?></p></div>';
+            return;
+        }
+        debounceTimer = setTimeout(function() { performSearch(q); }, 200);
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { closePalette(); return; }
+        var items = body.querySelectorAll('.search-palette-item, .search-palette-more');
+        var activeItem = body.querySelector('.search-palette-item.active');
         var ci = Array.from(items).indexOf(activeItem);
-        if (e.key === 'ArrowDown') { e.preventDefault(); if (activeItem) activeItem.classList.remove('active'); ci = (ci + 1) % items.length; if (items[ci]) items[ci].classList.add('active'); }
-        else if (e.key === 'ArrowUp') { e.preventDefault(); if (activeItem) activeItem.classList.remove('active'); ci = ci <= 0 ? items.length - 1 : ci - 1; if (items[ci]) items[ci].classList.add('active'); }
-        else if (e.key === 'Enter' && activeItem) { e.preventDefault(); window.location.href = activeItem.href; }
-        else if (e.key === 'Escape') hideDropdown();
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (activeItem) activeItem.classList.remove('active');
+            ci = (ci + 1) % items.length;
+            if (items[ci]) items[ci].classList.add('active');
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (activeItem) activeItem.classList.remove('active');
+            ci = ci <= 0 ? items.length - 1 : ci - 1;
+            if (items[ci]) items[ci].classList.add('active');
+        } else if (e.key === 'Enter' && activeItem) {
+            e.preventDefault();
+            window.location.href = activeItem.href;
+        }
     });
 })();
 </script>
