@@ -278,6 +278,11 @@ class ApiController extends Controller
                 $exists = Group::nameExists($value, $excludeId);
                 break;
 
+            case 'locations':
+                require_once SRC_PATH . '/models/Location.php';
+                $exists = Location::nameExists($value, $excludeId);
+                break;
+
             default:
                 $this->jsonError('Ungültiger Typ.', 400);
                 return;

@@ -191,6 +191,22 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Quick create popup: plus button at bottom of icon rail with shortcuts to create games, materials, boxes, groups, events
 - [x] Help panel: right-side sliding handbook with table of contents and per-page guide content
 - [x] Dark mode: toggle button in header, AJAX persistence via POST /settings/dark-mode, full dark color scheme CSS
+- [x] Dark mode: updated to 3-state cycle (system/light/dark), system mode uses prefers-color-scheme media query
+- [x] Search bar: made full width in header (removed max-width constraint)
+- [x] Help button: fixed ? icon rendering (added stroke-linecap, filled dot), added distinct circular button style
+- [x] Locations (Standorte): new entity for predefined box storage places
+  - [x] locations table in DB schema (name, description)
+  - [x] location_id FK added to boxes table (ON DELETE SET NULL)
+  - [x] Location model with CRUD, box count, select dropdown
+  - [x] LocationController with full CRUD + changelog logging
+  - [x] Location views (index, form, show) with grid layout
+  - [x] Routes: GET/POST /locations, GET /locations/{id}, etc.
+  - [x] Sidebar navigation: added Standorte link in inventory section
+  - [x] Box form: replaced free-text location with location dropdown
+  - [x] Box queries: join with locations table for location_name
+  - [x] Duplicate check API: added locations support
+  - [x] Help panel: added locations section and TOC item
+  - [x] Translation keys: location.* keys in de.php and en.php
 - [x] Responsive CSS: updated mobile breakpoints for new icon rail + context sidebar layout
 - [x] New routes: GET /settings/customization, /settings/language, /settings/email, /settings/debug, /settings/data, POST /settings/dark-mode
 - [x] New controller methods: showCustomization(), showLanguage(), showEmail(), showDebug(), showData(), toggleDarkMode()
@@ -215,14 +231,14 @@ The project has a comprehensive foundation with most core features implemented. 
 
 ## Architecture Summary
 
-### Controllers (14)
+### Controllers (15)
 - AuthController, DashboardController, GameController, MaterialController
 - BoxController, CategoryController, TagController, GroupController
-- CalendarController, ChangelogController, SearchController
+- LocationController, CalendarController, ChangelogController, SearchController
 - SettingsController, InstallController, ApiController
 
-### Models (9)
-- Game, Material, Box, Category, Tag, Group
+### Models (10)
+- Game, Material, Box, Category, Tag, Group, Location
 - CalendarEvent, User, PasswordReset
 
 ### Core Classes (9)
@@ -253,6 +269,7 @@ The project has a comprehensive foundation with most core features implemented. 
 All tables from specification are present:
 - [x] users
 - [x] categories
+- [x] locations
 - [x] boxes
 - [x] tags
 - [x] materials

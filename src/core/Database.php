@@ -351,7 +351,7 @@ class Database
     private static function verifySchema(PDO $pdo): bool
     {
         $requiredTables = [
-            'users', 'categories', 'boxes', 'tags', 'materials', 'games',
+            'users', 'categories', 'locations', 'boxes', 'tags', 'materials', 'games',
             'game_materials', 'game_categories', 'game_tags', 'groups',
             'group_games', 'group_materials', 'calendar_events', 'changelog',
             'ip_bans', 'password_resets', 'settings', 'transactions'
@@ -412,6 +412,16 @@ CREATE TABLE IF NOT EXISTS categories (
     FULLTEXT INDEX ft_categories (name, description)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Locations (Standorte - predefined places for boxes)
+CREATE TABLE IF NOT EXISTS locations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL UNIQUE,
+    description TEXT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FULLTEXT INDEX ft_locations (name, description)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Boxes
 CREATE TABLE IF NOT EXISTS boxes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -419,12 +429,14 @@ CREATE TABLE IF NOT EXISTS boxes (
     number VARCHAR(20) NULL,
     label VARCHAR(50) NULL,
     location VARCHAR(255) NULL,
+    location_id INT UNSIGNED NULL,
     description TEXT NULL,
     notes TEXT NULL,
     image_path VARCHAR(255) NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY unique_box_name (name),
+    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE SET NULL,
     FULLTEXT INDEX ft_boxes (name, location, description, notes)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

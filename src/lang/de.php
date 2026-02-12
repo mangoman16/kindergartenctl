@@ -329,11 +329,34 @@ return [
     'settings.debug_disable' => 'Debug-Modus deaktivieren',
     'settings.smtp_test_email' => 'Test-E-Mail-Adresse',
     'settings.dark_mode' => 'Dunkelmodus',
+    'settings.dark_mode_system' => 'System',
+    'settings.dark_mode_light' => 'Hell',
+    'settings.dark_mode_dark' => 'Dunkel',
+
+    // Locations (Standorte)
+    'location.title' => 'Standort',
+    'location.title_plural' => 'Standorte',
+    'location.add_new' => 'Neuer Standort',
+    'location.edit' => 'Standort bearbeiten',
+    'location.create' => 'Standort erstellen',
+    'location.not_found' => 'Standort nicht gefunden.',
+    'location.empty' => 'Noch keine Standorte vorhanden',
+    'location.empty_text' => 'Erstellen Sie Ihren ersten Standort, um Boxen zuzuordnen.',
+    'location.boxes_at_location' => 'Boxen an diesem Standort',
+    'location.no_boxes' => 'Keine Boxen an diesem Standort',
+    'location.statistics' => 'Statistik',
+    'location.name_placeholder' => 'z.B. Regal A, Gruppenraum 1',
+    'location.description_placeholder' => 'Optionale Beschreibung des Standorts',
+    'location.box_count' => ':count Box(en)',
 
     // Navigation
     'nav.inventory' => 'Inventar',
+    'nav.locations' => 'Standorte',
 
     // Help guides
+    'help.category_locations' => 'Standorte sind feste Orte, an denen Boxen aufbewahrt werden. Erstellen Sie Standorte und weisen Sie ihnen Boxen zu.',
+    'help.field_location_name' => 'Geben Sie einen eindeutigen Namen für den Standort ein, z.B. "Regal A" oder "Gruppenraum Sonnenschein".',
+    'help.guide_locations' => 'Standorte sind feste, vordefinierte Orte in Ihrem Kindergarten, an denen Boxen aufbewahrt werden. Jede Box kann genau einem Standort zugeordnet werden.',
     'help.guide_dashboard' => 'Das Dashboard zeigt eine Übersicht aller Ihrer Spiele, Materialien und Boxen. Sie sehen aktuelle Statistiken, kürzlich hinzugefügte Spiele, einen Mini-Kalender und einen Zufallsspiel-Picker. Nutzen Sie die Schnellaktionen, um neue Einträge zu erstellen.',
     'help.guide_games' => 'Hier verwalten Sie alle Spiele. Sie können Spiele erstellen, bearbeiten, als Favorit markieren und filtern. Jedes Spiel kann einer Box und Altersgruppen zugeordnet werden. Nutzen Sie Tags und Kategorien für bessere Organisation.',
     'help.guide_materials' => 'Materialien sind die einzelnen Bestandteile eines Spiels. Erfassen Sie hier alle Spielfiguren, Karten, Würfel und sonstiges Zubehör. Materialien können Spielen zugeordnet werden.',

@@ -329,11 +329,34 @@ return [
     'settings.debug_disable' => 'Disable Debug Mode',
     'settings.smtp_test_email' => 'Test Email Address',
     'settings.dark_mode' => 'Dark Mode',
+    'settings.dark_mode_system' => 'System',
+    'settings.dark_mode_light' => 'Light',
+    'settings.dark_mode_dark' => 'Dark',
+
+    // Locations
+    'location.title' => 'Location',
+    'location.title_plural' => 'Locations',
+    'location.add_new' => 'New Location',
+    'location.edit' => 'Edit Location',
+    'location.create' => 'Create Location',
+    'location.not_found' => 'Location not found.',
+    'location.empty' => 'No locations yet',
+    'location.empty_text' => 'Create your first location to assign boxes to.',
+    'location.boxes_at_location' => 'Boxes at this Location',
+    'location.no_boxes' => 'No boxes at this location',
+    'location.statistics' => 'Statistics',
+    'location.name_placeholder' => 'e.g. Shelf A, Group Room 1',
+    'location.description_placeholder' => 'Optional description of the location',
+    'location.box_count' => ':count Box(es)',
 
     // Navigation
     'nav.inventory' => 'Inventory',
+    'nav.locations' => 'Locations',
 
     // Help guides
+    'help.category_locations' => 'Locations are fixed places where boxes are stored. Create locations and assign boxes to them.',
+    'help.field_location_name' => 'Enter a unique name for the location, e.g. "Shelf A" or "Sunshine Group Room".',
+    'help.guide_locations' => 'Locations are fixed, predefined places in your kindergarten where boxes are stored. Each box can be assigned to exactly one location.',
     'help.guide_dashboard' => 'The dashboard shows an overview of all your games, materials, and boxes. You\'ll see current statistics, recently added games, a mini calendar, and a random game picker. Use the quick actions to create new entries.',
     'help.guide_games' => 'Here you manage all games. You can create, edit, favorite, and filter games. Each game can be assigned to a box and age groups. Use tags and categories for better organization.',
     'help.guide_materials' => 'Materials are the individual components of a game. Record all game pieces, cards, dice, and other accessories here. Materials can be assigned to games.',

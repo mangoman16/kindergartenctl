@@ -731,14 +731,19 @@ class SettingsController extends Controller
     {
         $this->requireCsrf();
 
-        $darkMode = $_POST['dark_mode'] ?? '0';
+        $darkModePref = $_POST['dark_mode_preference'] ?? 'system';
+        $allowedPrefs = ['system', 'light', 'dark'];
+        if (!in_array($darkModePref, $allowedPrefs, true)) {
+            $darkModePref = 'system';
+        }
+
         $preferences = $this->getUserPreferences();
-        $preferences['dark_mode'] = $darkMode === '1' ? '1' : '0';
+        $preferences['dark_mode_preference'] = $darkModePref;
         $this->savePreferences($preferences);
 
         // Return JSON for AJAX requests
         header('Content-Type: application/json');
-        echo json_encode(['success' => true]);
+        echo json_encode(['success' => true, 'preference' => $darkModePref]);
         exit;
     }
 

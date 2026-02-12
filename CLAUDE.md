@@ -62,7 +62,7 @@ src/lang/en.php           -> English translation strings (flat key=>value)
 ### 3b. User Preferences System
 - Preferences stored in `storage/preferences.php` (PHP array file)
 - Access via `userPreference('key', 'default')` helper function
-- Keys: `language`, `theme_color`, `theme_pattern`, `items_per_page`, `default_view`
+- Keys: `language`, `theme_color`, `theme_pattern`, `items_per_page`, `default_view`, `dark_mode_preference` (system|light|dark)
 - SettingsController saves via `savePreferences()` method
 
 ### 3c. Debug Mode
@@ -107,11 +107,11 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 
 ### 9. Navigation Structure (Asana-style)
 - **Icon Rail** (56px fixed left): Logo, Home, Games, Inventory, Calendar, Changelog buttons + Quick Create (plus) and Settings at bottom
-- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes. Calendar and Changelog sections have their own links.
+- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes, locations (Standorte). Calendar and Changelog sections have their own links.
 - **Header**: Search bar + Dark mode toggle + Help toggle + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
 - **Help Panel** (380px right-side slide): Handbook-style guide with table of contents, auto-scrolls to current page guide
 - **Quick Create Popup**: Accessible from plus button on icon rail, shortcuts to create games, materials, boxes, groups, calendar events
-- **Dark Mode**: Toggle in header, persisted via AJAX POST to `/settings/dark-mode`, CSS variables in `[data-theme="dark"]`
+- **Dark Mode**: Toggle in header cycles through system/light/dark, persisted via AJAX POST to `/settings/dark-mode` as `dark_mode_preference` (system|light|dark). System mode uses `prefers-color-scheme` media query. CSS variables in `[data-theme="dark"]`
 - **User settings** (`/user/settings`): Profile, language change, password change, email change, user management (create/delete users)
 - **App settings** (`/settings`): Menu with links to sub-pages: customization, language, email, debug, data, help wizard
 - **Settings sub-pages**: `GET /settings/customization`, `/settings/language`, `/settings/email`, `/settings/debug`, `/settings/data`
@@ -127,10 +127,10 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 
 ## File Counts
 
-- 14 Controllers in `src/controllers/`
-- 9 Models in `src/models/`
+- 15 Controllers in `src/controllers/` (includes LocationController)
+- 10 Models in `src/models/` (includes Location)
 - 4 Services in `src/services/`
 - 3 Helpers in `src/helpers/`
-- 56 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages)
+- 59 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages, locations/)
 - 9 Core classes in `src/core/`
 - 2 Language files in `src/lang/`

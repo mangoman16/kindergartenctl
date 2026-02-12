@@ -60,10 +60,12 @@
                         </div>
                         <?php endif; ?>
 
-                        <?php if ($box['location']): ?>
+                        <?php if (!empty($box['location_name'])): ?>
                         <div class="mb-4">
                             <span class="text-sm text-muted"><?= __('box.location') ?>:</span>
-                            <p class="mt-1"><?= e($box['location']) ?></p>
+                            <p class="mt-1">
+                                <a href="<?= url('/locations/' . $box['location_id']) ?>"><?= e($box['location_name']) ?></a>
+                            </p>
                         </div>
                         <?php endif; ?>
 

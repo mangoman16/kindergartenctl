@@ -491,10 +491,28 @@ small {
     color: var(--color-gray-700);
 }
 
-/* Dark mode toggle icon visibility */
-[data-theme="light"] .icon-moon { display: none; }
-[data-theme="dark"] .icon-sun { display: none; }
-[data-theme="dark"] .icon-moon { display: block; }
+/* Dark mode toggle icon visibility - show icon based on preference, not theme */
+.icon-sun, .icon-moon, .icon-system { display: none; }
+[data-dark-mode-pref="light"] .icon-sun { display: block; }
+[data-dark-mode-pref="dark"] .icon-moon { display: block; }
+[data-dark-mode-pref="system"] .icon-system { display: block; }
+
+/* Help Toggle Button */
+.help-toggle-btn {
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--color-gray-300) !important;
+}
+
+.help-toggle-btn:hover {
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary);
+}
 
 /* Help Panel */
 .help-panel {
@@ -628,7 +646,6 @@ small {
     background: var(--color-gray-50);
     border-radius: var(--radius-full);
     padding: var(--spacing-2) var(--spacing-4);
-    max-width: 400px;
     flex: 1;
 }
 
@@ -647,6 +664,7 @@ small {
 /* Search Container & Dropdown */
 .search-container {
     position: relative;
+    flex: 1;
 }
 
 .search-dropdown {
