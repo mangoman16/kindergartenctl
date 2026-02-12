@@ -195,6 +195,24 @@
     background: rgba(0, 0, 0, 0.75);
 }
 
+[data-theme="dark"] .inline-filter-select {
+    background-color: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-900);
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%239090a8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .inline-filter-check {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .dash-col-toggle {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+}
+
 /* ============================================
    Reset & Base Styles
    ============================================ */
@@ -287,17 +305,6 @@ small {
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-1);
-}
-
-.rail-logo {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-primary);
-    margin-bottom: var(--spacing-3);
-    text-decoration: none;
 }
 
 .rail-btn {
@@ -624,6 +631,17 @@ small {
 .help-section p {
     font-size: var(--font-size-sm);
     color: var(--color-gray-600);
+    line-height: var(--line-height-relaxed);
+}
+
+.help-category-hint {
+    background: var(--color-primary-bg);
+    border-left: 3px solid var(--color-primary);
+    padding: var(--spacing-3) var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-700);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
     line-height: var(--line-height-relaxed);
 }
 
@@ -977,6 +995,84 @@ small {
 .page-actions {
     display: flex;
     gap: var(--spacing-3);
+}
+
+/* Inline Filters */
+.inline-filters {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+    flex-wrap: wrap;
+}
+
+.inline-filter-select {
+    padding: var(--spacing-2) var(--spacing-8) var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-700);
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%239CA3AF' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.inline-filter-select:hover {
+    border-color: var(--color-gray-300);
+}
+
+.inline-filter-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-bg);
+}
+
+.inline-filter-check {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+    white-space: nowrap;
+}
+
+.inline-filter-check:hover {
+    border-color: var(--color-gray-300);
+}
+
+.inline-filter-check input[type="checkbox"] {
+    display: none;
+}
+
+.inline-filter-check:has(input:checked) {
+    background: var(--color-primary-bg);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.inline-filter-reset {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-500);
+    text-decoration: none;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-full);
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.inline-filter-reset:hover {
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
 }
 
 /* Breadcrumbs */

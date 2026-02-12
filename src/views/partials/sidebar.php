@@ -18,10 +18,6 @@ $hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar', 'c
 <!-- Icon Rail -->
 <nav class="icon-rail" id="iconRail">
     <div class="rail-top">
-        <a href="<?= url('/') ?>" class="rail-logo" title="KindergartenOrganizer">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
-        </a>
-
         <button class="rail-btn <?= $navSection === 'home' ? 'active' : '' ?>" data-section="home" data-href="<?= url('/') ?>" title="<?= __('nav.dashboard') ?>">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         </button>

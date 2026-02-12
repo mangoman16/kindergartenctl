@@ -395,50 +395,62 @@ class ApiController extends Controller
         require_once SRC_PATH . '/models/Tag.php';
         require_once SRC_PATH . '/models/Group.php';
 
+        $context = trim($this->getQuery('context', 'all'));
         $results = [];
+        $contextResults = [];
         $db = Database::getInstance();
         $searchTerm = '%' . $query . '%';
 
-        // Search games (limit 5)
-        $games = Game::searchGames($query, 5);
+        // Adjust limits based on context - prioritized type gets more results
+        $gameLim = ($context === 'game') ? 8 : 5;
+        $matLim = ($context === 'material') ? 8 : 3;
+        $boxLim = ($context === 'box') ? 8 : 2;
+        $tagLim = 2;
+        $grpLim = 2;
+
+        // Search games
+        $games = Game::searchGames($query, $gameLim);
         foreach ($games as $game) {
-            $results[] = [
+            $item = [
                 'type' => 'game',
                 'id' => $game['id'],
                 'name' => $game['name'],
                 'url' => url('/games/' . $game['id']),
                 'image' => $game['image_path'] ? upload($game['image_path']) : null,
             ];
+            if ($context === 'game') { $contextResults[] = $item; } else { $results[] = $item; }
         }
 
-        // Search materials (limit 3)
-        $stmt = $db->prepare("SELECT id, name, image_path FROM materials WHERE name LIKE :q ORDER BY name LIMIT 3");
+        // Search materials
+        $stmt = $db->prepare("SELECT id, name, image_path FROM materials WHERE name LIKE :q ORDER BY name LIMIT " . (int)$matLim);
         $stmt->execute(['q' => $searchTerm]);
         foreach ($stmt->fetchAll() as $material) {
-            $results[] = [
+            $item = [
                 'type' => 'material',
                 'id' => $material['id'],
                 'name' => $material['name'],
                 'url' => url('/materials/' . $material['id']),
                 'image' => $material['image_path'] ? upload($material['image_path']) : null,
             ];
+            if ($context === 'material') { $contextResults[] = $item; } else { $results[] = $item; }
         }
 
-        // Search boxes (limit 2)
-        $stmt = $db->prepare("SELECT id, name FROM boxes WHERE name LIKE :q1 OR label LIKE :q2 ORDER BY name LIMIT 2");
+        // Search boxes
+        $stmt = $db->prepare("SELECT id, name FROM boxes WHERE name LIKE :q1 OR label LIKE :q2 ORDER BY name LIMIT " . (int)$boxLim);
         $stmt->execute(['q1' => $searchTerm, 'q2' => $searchTerm]);
         foreach ($stmt->fetchAll() as $box) {
-            $results[] = [
+            $item = [
                 'type' => 'box',
                 'id' => $box['id'],
                 'name' => $box['name'],
                 'url' => url('/boxes/' . $box['id']),
                 'image' => null,
             ];
+            if ($context === 'box') { $contextResults[] = $item; } else { $results[] = $item; }
         }
 
-        // Search tags (limit 2)
-        $tags = Tag::searchByName($query, 2);
+        // Search tags
+        $tags = Tag::searchByName($query, $tagLim);
         foreach ($tags as $tag) {
             $results[] = [
                 'type' => 'tag',
@@ -450,8 +462,8 @@ class ApiController extends Controller
             ];
         }
 
-        // Search groups (limit 2)
-        $stmt = $db->prepare("SELECT id, name FROM groups WHERE name LIKE :q ORDER BY name LIMIT 2");
+        // Search groups
+        $stmt = $db->prepare("SELECT id, name FROM groups WHERE name LIKE :q ORDER BY name LIMIT " . (int)$grpLim);
         $stmt->execute(['q' => $searchTerm]);
         foreach ($stmt->fetchAll() as $group) {
             $results[] = [
@@ -463,10 +475,18 @@ class ApiController extends Controller
             ];
         }
 
+        // Context results first, then other results
+        $allResults = array_merge($contextResults, $results);
+
+        $moreParams = ['q' => $query];
+        if ($context !== 'all') {
+            $moreParams['type'] = $context;
+        }
+
         $this->json([
-            'results' => $results,
+            'results' => $allResults,
             'query' => $query,
-            'more_url' => url('/search', ['q' => $query]),
+            'more_url' => url('/search', $moreParams),
         ]);
     }
 

@@ -1,3 +1,18 @@
+<?php
+$searchPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$searchContext = 'all';
+$searchPlaceholder = __('search.placeholder');
+if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') === 0 || strpos($searchPath, '/tags') === 0 || strpos($searchPath, '/groups') === 0) {
+    $searchContext = 'game';
+    $searchPlaceholder = __('search.placeholder') . ' (' . __('nav.games') . ')';
+} elseif (strpos($searchPath, '/materials') === 0) {
+    $searchContext = 'material';
+    $searchPlaceholder = __('search.placeholder') . ' (' . __('nav.materials') . ')';
+} elseif (strpos($searchPath, '/boxes') === 0 || strpos($searchPath, '/locations') === 0) {
+    $searchContext = 'box';
+    $searchPlaceholder = __('search.placeholder') . ' (' . __('nav.boxes') . ')';
+}
+?>
 <header class="top-header">
     <div class="search-container">
         <form action="<?= url('/search') ?>" method="GET" class="search-form" id="headerSearchForm">
@@ -5,7 +20,10 @@
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="text" name="q" id="headerSearchInput" placeholder="<?= __('search.placeholder') ?>" autocomplete="off">
+            <input type="text" name="q" id="headerSearchInput" placeholder="<?= e($searchPlaceholder) ?>" autocomplete="off" data-context="<?= $searchContext ?>">
+            <?php if ($searchContext !== 'all'): ?>
+                <input type="hidden" name="type" value="<?= $searchContext ?>">
+            <?php endif; ?>
         </form>
         <div class="search-dropdown" id="searchDropdown"></div>
     </div>
@@ -232,9 +250,13 @@
 
     function hideDropdown() { searchDropdown.classList.remove('active'); }
 
+    var searchContext = searchInput.getAttribute('data-context') || 'all';
+
     function performSearch(query) {
         if (query.length < 2) { hideDropdown(); return; }
-        fetch('/api/search?q=' + encodeURIComponent(query)).then(function(r) { return r.json(); }).then(function(data) { if (query === currentQuery) showDropdown(data.results, data.query, data.more_url); }).catch(function() { hideDropdown(); });
+        var url = '/api/search?q=' + encodeURIComponent(query);
+        if (searchContext !== 'all') url += '&context=' + encodeURIComponent(searchContext);
+        fetch(url).then(function(r) { return r.json(); }).then(function(data) { if (query === currentQuery) showDropdown(data.results, data.query, data.more_url); }).catch(function() { hideDropdown(); });
     }
 
     searchInput.addEventListener('input', function() { var q = this.value.trim(); currentQuery = q; clearTimeout(debounceTimer); if (q.length < 2) { hideDropdown(); return; } debounceTimer = setTimeout(function() { performSearch(q); }, 200); });

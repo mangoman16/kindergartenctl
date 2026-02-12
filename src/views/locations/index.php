@@ -1,8 +1,3 @@
-<div class="category-help">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><circle cx="12" cy="17" r="0.5" fill="currentColor"></circle></svg>
-    <span><?= __('help.category_locations') ?></span>
-</div>
-
 <div class="page-header">
     <h1 class="page-title"><?= __('location.title_plural') ?></h1>
     <div class="page-actions">
