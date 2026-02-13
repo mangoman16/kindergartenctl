@@ -354,7 +354,7 @@ class Database
             'users', 'categories', 'locations', 'boxes', 'tags', 'materials', 'games',
             'game_materials', 'game_categories', 'game_tags', 'groups',
             'group_games', 'group_materials', 'calendar_events', 'changelog',
-            'ip_bans', 'password_resets', 'settings', 'transactions'
+            'ip_bans', 'password_resets', 'settings', 'transactions', 'ideas'
         ];
 
         $stmt = $pdo->query("SHOW TABLES");
@@ -661,6 +661,22 @@ CREATE TABLE IF NOT EXISTS transactions (
     INDEX idx_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Ideas table
+CREATE TABLE IF NOT EXISTS ideas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description TEXT NULL,
+    notes TEXT NULL,
+    idea_type ENUM('game', 'activity', 'material', 'other') DEFAULT 'other',
+    status ENUM('new', 'in_progress', 'done', 'archived') DEFAULT 'new',
+    priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FULLTEXT INDEX ft_ideas (title, description, notes),
+    INDEX idx_status (status),
+    INDEX idx_type (idea_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Insert default categories (age groups)
 INSERT IGNORE INTO categories (name, description, sort_order) VALUES
     ('2-3 Jahre', 'Spiele für Kinder von 2-3 Jahren', 1),
@@ -673,6 +689,53 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
     ('items_per_page', '24'),
     ('default_view', 'grid');
 ";
+    }
+
+    /**
+     * Run migrations to update existing database schema.
+     * Safe to run multiple times (idempotent).
+     */
+    public static function runMigrations(): void
+    {
+        $pdo = self::getInstance();
+        if (!$pdo) return;
+
+        $migrations = [
+            // Add notes column to tables missing it
+            "ALTER TABLE games ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER instructions",
+            "ALTER TABLE categories ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER description",
+            "ALTER TABLE tags ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER description",
+            "ALTER TABLE `groups` ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER description",
+            "ALTER TABLE locations ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER description",
+            // Add event_type to calendar_events if missing (for recurring support)
+            "ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS recurring_rule VARCHAR(255) NULL AFTER event_type",
+            "ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS recurring_parent_id INT UNSIGNED NULL AFTER recurring_rule",
+            // Add notes to CalendarEvent fillable (already in DB but ensure column exists)
+            "ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER event_type",
+            // Create ideas table if not exists
+            "CREATE TABLE IF NOT EXISTS ideas (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(200) NOT NULL,
+                description TEXT NULL,
+                notes TEXT NULL,
+                idea_type ENUM('game', 'activity', 'material', 'other') DEFAULT 'other',
+                status ENUM('new', 'in_progress', 'done', 'archived') DEFAULT 'new',
+                priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FULLTEXT INDEX ft_ideas (title, description, notes),
+                INDEX idx_status (status),
+                INDEX idx_type (idea_type)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+        ];
+
+        foreach ($migrations as $sql) {
+            try {
+                $pdo->exec($sql);
+            } catch (PDOException $e) {
+                // Silently ignore errors (column already exists, etc.)
+            }
+        }
     }
 
     /**
