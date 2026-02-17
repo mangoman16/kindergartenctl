@@ -93,18 +93,24 @@
         });
     });
 
-    // On form submit, ensure theme_color is set
+    // On form submit, always ensure a theme_color value is submitted
     document.querySelector('.settings-page form').addEventListener('submit', function(e) {
         var checked = document.querySelector('input[name="theme_color"]:checked');
         if (!checked) {
+            // No preset selected - use the current picker/text value
             var val = textInput.value.trim();
-            if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                var hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = 'theme_color';
-                hidden.value = val;
-                this.appendChild(hidden);
+            if (!(/^#[0-9A-Fa-f]{6}$/.test(val))) {
+                val = picker.value; // Fallback to native picker value
             }
+            // Remove any previously appended hidden input
+            var existing = this.querySelector('input[type="hidden"][name="theme_color"]');
+            if (existing) existing.remove();
+
+            var hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'theme_color';
+            hidden.value = val;
+            this.appendChild(hidden);
         }
     });
 

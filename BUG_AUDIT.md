@@ -13,9 +13,9 @@
 |----------|-------|-------|
 | Critical | 4 | 4 |
 | High | 2 | 2 |
-| Medium | 8 | 8 |
-| Low | 1 | 1 |
-| **Total** | **15** | **15** |
+| Medium | 9 | 9 |
+| Low | 2 | 2 |
+| **Total** | **17** | **17** |
 
 ---
 
@@ -95,6 +95,16 @@
 - **File:** `src/views/settings/index.php` (old version)
 - **Problem:** The "Test SMTP" button was an `<a href>` link, sending a GET request to `/settings/smtp/test`. The route was defined as POST only, resulting in a 404 error.
 - **Fix:** Replaced with a `<form method="POST">` including CSRF token and a test email address input field.
+
+### BUG-17 (Medium): Ideas Table Missing `user_id` — Not Associated with Users
+- **File:** `src/core/Database.php:665-681` (schema DDL) and `src/core/Database.php:716-732` (migration)
+- **Problem:** The `ideas` table had no `user_id` column. Ideas were stored globally without any user association, meaning all users shared the same ideas pool. The table was also miscategorized in the schema docblock alongside security tables (`ip_bans`).
+- **Fix:** Added `user_id INT UNSIGNED NOT NULL` column with `FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE` to both the schema DDL and the migration's `CREATE TABLE`. Added an `ALTER TABLE` migration for existing installs. Updated the schema docblock to list ideas as a separate category ("per-user idea tracking").
+
+### BUG-16 (Low): Search Palette Incomplete Dark Mode Styling
+- **File:** `public/assets/css/style.css:269-335`
+- **Problem:** The search command palette (`.search-palette`) had only partial dark mode overrides. Missing styles included: palette background color (appeared too dark against overlay), header/footer border colors (invisible `--color-gray-100` borders), placeholder text color (too dim), hint/empty state text colors, result item hover/active backgrounds (insufficient contrast), item type labels, and the "more results" link styling. The palette was barely distinguishable from the dark overlay backdrop.
+- **Fix:** Added comprehensive `[data-theme="dark"]` overrides for all search palette elements: elevated background (`--color-gray-100`), stronger box-shadow, visible border colors (`--color-gray-300`), proper text contrast for all child elements, and hover/active states with adequate contrast (`--color-gray-200`).
 
 ---
 

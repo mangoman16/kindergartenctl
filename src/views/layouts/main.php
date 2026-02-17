@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="<?= e(userPreference('dark_mode', '') === '1' ? 'dark' : 'light') ?>">
+<?php $darkModePref = userPreference('dark_mode_preference', 'system'); ?>
+<html lang="de" data-theme="<?= e($darkModePref === 'dark' ? 'dark' : ($darkModePref === 'light' ? 'light' : 'light')) ?>" data-dark-mode-pref="<?= e($darkModePref) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +24,9 @@
 $themeColor = userPreference('theme_color', '#4F46E5');
 $themePattern = userPreference('theme_pattern', 'none');
 ?>
+<script<?= cspNonce() ?>>
+(function(){var p=document.documentElement.getAttribute('data-dark-mode-pref');if(p==='system'){var m=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.setAttribute('data-theme',m?'dark':'light');}})();
+</script>
 <style<?= cspNonce() ?>>
 :root {
     --color-primary: <?= e($themeColor) ?>;

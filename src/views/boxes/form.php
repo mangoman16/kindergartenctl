@@ -48,14 +48,18 @@
             </div>
 
             <div class="form-group">
-                <label for="location" class="form-label">
+                <label for="location_id" class="form-label">
                     <?= __('box.location') ?>
                     <span class="help-tooltip" data-help="<?= e(__('help.field_box_location')) ?>">?</span>
                 </label>
-                <input type="text" id="location" name="location"
-                       class="form-control"
-                       value="<?= old('location', $box['location'] ?? '') ?>"
-                       maxlength="255" placeholder="z.B. Regal A, Fach 3">
+                <select id="location_id" name="location_id" class="form-control">
+                    <option value=""><?= __('form.select_option') ?></option>
+                    <?php foreach ($locations ?? [] as $loc): ?>
+                        <option value="<?= $loc['id'] ?>" <?= old('location_id', $box['location_id'] ?? '') == $loc['id'] ? 'selected' : '' ?>>
+                            <?= e($loc['name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="form-group">

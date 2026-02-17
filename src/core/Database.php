@@ -22,11 +22,12 @@
  * $stmt->execute(['id' => 123]);
  * ```
  *
- * SCHEMA (18 tables):
+ * SCHEMA (19 tables):
  * - users, categories, boxes, tags, materials, games
  * - game_materials, game_categories, game_tags (many-to-many junctions)
  * - groups, group_games, group_materials (collections)
  * - calendar_events (scheduling)
+ * - ideas (per-user idea tracking)
  * - changelog, transactions (audit/integrity)
  * - ip_bans, password_resets, settings (security/config)
  *
@@ -351,10 +352,10 @@ class Database
     private static function verifySchema(PDO $pdo): bool
     {
         $requiredTables = [
-            'users', 'categories', 'boxes', 'tags', 'materials', 'games',
+            'users', 'categories', 'locations', 'boxes', 'tags', 'materials', 'games',
             'game_materials', 'game_categories', 'game_tags', 'groups',
             'group_games', 'group_materials', 'calendar_events', 'changelog',
-            'ip_bans', 'password_resets', 'settings', 'transactions'
+            'ip_bans', 'password_resets', 'settings', 'transactions', 'ideas'
         ];
 
         $stmt = $pdo->query("SHOW TABLES");
@@ -412,6 +413,16 @@ CREATE TABLE IF NOT EXISTS categories (
     FULLTEXT INDEX ft_categories (name, description)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Locations (Standorte - predefined places for boxes)
+CREATE TABLE IF NOT EXISTS locations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL UNIQUE,
+    description TEXT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FULLTEXT INDEX ft_locations (name, description)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Boxes
 CREATE TABLE IF NOT EXISTS boxes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -419,12 +430,14 @@ CREATE TABLE IF NOT EXISTS boxes (
     number VARCHAR(20) NULL,
     label VARCHAR(50) NULL,
     location VARCHAR(255) NULL,
+    location_id INT UNSIGNED NULL,
     description TEXT NULL,
     notes TEXT NULL,
     image_path VARCHAR(255) NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY unique_box_name (name),
+    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE SET NULL,
     FULLTEXT INDEX ft_boxes (name, location, description, notes)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -649,6 +662,25 @@ CREATE TABLE IF NOT EXISTS transactions (
     INDEX idx_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Ideas table
+CREATE TABLE IF NOT EXISTS ideas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT NULL,
+    notes TEXT NULL,
+    idea_type ENUM('game', 'activity', 'material', 'other') DEFAULT 'other',
+    status ENUM('new', 'in_progress', 'done', 'archived') DEFAULT 'new',
+    priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FULLTEXT INDEX ft_ideas (title, description, notes),
+    INDEX idx_user (user_id),
+    INDEX idx_status (status),
+    INDEX idx_type (idea_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Insert default categories (age groups)
 INSERT IGNORE INTO categories (name, description, sort_order) VALUES
     ('2-3 Jahre', 'Spiele für Kinder von 2-3 Jahren', 1),
@@ -661,6 +693,58 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
     ('items_per_page', '24'),
     ('default_view', 'grid');
 ";
+    }
+
+    /**
+     * Run migrations to update existing database schema.
+     * Safe to run multiple times (idempotent).
+     */
+    public static function runMigrations(): void
+    {
+        $pdo = self::getInstance();
+        if (!$pdo) return;
+
+        $migrations = [
+            // Add notes column to tables missing it
+            "ALTER TABLE games ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER instructions",
+            "ALTER TABLE categories ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER description",
+            "ALTER TABLE tags ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER description",
+            "ALTER TABLE `groups` ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER description",
+            "ALTER TABLE locations ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER description",
+            // Add event_type to calendar_events if missing (for recurring support)
+            "ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS recurring_rule VARCHAR(255) NULL AFTER event_type",
+            "ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS recurring_parent_id INT UNSIGNED NULL AFTER recurring_rule",
+            // Add notes to CalendarEvent fillable (already in DB but ensure column exists)
+            "ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS notes TEXT NULL AFTER event_type",
+            // Create ideas table if not exists
+            "CREATE TABLE IF NOT EXISTS ideas (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                user_id INT UNSIGNED NOT NULL,
+                title VARCHAR(200) NOT NULL,
+                description TEXT NULL,
+                notes TEXT NULL,
+                idea_type ENUM('game', 'activity', 'material', 'other') DEFAULT 'other',
+                status ENUM('new', 'in_progress', 'done', 'archived') DEFAULT 'new',
+                priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FULLTEXT INDEX ft_ideas (title, description, notes),
+                INDEX idx_user (user_id),
+                INDEX idx_status (status),
+                INDEX idx_type (idea_type)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            // Add user_id to ideas table if it exists without it
+            "ALTER TABLE ideas ADD COLUMN IF NOT EXISTS user_id INT UNSIGNED NOT NULL DEFAULT 1 AFTER id",
+        ];
+
+        foreach ($migrations as $sql) {
+            try {
+                $pdo->exec($sql);
+            } catch (PDOException $e) {
+                // Silently ignore errors (column already exists, etc.)
+            }
+        }
     }
 
     /**
