@@ -22,11 +22,12 @@
  * $stmt->execute(['id' => 123]);
  * ```
  *
- * SCHEMA (18 tables):
+ * SCHEMA (19 tables):
  * - users, categories, boxes, tags, materials, games
  * - game_materials, game_categories, game_tags (many-to-many junctions)
  * - groups, group_games, group_materials (collections)
  * - calendar_events (scheduling)
+ * - ideas (per-user idea tracking)
  * - changelog, transactions (audit/integrity)
  * - ip_bans, password_resets, settings (security/config)
  *
@@ -664,6 +665,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 -- Ideas table
 CREATE TABLE IF NOT EXISTS ideas (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
     title VARCHAR(200) NOT NULL,
     description TEXT NULL,
     notes TEXT NULL,
@@ -672,7 +674,9 @@ CREATE TABLE IF NOT EXISTS ideas (
     priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FULLTEXT INDEX ft_ideas (title, description, notes),
+    INDEX idx_user (user_id),
     INDEX idx_status (status),
     INDEX idx_type (idea_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -715,6 +719,7 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
             // Create ideas table if not exists
             "CREATE TABLE IF NOT EXISTS ideas (
                 id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                user_id INT UNSIGNED NOT NULL,
                 title VARCHAR(200) NOT NULL,
                 description TEXT NULL,
                 notes TEXT NULL,
@@ -723,10 +728,14 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
                 priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
                 FULLTEXT INDEX ft_ideas (title, description, notes),
+                INDEX idx_user (user_id),
                 INDEX idx_status (status),
                 INDEX idx_type (idea_type)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            // Add user_id to ideas table if it exists without it
+            "ALTER TABLE ideas ADD COLUMN IF NOT EXISTS user_id INT UNSIGNED NOT NULL DEFAULT 1 AFTER id",
         ];
 
         foreach ($migrations as $sql) {
