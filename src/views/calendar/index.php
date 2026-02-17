@@ -556,5 +556,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const pad = n => n.toString().padStart(2, '0');
         return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
+
+    // Auto-open create modal when ?create=1 is in URL
+    if (new URLSearchParams(window.location.search).get('create') === '1') {
+        const today = new Date();
+        const pad = n => n.toString().padStart(2, '0');
+        const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+        openModal(null, todayStr);
+        // Clean up URL
+        history.replaceState(null, '', window.location.pathname);
+    }
 });
 </script>

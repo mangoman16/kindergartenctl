@@ -11,10 +11,34 @@
     </div>
 </div>
 
-<!-- Inline Filters -->
-<form action="<?= url('/games') ?>" method="GET" class="inline-filters">
+<?php $hasActiveFilters = !empty($filters['is_favorite']) || !empty($filters['box_id']) || !empty($filters['category_id']) || !empty($filters['tag_id']); ?>
+<?php
+    $activeFilterCount = 0;
+    if (!empty($filters['box_id'])) $activeFilterCount++;
+    if (!empty($filters['category_id'])) $activeFilterCount++;
+    if (!empty($filters['tag_id'])) $activeFilterCount++;
+    if (!empty($filters['is_favorite'])) $activeFilterCount++;
+?>
+<!-- Filter Toggle Button -->
+<div class="filter-toggle-bar">
+    <button type="button" class="btn btn-secondary btn-sm" id="filterToggleBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        <?= __('action.filter') ?>
+        <?php if ($activeFilterCount > 0): ?>
+            <span class="filter-badge"><?= $activeFilterCount ?></span>
+        <?php endif; ?>
+    </button>
+    <?php if ($hasActiveFilters): ?>
+        <a href="<?= url('/games') ?>" class="btn btn-sm btn-ghost"><?= __('action.reset') ?></a>
+    <?php endif; ?>
+</div>
+
+<!-- Inline Filters (collapsible) -->
+<form action="<?= url('/games') ?>" method="GET" class="inline-filters" id="filtersPanel" style="<?= $hasActiveFilters ? '' : 'display:none;' ?>">
     <select name="box" class="inline-filter-select" onchange="this.form.submit()">
-        <option value="">Alle Boxen</option>
+        <option value=""><?= __('misc.all') ?> <?= __('nav.boxes') ?></option>
         <?php foreach ($boxes as $box): ?>
             <option value="<?= $box['id'] ?>" <?= ($filters['box_id'] ?? '') == $box['id'] ? 'selected' : '' ?>>
                 <?= e($box['name']) ?>
@@ -30,7 +54,7 @@
         <?php endforeach; ?>
     </select>
     <select name="tag" class="inline-filter-select" onchange="this.form.submit()">
-        <option value="">Alle Themen</option>
+        <option value=""><?= __('misc.all') ?> <?= __('nav.tags') ?></option>
         <?php foreach ($tags as $tag): ?>
             <option value="<?= $tag['id'] ?>" <?= ($filters['tag_id'] ?? '') == $tag['id'] ? 'selected' : '' ?>>
                 <?= e($tag['name']) ?>
@@ -42,12 +66,8 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
         </svg>
-        <span>Nur Favoriten</span>
+        <span><?= __('misc.favorites_only') ?></span>
     </label>
-    <?php $hasActiveFilters = !empty($filters['search']) || !empty($filters['is_favorite']) || !empty($filters['box_id']) || !empty($filters['category_id']) || !empty($filters['tag_id']); ?>
-    <?php if ($hasActiveFilters): ?>
-        <a href="<?= url('/games') ?>" class="inline-filter-reset"><?= __('misc.reset') ?? 'Zurücksetzen' ?></a>
-    <?php endif; ?>
     <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
 </form>
 
@@ -62,8 +82,8 @@
                     <polygon points="10 8 16 12 10 16 10 8"></polygon>
                 </svg>
             </div>
-            <h3 class="empty-state-title">Noch keine Spiele vorhanden</h3>
-            <p class="empty-state-text">Erstellen Sie Ihr erstes Spiel, um loszulegen.</p>
+            <h3 class="empty-state-title"><?= __('dashboard.no_games_yet') ?></h3>
+            <p class="empty-state-text"><?= __('dashboard.no_games_yet_text') ?></p>
             <a href="<?= url('/games/create') ?>" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -325,6 +345,40 @@
 }
 .selection-mode .game-card-checkbox { display: block !important; }
 .selection-mode .game-card { cursor: pointer; }
+
+/* Filter Toggle */
+.filter-toggle-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.filter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 9px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 4px;
+}
+.btn-ghost {
+    background: none;
+    border: none;
+    color: var(--color-gray-500);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+}
+.btn-ghost:hover {
+    color: var(--color-danger);
+}
 </style>
 
 <!-- Add to Group Modal -->
@@ -522,5 +576,23 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.selectedIds = selectedIds;
+
+    // Filter toggle
+    var filterBtn = document.getElementById('filterToggleBtn');
+    var filtersPanel = document.getElementById('filtersPanel');
+    if (filterBtn && filtersPanel) {
+        var filtersVisible = filtersPanel.style.display !== 'none';
+        filterBtn.addEventListener('click', function() {
+            filtersVisible = !filtersVisible;
+            filtersPanel.style.display = filtersVisible ? '' : 'none';
+            localStorage.setItem('gamesFiltersVisible', filtersVisible);
+        });
+        // Restore from localStorage (but keep visible if filters are active)
+        var savedVis = localStorage.getItem('gamesFiltersVisible');
+        if (savedVis === 'true' && !filtersVisible) {
+            filtersPanel.style.display = '';
+            filtersVisible = true;
+        }
+    }
 });
 </script>

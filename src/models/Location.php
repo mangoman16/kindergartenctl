@@ -9,6 +9,7 @@ class Location extends Model
     protected static array $fillable = [
         'name',
         'description',
+        'notes',
     ];
 
     /**

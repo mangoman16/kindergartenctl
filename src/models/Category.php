@@ -22,6 +22,7 @@ class Category extends Model
         'description',
         'image_path',
         'sort_order',
+        'notes',
     ];
 
     /**

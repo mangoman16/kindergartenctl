@@ -106,15 +106,15 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 7. **Validation in update methods** - Must match create/store validation (don't skip)
 
 ### 9. Navigation Structure (Asana-style)
-- **Icon Rail** (56px fixed left): Sidebar toggle (hamburger) at top, then Home, Games, Inventory, Calendar, Changelog buttons + Quick Create (plus) and Settings at bottom
+- **Icon Rail** (56px fixed left): Sidebar toggle (hamburger) at top, then Home, Games, Inventory, Calendar buttons + Quick Create (plus) and Settings at bottom
 - **Sidebar Toggle**: Hamburger button at top of icon rail (`#sidebarToggleBtn`). Collapses/expands context sidebar. State persisted in localStorage (`sidebarCollapsed`). Always visible across all pages.
-- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes, locations (Standorte). Calendar and Changelog sections have their own links.
-- **Header**: Search trigger button (opens command palette, Ctrl+K shortcut) + Help toggle + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
+- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes, locations (Standorte). Calendar section has its own link. Changelog moved to settings.
+- **Header**: Search trigger button (opens global command palette, Ctrl+K shortcut) + Help toggle + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
 - **Help Panel** (380px right-side slide): Handbook-style guide with table of contents, auto-scrolls to current page guide
 - **Quick Create Popup**: Accessible from plus button on icon rail, shortcuts to create games, materials, boxes, groups, calendar events
 - **Dark Mode**: Settings in user settings page (`/user/settings`) with three buttons: System, Light, Dark. Persisted via AJAX POST to `/settings/dark-mode` as `dark_mode_preference` (system|light|dark). System mode uses `prefers-color-scheme` media query. CSS variables in `[data-theme="dark"]`
 - **User settings** (`/user/settings`): Profile, language change, dark mode, password change, email change, user management (create/delete users)
-- **App settings** (`/settings`): Menu with links to sub-pages: customization, language, email, debug, data, help wizard
+- **App settings** (`/settings`): Menu with links to sub-pages: customization, language, email, debug, data, changelog, help wizard
 - **Settings sub-pages**: `GET /settings/customization`, `/settings/language`, `/settings/email`, `/settings/debug`, `/settings/data`
 - **Help wizard** (`/settings/help`): Step-by-step guided tour of the application
 - **User management routes**: `POST /user/settings/language`, `POST /user/settings/create-user`, `POST /user/settings/delete-user`
@@ -128,10 +128,13 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 
 ### 11. Search System
 - **Command palette (Asana-style)**: Search trigger button in header opens a centered modal overlay (`.search-palette-overlay`). Keyboard shortcut: Ctrl+K / Cmd+K.
-- **Context-aware**: Detects current section and adjusts placeholder text and result priority. Games pages → `game` context; materials → `material`; boxes/locations → `box`.
-- Context results appear first in results, with higher limits.
-- **Keyboard navigation**: Arrow keys to navigate, Enter to open, Escape to close.
-- **Inline filters**: Per-page filters use `.inline-filters` with pill-style dropdowns and checkboxes (auto-submit on change). No more card-wrapped filter forms.
+- **Fully global**: Search treats all entity types equally with balanced result limits (6 games, 6 materials, 4 boxes/tags/groups). No context-based prioritization.
+- **Filter chips**: `.search-filter-chip` buttons in palette header to filter results by type (All, Games, Materials, Boxes, Tags, Groups). Shows result counts per type.
+- **Search history**: Recent queries stored in localStorage (`searchHistory`, max 8). Shown when palette opens before typing.
+- **Recently found**: Clicked results stored in localStorage (`searchRecent`, max 6). Shown below history on palette open.
+- **Clear history**: Button in section header to clear all search history and recent items.
+- **Keyboard navigation**: Arrow keys to navigate, Enter to open (or re-run history query), Escape to close.
+- **Inline filters**: Per-page filters use `.inline-filters` with pill-style dropdowns and checkboxes (auto-submit on change). Filters are now **collapsible** behind a "Filter" toggle button with active filter count badge.
 
 ### 12. Dashboard Layout
 - **Two-column layout**: Left column (Calendar, Recent Changes, Random Game) and Right column (Recent Games, Recently Played, Favorites)

@@ -246,6 +246,10 @@
 
         // Apply crop
         modal.querySelector('#applyCrop').addEventListener('click', () => {
+            const applyBtn = modal.querySelector('#applyCrop');
+            applyBtn.disabled = true;
+            applyBtn.textContent = 'Verarbeite...';
+
             const canvas = cropper.getCroppedCanvas({
                 width: 600,
                 height: 600,
@@ -253,10 +257,23 @@
                 imageSmoothingQuality: 'high',
             });
 
-            canvas.toBlob((blob) => {
-                onCrop(blob);
-                closeModal();
-            }, 'image/webp', 0.85);
+            // Try WebP first, fall back to JPEG for browser compatibility
+            function tryBlob(mimeType, quality, fallbackMime) {
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        onCrop(blob);
+                        closeModal();
+                    } else if (fallbackMime) {
+                        tryBlob(fallbackMime, 0.9, null);
+                    } else {
+                        applyBtn.disabled = false;
+                        applyBtn.textContent = 'Zuschneiden';
+                        alert('Fehler beim Verarbeiten des Bildes. Bitte versuchen Sie ein anderes Format.');
+                    }
+                }, mimeType, quality);
+            }
+
+            tryBlob('image/webp', 0.85, 'image/jpeg');
         });
     }
 
@@ -265,7 +282,8 @@
      */
     async function uploadImage(blob, type) {
         const formData = new FormData();
-        formData.append('image', blob, 'image.webp');
+        const ext = blob.type === 'image/webp' ? 'webp' : (blob.type === 'image/png' ? 'png' : 'jpg');
+        formData.append('image', blob, 'image.' + ext);
         formData.append('type', type);
 
         const response = await fetchWithCsrf('/api/upload-image', {

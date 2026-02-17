@@ -93,25 +93,63 @@
         });
     });
 
-    // On form submit, always ensure a theme_color value is submitted
+    // On form submit, apply changes immediately via AJAX and update CSS live
     document.querySelector('.settings-page form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
         var checked = document.querySelector('input[name="theme_color"]:checked');
-        if (!checked) {
-            // No preset selected - use the current picker/text value
-            var val = textInput.value.trim();
-            if (!(/^#[0-9A-Fa-f]{6}$/.test(val))) {
-                val = picker.value; // Fallback to native picker value
+        var colorVal;
+        if (checked) {
+            colorVal = checked.value;
+        } else {
+            colorVal = textInput.value.trim();
+            if (!(/^#[0-9A-Fa-f]{6}$/.test(colorVal))) {
+                colorVal = picker.value;
             }
-            // Remove any previously appended hidden input
+        }
+
+        var patternChecked = document.querySelector('input[name="theme_pattern"]:checked');
+        var patternVal = patternChecked ? patternChecked.value : 'none';
+
+        // Apply changes immediately in browser
+        document.documentElement.style.setProperty('--color-primary', colorVal);
+        document.documentElement.style.setProperty('--color-primary-dark', colorVal + 'cc');
+        document.documentElement.style.setProperty('--color-primary-light', colorVal + '88');
+        document.documentElement.style.setProperty('--color-primary-bg', colorVal + '11');
+        document.body.setAttribute('data-pattern', patternVal);
+
+        // Submit form normally (server-side save)
+        if (!checked) {
             var existing = this.querySelector('input[type="hidden"][name="theme_color"]');
             if (existing) existing.remove();
-
             var hidden = document.createElement('input');
             hidden.type = 'hidden';
             hidden.name = 'theme_color';
-            hidden.value = val;
+            hidden.value = colorVal;
             this.appendChild(hidden);
         }
+
+        // Submit via fetch so we can control the redirect
+        var formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        }).then(function() {
+            // Show success feedback without full reload
+            var btn = document.querySelector('.settings-actions .btn-primary');
+            var originalText = btn.textContent;
+            btn.textContent = '<?= __('settings.saved') ?>';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            setTimeout(function() {
+                btn.textContent = originalText;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-primary');
+            }, 2000);
+        }).catch(function() {
+            // Fallback: submit normally
+            e.target.submit();
+        });
     });
 
     document.querySelectorAll('.pattern-option input').forEach(function(input) {

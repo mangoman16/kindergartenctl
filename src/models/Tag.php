@@ -21,6 +21,7 @@ class Tag extends Model
         'description',
         'image_path',
         'color',
+        'notes',
     ];
 
     /**

@@ -11,7 +11,7 @@
                     <polygon points="10 8 16 12 10 16 10 8"></polygon>
                 </svg>
             </div>
-            <h3 class="empty-state-title">Noch keine Spiele vorhanden</h3>
+            <h3 class="empty-state-title"><?= __('dashboard.no_games_yet') ?></h3>
             <p class="empty-state-text">Beginnen Sie damit, Ihr erstes Spiel hinzuzufügen.</p>
             <a href="<?= url('/games/create') ?>" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -182,7 +182,7 @@
             </div>
             <div class="dash-card-body">
                 <?php if (empty($recentChanges)): ?>
-                    <p class="text-muted">Noch keine Änderungen.</p>
+                    <p class="text-muted"><?= __('dashboard.no_changes_yet') ?></p>
                 <?php else: ?>
                     <div class="dash-change-list">
                         <?php foreach (array_slice($recentChanges, 0, 4) as $change): ?>
@@ -239,7 +239,7 @@
                     </a>
                 </div>
                 <p id="random-game-empty" class="text-muted mt-4" style="display: none;">
-                    Kein passendes Spiel gefunden.
+                    <?= __('dashboard.no_random_game') ?>
                 </p>
             </div>
         </div>
@@ -294,7 +294,7 @@
             </div>
             <div class="dash-card-body">
                 <?php if (empty($recentlyPlayed)): ?>
-                    <p class="text-muted">Noch keine Spiele gespielt.</p>
+                    <p class="text-muted"><?= __('dashboard.no_played_yet') ?></p>
                 <?php else: ?>
                     <div class="dash-item-list">
                         <?php foreach (array_slice($recentlyPlayed, 0, 4) as $played): ?>
@@ -331,7 +331,7 @@
             </div>
             <div class="dash-card-body">
                 <?php if (empty($favoriteGames)): ?>
-                    <p class="text-muted">Noch keine Favoriten.</p>
+                    <p class="text-muted"><?= __('dashboard.no_favorites_yet') ?></p>
                 <?php else: ?>
                     <div class="dash-item-list">
                         <?php foreach (array_slice($favoriteGames, 0, 4) as $game): ?>

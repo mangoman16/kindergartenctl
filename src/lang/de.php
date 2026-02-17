@@ -91,6 +91,9 @@ return [
     'game.is_active' => 'Aktiv',
     'game.age_group' => 'Altersgruppe',
     'game.players' => 'Spieler',
+    'game.minutes' => 'Minuten',
+    'game.inactive' => 'Inaktiv',
+    'game.outdoor' => 'Outdoor',
 
     // Materials
     'material.title' => 'Material',
@@ -152,6 +155,8 @@ return [
     'group.materials_in_group' => 'Materialien in dieser Gruppe',
     'group.item_count' => ':count Eintrag/Einträge',
     'group.empty' => 'Diese Gruppe ist leer',
+    'group.add_to' => 'Zur Gruppe hinzufügen',
+    'group.select' => 'Gruppe auswählen',
 
     // Calendar
     'calendar.title' => 'Kalender',
@@ -185,6 +190,12 @@ return [
     'dashboard.welcome' => 'Willkommen',
     'dashboard.recent_changes' => 'Letzte Änderungen',
     'dashboard.recent_games' => 'Zuletzt hinzugefügt',
+    'dashboard.no_games_yet' => 'Noch keine Spiele vorhanden',
+    'dashboard.no_games_yet_text' => 'Erstellen Sie Ihr erstes Spiel, um loszulegen.',
+    'dashboard.no_changes_yet' => 'Noch keine Änderungen.',
+    'dashboard.no_random_game' => 'Kein passendes Spiel gefunden.',
+    'dashboard.no_played_yet' => 'Noch keine Spiele gespielt.',
+    'dashboard.no_favorites_yet' => 'Noch keine Favoriten.',
 
     // Changelog
     'changelog.title' => 'Änderungsprotokoll',
@@ -233,6 +244,9 @@ return [
     'search.all' => 'Alle',
     'search.show_all' => 'Alle Ergebnisse anzeigen',
     'search.min_chars' => 'Mindestens 3 Zeichen eingeben',
+    'search.global_placeholder' => 'Überall suchen... (Ctrl+K)',
+    'search.recent_searches' => 'Letzte Suchen',
+    'search.recently_found' => 'Zuletzt gefunden',
     'search.hint' => 'Tippen Sie, um Spiele, Materialien, Boxen und mehr zu finden.',
     'search.navigate' => 'Navigieren',
     'search.open' => 'Öffnen',
@@ -258,6 +272,10 @@ return [
     'misc.and' => 'und',
     'misc.actions' => 'Aktionen',
     'misc.search_placeholder' => 'Name suchen...',
+    'misc.from' => 'ab',
+    'misc.to' => 'bis',
+    'misc.not_specified' => 'Nicht angegeben',
+    'misc.favorites_only' => 'Nur Favoriten',
 
     // Validation
     'validation.required' => 'Dieses Feld ist erforderlich',

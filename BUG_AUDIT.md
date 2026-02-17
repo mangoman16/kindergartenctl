@@ -11,11 +11,11 @@
 
 | Severity | Found | Fixed |
 |----------|-------|-------|
-| Critical | 4 | 4 |
-| High | 2 | 2 |
-| Medium | 9 | 9 |
+| Critical | 6 | 6 |
+| High | 5 | 5 |
+| Medium | 12 | 12 |
 | Low | 2 | 2 |
-| **Total** | **17** | **17** |
+| **Total** | **25** | **25** |
 
 ---
 
@@ -105,6 +105,46 @@
 - **File:** `public/assets/css/style.css:269-335`
 - **Problem:** The search command palette (`.search-palette`) had only partial dark mode overrides. Missing styles included: palette background color (appeared too dark against overlay), header/footer border colors (invisible `--color-gray-100` borders), placeholder text color (too dim), hint/empty state text colors, result item hover/active backgrounds (insufficient contrast), item type labels, and the "more results" link styling. The palette was barely distinguishable from the dark overlay backdrop.
 - **Fix:** Added comprehensive `[data-theme="dark"]` overrides for all search palette elements: elevated background (`--color-gray-100`), stronger box-shadow, visible border colors (`--color-gray-300`), proper text contrast for all child elements, and hover/active states with adequate contrast (`--color-gray-200`).
+
+### BUG-18 (Critical): Image Upload Cropping Stuck on "Bild zuschneiden"
+- **File:** `public/assets/js/app.js:248-269`
+- **Problem:** `canvas.toBlob('image/webp')` silently fails in browsers lacking WebP encoding support (e.g. older Safari). The callback never fires, leaving the crop modal frozen.
+- **Fix:** Added WebP→JPEG fallback chain in `tryBlob()`. Added error handling so the modal never freezes. Also fixed hardcoded `image.webp` filename to match the actual blob MIME type.
+
+### BUG-19 (Critical): Calendar Quick-Create 404
+- **File:** `src/views/partials/sidebar.php:76`
+- **Problem:** Quick-create "Eintrag hinzufügen" linked to `/calendar/create` which doesn't exist as a route. Calendar events are created via modal on `/calendar`.
+- **Fix:** Changed link to `/calendar?create=1`. Added auto-open logic in `calendar/index.php` to detect `?create=1` and open the create modal automatically.
+
+### BUG-20 (High): Design/Customization Settings Not Persisting Visually
+- **File:** `src/views/settings/customization.php:97-115`
+- **Problem:** Saving theme color/pattern required 4-5 clicks due to browser caching the old inline CSS variables in the HTML.
+- **Fix:** Converted form submit to AJAX. CSS variables are updated immediately in the browser via `document.documentElement.style.setProperty()` on save, providing instant visual feedback without page reload.
+
+### BUG-21 (High): Game Detail View — Wrong Location Data
+- **File:** `src/models/Game.php:136-143`
+- **Problem:** `Game::findWithRelations()` used `b.location` (old varchar field) instead of joining the `locations` table via `b.location_id`.
+- **Fix:** Updated query to `LEFT JOIN locations l ON l.id = b.location_id` with `COALESCE(l.name, b.location) as box_location`.
+
+### BUG-22 (High): Game Detail Modal Backdrop Not Covering Screen
+- **File:** `src/views/games/show.php:430`
+- **Problem:** Modal backdrop used `position: absolute` instead of `fixed`, and hardcoded `background: white` broke dark mode.
+- **Fix:** Changed to `position: fixed` on backdrop, scoped CSS selectors to `#add-to-group-modal` to avoid conflicts, replaced `background: white` with `var(--color-white)`.
+
+### BUG-23 (Medium): Missing `$fillable` for `notes` in 6 Models
+- **Files:** `Game.php:34`, `CalendarEvent.php:19`, `Category.php:20`, `Tag.php:19`, `Group.php:22`, `Location.php:9`
+- **Problem:** Database migration adds `notes TEXT NULL` columns to these tables, but models lacked `notes` in their `$fillable` arrays. CalendarEvent also lacked `event_type`.
+- **Fix:** Added `'notes'` to all 6 model `$fillable` arrays, and `'event_type'` to CalendarEvent.
+
+### BUG-24 (Medium): Undefined CSS Variable `--color-yellow-100`
+- **File:** `public/assets/css/style.css:1106`
+- **Problem:** `<mark>` highlight used `var(--color-yellow-100)` but this variable was never defined in `:root`.
+- **Fix:** Added `--color-yellow-100: #FEF9C3;` to `:root` variables.
+
+### BUG-25 (Medium): Search Was Context-Dependent Instead of Global
+- **Files:** `src/views/partials/header.php`, `src/controllers/ApiController.php:377-489`
+- **Problem:** Search prioritized results based on current page section (games page → more games, materials page → more materials). User expected fully global search.
+- **Fix:** Removed context detection. Equalized API result limits across all entity types. Added filter chips, search history (localStorage), and recently found items to the search palette.
 
 ---
 

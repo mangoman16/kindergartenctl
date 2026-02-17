@@ -91,6 +91,9 @@ return [
     'game.is_active' => 'Active',
     'game.age_group' => 'Age Group',
     'game.players' => 'Players',
+    'game.minutes' => 'Minutes',
+    'game.inactive' => 'Inactive',
+    'game.outdoor' => 'Outdoor',
 
     // Materials
     'material.title' => 'Material',
@@ -152,6 +155,8 @@ return [
     'group.materials_in_group' => 'Materials in this Group',
     'group.item_count' => ':count Item(s)',
     'group.empty' => 'This group is empty',
+    'group.add_to' => 'Add to Group',
+    'group.select' => 'Select Group',
 
     // Calendar
     'calendar.title' => 'Calendar',
@@ -185,6 +190,12 @@ return [
     'dashboard.welcome' => 'Welcome',
     'dashboard.recent_changes' => 'Recent Changes',
     'dashboard.recent_games' => 'Recently Added',
+    'dashboard.no_games_yet' => 'No games yet',
+    'dashboard.no_games_yet_text' => 'Create your first game to get started.',
+    'dashboard.no_changes_yet' => 'No changes yet.',
+    'dashboard.no_random_game' => 'No matching game found.',
+    'dashboard.no_played_yet' => 'No games played yet.',
+    'dashboard.no_favorites_yet' => 'No favorites yet.',
 
     // Changelog
     'changelog.title' => 'Changelog',
@@ -233,6 +244,9 @@ return [
     'search.all' => 'All',
     'search.show_all' => 'Show all results',
     'search.min_chars' => 'Enter at least 3 characters',
+    'search.global_placeholder' => 'Search everything... (Ctrl+K)',
+    'search.recent_searches' => 'Recent Searches',
+    'search.recently_found' => 'Recently Found',
     'search.hint' => 'Type to find games, materials, boxes and more.',
     'search.navigate' => 'Navigate',
     'search.open' => 'Open',
@@ -258,6 +272,10 @@ return [
     'misc.and' => 'and',
     'misc.actions' => 'Actions',
     'misc.search_placeholder' => 'Search by name...',
+    'misc.from' => 'from',
+    'misc.to' => 'up to',
+    'misc.not_specified' => 'Not specified',
+    'misc.favorites_only' => 'Favorites only',
 
     // Validation
     'validation.required' => 'This field is required',

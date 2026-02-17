@@ -395,18 +395,16 @@ class ApiController extends Controller
         require_once SRC_PATH . '/models/Tag.php';
         require_once SRC_PATH . '/models/Group.php';
 
-        $context = trim($this->getQuery('context', 'all'));
         $results = [];
-        $contextResults = [];
         $db = Database::getInstance();
         $searchTerm = '%' . $query . '%';
 
-        // Adjust limits based on context - prioritized type gets more results
-        $gameLim = ($context === 'game') ? 8 : 5;
-        $matLim = ($context === 'material') ? 8 : 3;
-        $boxLim = ($context === 'box') ? 8 : 2;
-        $tagLim = 2;
-        $grpLim = 2;
+        // Equal limits for all types (global search)
+        $gameLim = 6;
+        $matLim = 6;
+        $boxLim = 4;
+        $tagLim = 4;
+        $grpLim = 4;
 
         // Search games
         $games = Game::searchGames($query, $gameLim);
@@ -418,35 +416,33 @@ class ApiController extends Controller
                 'url' => url('/games/' . $game['id']),
                 'image' => $game['image_path'] ? upload($game['image_path']) : null,
             ];
-            if ($context === 'game') { $contextResults[] = $item; } else { $results[] = $item; }
+            $results[] = $item;
         }
 
         // Search materials
         $stmt = $db->prepare("SELECT id, name, image_path FROM materials WHERE name LIKE :q ORDER BY name LIMIT " . (int)$matLim);
         $stmt->execute(['q' => $searchTerm]);
         foreach ($stmt->fetchAll() as $material) {
-            $item = [
+            $results[] = [
                 'type' => 'material',
                 'id' => $material['id'],
                 'name' => $material['name'],
                 'url' => url('/materials/' . $material['id']),
                 'image' => $material['image_path'] ? upload($material['image_path']) : null,
             ];
-            if ($context === 'material') { $contextResults[] = $item; } else { $results[] = $item; }
         }
 
         // Search boxes
         $stmt = $db->prepare("SELECT id, name FROM boxes WHERE name LIKE :q1 OR label LIKE :q2 ORDER BY name LIMIT " . (int)$boxLim);
         $stmt->execute(['q1' => $searchTerm, 'q2' => $searchTerm]);
         foreach ($stmt->fetchAll() as $box) {
-            $item = [
+            $results[] = [
                 'type' => 'box',
                 'id' => $box['id'],
                 'name' => $box['name'],
                 'url' => url('/boxes/' . $box['id']),
                 'image' => null,
             ];
-            if ($context === 'box') { $contextResults[] = $item; } else { $results[] = $item; }
         }
 
         // Search tags
@@ -475,18 +471,10 @@ class ApiController extends Controller
             ];
         }
 
-        // Context results first, then other results
-        $allResults = array_merge($contextResults, $results);
-
-        $moreParams = ['q' => $query];
-        if ($context !== 'all') {
-            $moreParams['type'] = $context;
-        }
-
         $this->json([
-            'results' => $allResults,
+            'results' => $results,
             'query' => $query,
-            'more_url' => url('/search', $moreParams),
+            'more_url' => url('/search', ['q' => $query]),
         ]);
     }
 

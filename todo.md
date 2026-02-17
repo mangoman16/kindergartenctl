@@ -216,6 +216,21 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Header rewritten: partials/header.php now includes help toggle, dark mode toggle, search
 - [x] Translation keys added for all new features (de + en)
 
+### February 2026 - Bug Fixes & Search Overhaul
+- [x] Fixed image upload/cropping stuck on "Bild zuschneiden" (WebP→JPEG fallback, error handling)
+- [x] Fixed calendar quick-create 404 (/calendar/create → /calendar?create=1 with auto-open modal)
+- [x] Fixed customization settings cache issue (AJAX save + live CSS variable update)
+- [x] Fixed game detail view: location query (JOIN locations table), modal backdrop (position:fixed), dark mode (var(--color-white))
+- [x] Added missing `notes` to $fillable in 6 models (Game, CalendarEvent, Category, Tag, Group, Location)
+- [x] Added `event_type` to CalendarEvent $fillable
+- [x] Moved changelog from icon rail to settings menu page
+- [x] Made game index filters collapsible behind toggle button with active filter count badge
+- [x] Fixed undefined CSS variable --color-yellow-100 (search highlight)
+- [x] Added dark mode overrides for: detail-list, mini-cal-popover, dash-picker-select, form-error, empty-state, page-footer, tag-badge
+- [x] Overhauled search to fully global: removed context detection, equalized result limits, added filter chips, search history (localStorage), recently found items
+- [x] Replaced hardcoded German strings with __() translation keys in dashboard, games index, game show, game form
+- [x] Added new translation keys to de.php and en.php (dashboard.no_*, misc.from/to/not_specified, game.minutes/inactive/outdoor, group.add_to/select, search.global_placeholder/recent_searches/recently_found, misc.favorites_only)
+
 ---
 
 ## Technical Debt / Improvements

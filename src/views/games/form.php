@@ -95,7 +95,7 @@
                         <div class="form-group">
                             <label for="box_id" class="form-label"><?= __('nav.boxes') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_box')) ?>">?</span></label>
                             <select id="box_id" name="box_id" class="form-control">
-                                <option value="">-- Keine Box --</option>
+                                <option value="">-- <?= __('material.no_box') ?> --</option>
                                 <?php foreach ($boxes as $box): ?>
                                     <option value="<?= $box['id'] ?>" <?= old('box_id', $game['box_id'] ?? '') == $box['id'] ? 'selected' : '' ?>>
                                         <?= e($box['name']) ?>
