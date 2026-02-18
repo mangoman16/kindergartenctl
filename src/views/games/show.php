@@ -311,7 +311,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     const newFavorite = data.is_favorite;
@@ -350,24 +353,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     closeAddToGroupModal();
-                    alert('Spiel wurde zur Gruppe hinzugefügt!');
+                    alert('<?= __('flash.added_to_group') ?>');
                 } else {
-                    alert(data.error || 'Ein Fehler ist aufgetreten.');
+                    alert(data.error || '<?= __('flash.error_generic') ?>');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Ein Fehler ist aufgetreten.');
+                alert('<?= __('flash.error_generic') ?>');
             })
             .finally(() => {
                 submitBtn.disabled = false;
             });
         });
     }
+
+    // Escape key to close modals
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAddToGroupModal();
+        }
+    });
 });
 
 function openAddToGroupModal() {

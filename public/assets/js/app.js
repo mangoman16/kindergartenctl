@@ -322,12 +322,10 @@
 
                 timeout = setTimeout(async () => {
                     try {
-                        const response = await fetchWithCsrf(`/api/${type}/check-duplicate`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: value, exclude_id: excludeId }),
-                        });
+                        const params = new URLSearchParams({ type, value: value, exclude_id: excludeId || '' });
+                        const response = await fetch(`/api/check-duplicate?${params.toString()}`);
 
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
                         const data = await response.json();
 
                         // Remove existing warning

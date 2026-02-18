@@ -200,7 +200,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     const newFavorite = data.is_favorite;
@@ -208,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     toggleBtn.className = 'btn btn-block ' + (newFavorite ? 'btn-warning' : 'btn-secondary');
                     document.getElementById('favorite-icon-filled').style.display = newFavorite ? '' : 'none';
                     document.getElementById('favorite-icon-outline').style.display = newFavorite ? 'none' : '';
-                    document.getElementById('favorite-text').textContent = newFavorite ? 'Favorit entfernen' : 'Als Favorit markieren';
+                    document.getElementById('favorite-text').textContent = newFavorite ? '<?= __('misc.remove_from_favorites') ?>' : '<?= __('misc.add_to_favorites') ?>';
                 }
             })
             .catch(error => {
@@ -238,24 +241,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     closeAddToGroupModal();
-                    alert('Material wurde zur Gruppe hinzugefügt!');
+                    alert('<?= __('flash.added_to_group') ?>');
                 } else {
-                    alert(data.error || 'Ein Fehler ist aufgetreten.');
+                    alert(data.error || '<?= __('flash.error_generic') ?>');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Ein Fehler ist aufgetreten.');
+                alert('<?= __('flash.error_generic') ?>');
             })
             .finally(() => {
                 submitBtn.disabled = false;
             });
         });
     }
+
+    // Escape key to close modals
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAddToGroupModal();
+        }
+    });
 });
 
 function openAddToGroupModal() {
@@ -279,15 +292,15 @@ function closeAddToGroupModal() {
     <div class="modal-backdrop" onclick="closeAddToGroupModal()"></div>
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title">Zur Gruppe hinzufügen</h3>
+            <h3 class="modal-title"><?= __('group.add_to') ?></h3>
             <button type="button" class="modal-close" onclick="closeAddToGroupModal()">&times;</button>
         </div>
         <form id="add-to-group-form">
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="group_id">Gruppe auswählen</label>
+                    <label for="group_id"><?= __('group.select') ?></label>
                     <select name="group_id" id="group_id" class="form-control" required>
-                        <option value="">Bitte wählen...</option>
+                        <option value=""><?= __('form.select_option') ?></option>
                         <?php foreach ($groups as $group): ?>
                             <option value="<?= $group['id'] ?>"><?= e($group['name']) ?></option>
                         <?php endforeach; ?>
@@ -295,8 +308,8 @@ function closeAddToGroupModal() {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeAddToGroupModal()">Abbrechen</button>
-                <button type="submit" class="btn btn-primary">Hinzufügen</button>
+                <button type="button" class="btn btn-secondary" onclick="closeAddToGroupModal()"><?= __('action.cancel') ?></button>
+                <button type="submit" class="btn btn-primary"><?= __('action.add') ?></button>
             </div>
         </form>
     </div>

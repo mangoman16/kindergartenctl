@@ -231,6 +231,23 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Replaced hardcoded German strings with __() translation keys in dashboard, games index, game show, game form
 - [x] Added new translation keys to de.php and en.php (dashboard.no_*, misc.from/to/not_specified, game.minutes/inactive/outdoor, group.add_to/select, search.global_placeholder/recent_searches/recently_found, misc.favorites_only)
 
+### February 2026 - Frontend Polish & i18n Completion
+- [x] Fixed broken duplicate-check API route (POST to GET-only route, silently failed on all forms)
+- [x] Added dark mode overrides for: icon rail, context sidebar, top header, user dropdown, help panel, card footer, form labels, breadcrumbs, pagination, modals, badges, filter toggles, changelog tables
+- [x] Removed duplicate dark mode CSS rule for search palette mark highlight
+- [x] Added `@media (max-width: 480px)` mobile breakpoint (reduced padding, single-column grids, smaller min-widths)
+- [x] Added `response.ok` checks to all fetch calls in games/show.php and materials/show.php
+- [x] Added Escape key handler to close modals in games/show.php and materials/show.php
+- [x] Replaced hardcoded German strings in changelog/index.php (filters, table headers, pagination, purge section, details modal)
+- [x] Replaced hardcoded German strings in calendar/index.php (legend, modal form labels, buttons, error messages)
+- [x] Replaced hardcoded German strings in materials/index.php (bulk actions, badges, modal, tooltips, JS alerts)
+- [x] Replaced hardcoded German strings in games/index.php (bulk actions, modal, count text, JS alerts)
+- [x] Replaced hardcoded German strings in boxes/index.php (sort labels, empty state)
+- [x] Replaced hardcoded German strings in materials/show.php (modal, favorite text, JS alerts)
+- [x] Replaced hardcoded German strings in categories/index.php, tags/index.php, groups/index.php (empty states)
+- [x] Replaced hardcoded "Keine Box" and "Keine Termine" in dashboard/index.php
+- [x] Added 80+ new translation keys to de.php and en.php (bulk.*, calendar.*, changelog.*, pagination.*, material.empty_*, box.sort_*, game.basic_info/details/found, flash.added_to_group/error_generic, misc.no_box/no_description)
+
 ---
 
 ## Technical Debt / Improvements

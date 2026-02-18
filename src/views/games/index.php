@@ -100,43 +100,43 @@
     <div class="flex items-center gap-4">
         <label class="form-check">
             <input type="checkbox" id="select-all-checkbox">
-            <span class="form-check-label">Alle auswählen</span>
+            <span class="form-check-label"><?= __('action.select_all') ?></span>
         </label>
-        <span id="selected-count" class="text-muted">0 ausgewählt</span>
+        <span id="selected-count" class="text-muted">0 <?= __('bulk.selected') ?></span>
     </div>
     <div class="flex gap-2">
-        <button type="button" class="btn btn-sm btn-secondary" id="bulk-add-group" title="Zu Gruppe hinzufügen">
+        <button type="button" class="btn btn-sm btn-secondary" id="bulk-add-group" title="<?= __('group.add_to') ?>">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
             </svg>
-            Zu Gruppe
+            <?= __('bulk.add_to_group') ?>
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" id="bulk-add-favorites" title="Als Favorit markieren">
+        <button type="button" class="btn btn-sm btn-secondary" id="bulk-add-favorites" title="<?= __('misc.add_to_favorites') ?>">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
             </svg>
-            Favoriten +
+            <?= __('bulk.add_favorites') ?>
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" id="bulk-remove-favorites" title="Aus Favoriten entfernen">
+        <button type="button" class="btn btn-sm btn-secondary" id="bulk-remove-favorites" title="<?= __('misc.remove_from_favorites') ?>">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 <line x1="4" y1="4" x2="20" y2="20"></line>
             </svg>
-            Favoriten -
+            <?= __('bulk.remove_favorites') ?>
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" id="bulk-cancel">Abbrechen</button>
+        <button type="button" class="btn btn-sm btn-secondary" id="bulk-cancel"><?= __('action.cancel') ?></button>
     </div>
 </div>
 
 <!-- Games Grid -->
 <div class="flex items-center justify-between mb-3">
-    <div class="text-muted"><?= count($games) ?> <?= pluralize(count($games), 'Spiel', 'Spiele') ?> gefunden</div>
+    <div class="text-muted"><?= count($games) ?> <?= pluralize(count($games), __('game.title'), __('game.title_plural')) ?> <?= __('game.found') ?></div>
     <button type="button" class="btn btn-sm btn-secondary" id="toggle-selection-mode">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 11 12 14 22 4"></polyline>
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
         </svg>
-        Mehrfachauswahl
+        <?= __('bulk.multi_select') ?>
     </button>
 </div>
 
@@ -386,20 +386,20 @@
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title">Zu Gruppe hinzufügen</h3>
+            <h3 class="modal-title"><?= __('group.add_to') ?></h3>
             <button type="button" class="modal-close" onclick="closeGroupModal()">&times;</button>
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label class="form-label">Gruppe auswählen</label>
+                <label class="form-label"><?= __('group.select') ?></label>
                 <select id="bulk-group-select" class="form-control">
-                    <option value="">-- Gruppe wählen --</option>
+                    <option value=""><?= __('form.select_option') ?></option>
                 </select>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Abbrechen</button>
-            <button type="button" class="btn btn-primary" onclick="confirmBulkAddToGroup()">Hinzufügen</button>
+            <button type="button" class="btn btn-secondary" onclick="closeGroupModal()"><?= __('action.cancel') ?></button>
+            <button type="button" class="btn btn-primary" onclick="confirmBulkAddToGroup()"><?= __('action.add') ?></button>
         </div>
     </div>
 </div>
@@ -491,13 +491,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateSelectedCount() {
         if (selectedCountEl) {
-            selectedCountEl.textContent = selectedIds.size + ' ausgewählt';
+            selectedCountEl.textContent = selectedIds.size + ' <?= __('bulk.selected') ?>';
         }
     }
 
     // Bulk add to favorites
     document.getElementById('bulk-add-favorites')?.addEventListener('click', async function() {
-        if (selectedIds.size === 0) return alert('Keine Spiele ausgewählt');
+        if (selectedIds.size === 0) return alert('<?= __('bulk.no_items_selected') ?>');
 
         for (const id of selectedIds) {
             await fetch('<?= url('/api/games/') ?>' + id + '/toggle-favorite', {
@@ -510,13 +510,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        alert(selectedIds.size + ' Spiele zu Favoriten hinzugefügt');
+        alert('<?= __('bulk.added_to_favorites') ?>');
         location.reload();
     });
 
     // Bulk remove from favorites
     document.getElementById('bulk-remove-favorites')?.addEventListener('click', async function() {
-        if (selectedIds.size === 0) return alert('Keine Spiele ausgewählt');
+        if (selectedIds.size === 0) return alert('<?= __('bulk.no_items_selected') ?>');
 
         for (const id of selectedIds) {
             await fetch('<?= url('/api/games/') ?>' + id + '/toggle-favorite', {
@@ -529,20 +529,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        alert(selectedIds.size + ' Spiele aus Favoriten entfernt');
+        alert('<?= __('bulk.removed_from_favorites') ?>');
         location.reload();
     });
 
     // Bulk add to group
     document.getElementById('bulk-add-group')?.addEventListener('click', async function() {
-        if (selectedIds.size === 0) return alert('Keine Spiele ausgewählt');
+        if (selectedIds.size === 0) return alert('<?= __('bulk.no_items_selected') ?>');
 
         // Load groups
         const response = await fetch('<?= url('/api/groups') ?>');
         const data = await response.json();
 
         const select = document.getElementById('bulk-group-select');
-        select.innerHTML = '<option value="">-- Gruppe wählen --</option>';
+        select.innerHTML = '<option value=""><?= __('form.select_option') ?></option>';
         (data.groups || data).forEach(group => {
             select.innerHTML += `<option value="${group.id}">${group.name}</option>`;
         });
@@ -557,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.confirmBulkAddToGroup = async function() {
         const groupId = document.getElementById('bulk-group-select').value;
-        if (!groupId) return alert('Bitte Gruppe auswählen');
+        if (!groupId) return alert('<?= __('bulk.select_group') ?>');
 
         for (const id of selectedIds) {
             await fetch('<?= url('/api/groups/add-item') ?>', {
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         closeGroupModal();
-        alert(selectedIds.size + ' Spiele zur Gruppe hinzugefügt');
+        alert('<?= __('bulk.added_to_group') ?>');
         location.reload();
     };
 

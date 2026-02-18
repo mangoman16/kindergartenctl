@@ -18,7 +18,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
         </svg>
-        <span>Nur Favoriten</span>
+        <span><?= __('misc.favorites_only') ?></span>
     </label>
     <?php if (!empty($filters['search']) || !empty($filters['is_favorite'])): ?>
         <a href="<?= url('/materials') ?>" class="inline-filter-reset"><?= __('misc.reset') ?? 'Zurücksetzen' ?></a>
@@ -38,8 +38,8 @@
                     <line x1="12" y1="22.08" x2="12" y2="12"></line>
                 </svg>
             </div>
-            <h3 class="empty-state-title">Noch keine Materialien vorhanden</h3>
-            <p class="empty-state-text">Erstellen Sie Materialien, die für Spiele benötigt werden.</p>
+            <h3 class="empty-state-title"><?= __('material.empty_title') ?></h3>
+            <p class="empty-state-text"><?= __('material.empty_text') ?></p>
             <a href="<?= url('/materials/create') ?>" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -55,29 +55,29 @@
 <!-- Bulk Actions Bar -->
 <div id="bulk-actions-bar" class="bulk-actions-bar" style="display: none;">
     <div class="flex items-center gap-4">
-        <span id="selected-count" class="text-muted">0 ausgewählt</span>
+        <span id="selected-count" class="text-muted">0 <?= __('bulk.selected') ?></span>
     </div>
     <div class="flex gap-2">
-        <button type="button" class="btn btn-sm btn-secondary" id="bulk-add-group" title="Zu Gruppe hinzufügen">
+        <button type="button" class="btn btn-sm btn-secondary" id="bulk-add-group" title="<?= __('group.add_to') ?>">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
             </svg>
-            Zu Gruppe
+            <?= __('bulk.add_to_group') ?>
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" id="bulk-add-favorites" title="Als Favorit markieren">
+        <button type="button" class="btn btn-sm btn-secondary" id="bulk-add-favorites" title="<?= __('misc.add_to_favorites') ?>">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
             </svg>
-            Favoriten +
+            <?= __('bulk.add_favorites') ?>
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" id="bulk-remove-favorites" title="Aus Favoriten entfernen">
+        <button type="button" class="btn btn-sm btn-secondary" id="bulk-remove-favorites" title="<?= __('misc.remove_from_favorites') ?>">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 <line x1="4" y1="4" x2="20" y2="20"></line>
             </svg>
-            Favoriten -
+            <?= __('bulk.remove_favorites') ?>
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" id="bulk-cancel">Abbrechen</button>
+        <button type="button" class="btn btn-sm btn-secondary" id="bulk-cancel"><?= __('action.cancel') ?></button>
     </div>
 </div>
 
@@ -131,9 +131,9 @@
                     <td class="text-center"><?= $material['quantity'] ?: '-' ?></td>
                     <td class="text-center">
                         <?php if ($material['is_consumable']): ?>
-                            <span class="badge badge-warning">Verbrauch</span>
+                            <span class="badge badge-warning"><?= __('material.consumable_badge') ?></span>
                         <?php else: ?>
-                            <span class="badge badge-info">Ausrüstung</span>
+                            <span class="badge badge-info"><?= __('material.equipment_badge') ?></span>
                         <?php endif; ?>
                     </td>
                     <td class="text-center">
@@ -141,13 +141,13 @@
                     </td>
                     <td>
                         <div class="flex gap-2">
-                            <a href="<?= url('/materials/' . $material['id']) ?>" class="btn btn-sm btn-secondary" title="Anzeigen">
+                            <a href="<?= url('/materials/' . $material['id']) ?>" class="btn btn-sm btn-secondary" title="<?= __('action.view') ?>">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
                             </a>
-                            <a href="<?= url('/materials/' . $material['id'] . '/edit') ?>" class="btn btn-sm btn-secondary" title="Bearbeiten">
+                            <a href="<?= url('/materials/' . $material['id'] . '/edit') ?>" class="btn btn-sm btn-secondary" title="<?= __('action.edit') ?>">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -156,7 +156,7 @@
                             <form action="<?= url('/materials/' . $material['id'] . '/delete') ?>" method="POST"
                                   onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')">
                                 <?= csrfField() ?>
-                                <button type="submit" class="btn btn-sm btn-danger" title="Löschen">
+                                <button type="submit" class="btn btn-sm btn-danger" title="<?= __('action.delete') ?>">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="3 6 5 6 21 6"></polyline>
                                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -177,20 +177,20 @@
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title">Zu Gruppe hinzufügen</h3>
+            <h3 class="modal-title"><?= __('group.add_to') ?></h3>
             <button type="button" class="modal-close" onclick="closeGroupModal()">&times;</button>
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label class="form-label">Gruppe auswählen</label>
+                <label class="form-label"><?= __('group.select') ?></label>
                 <select id="bulk-group-select" class="form-control">
-                    <option value="">-- Gruppe wählen --</option>
+                    <option value=""><?= __('form.select_option') ?></option>
                 </select>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Abbrechen</button>
-            <button type="button" class="btn btn-primary" onclick="confirmBulkAddToGroup()">Hinzufügen</button>
+            <button type="button" class="btn btn-secondary" onclick="closeGroupModal()"><?= __('action.cancel') ?></button>
+            <button type="button" class="btn btn-primary" onclick="confirmBulkAddToGroup()"><?= __('action.add') ?></button>
         </div>
     </div>
 </div>
@@ -299,13 +299,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateSelectedCount() {
         if (selectedCountEl) {
-            selectedCountEl.textContent = selectedIds.size + ' ausgewählt';
+            selectedCountEl.textContent = selectedIds.size + ' <?= __('bulk.selected') ?>';
         }
     }
 
     // Bulk add to favorites
     document.getElementById('bulk-add-favorites')?.addEventListener('click', async function() {
-        if (selectedIds.size === 0) return alert('Keine Materialien ausgewählt');
+        if (selectedIds.size === 0) return alert('<?= __('bulk.no_items_selected') ?>');
 
         for (const id of selectedIds) {
             await fetch('<?= url('/api/materials/') ?>' + id + '/toggle-favorite', {
@@ -318,13 +318,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        alert(selectedIds.size + ' Materialien zu Favoriten hinzugefügt');
+        alert('<?= __('bulk.added_to_favorites') ?>');
         location.reload();
     });
 
     // Bulk remove from favorites
     document.getElementById('bulk-remove-favorites')?.addEventListener('click', async function() {
-        if (selectedIds.size === 0) return alert('Keine Materialien ausgewählt');
+        if (selectedIds.size === 0) return alert('<?= __('bulk.no_items_selected') ?>');
 
         for (const id of selectedIds) {
             await fetch('<?= url('/api/materials/') ?>' + id + '/toggle-favorite', {
@@ -337,20 +337,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        alert(selectedIds.size + ' Materialien aus Favoriten entfernt');
+        alert('<?= __('bulk.removed_from_favorites') ?>');
         location.reload();
     });
 
     // Bulk add to group
     document.getElementById('bulk-add-group')?.addEventListener('click', async function() {
-        if (selectedIds.size === 0) return alert('Keine Materialien ausgewählt');
+        if (selectedIds.size === 0) return alert('<?= __('bulk.no_items_selected') ?>');
 
         // Load groups
         const response = await fetch('<?= url('/api/groups') ?>');
         const data = await response.json();
 
         const select = document.getElementById('bulk-group-select');
-        select.innerHTML = '<option value="">-- Gruppe wählen --</option>';
+        select.innerHTML = '<option value=""><?= __('form.select_option') ?></option>';
         (data.groups || data).forEach(group => {
             select.innerHTML += `<option value="${group.id}">${group.name}</option>`;
         });
@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.confirmBulkAddToGroup = async function() {
         const groupId = document.getElementById('bulk-group-select').value;
-        if (!groupId) return alert('Bitte Gruppe auswählen');
+        if (!groupId) return alert('<?= __('bulk.select_group') ?>');
 
         for (const id of selectedIds) {
             await fetch('<?= url('/api/groups/add-item') ?>', {
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         closeGroupModal();
-        alert(selectedIds.size + ' Materialien zur Gruppe hinzugefügt');
+        alert('<?= __('bulk.added_to_group') ?>');
         location.reload();
     };
 });

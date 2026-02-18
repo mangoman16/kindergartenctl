@@ -277,7 +277,7 @@
                                 <?php endif; ?>
                                 <div class="dash-item-info">
                                     <div class="dash-item-name"><?= e($game['name']) ?></div>
-                                    <div class="dash-item-meta"><?= e($game['box_name'] ?? 'Keine Box') ?></div>
+                                    <div class="dash-item-meta"><?= e($game['box_name'] ?? __('misc.no_box')) ?></div>
                                 </div>
                             </a>
                         <?php endforeach; ?>
@@ -311,7 +311,7 @@
                                 <?php endif; ?>
                                 <div class="dash-item-info">
                                     <div class="dash-item-name"><?= e($played['game_name']) ?></div>
-                                    <div class="dash-item-meta"><?= e($played['box_name'] ?? 'Keine Box') ?></div>
+                                    <div class="dash-item-meta"><?= e($played['box_name'] ?? __('misc.no_box')) ?></div>
                                 </div>
                                 <span class="dash-item-date"><?= formatDate($played['start_date'], 'd.m.') ?></span>
                             </a>
@@ -347,7 +347,7 @@
                                 <?php endif; ?>
                                 <div class="dash-item-info">
                                     <div class="dash-item-name"><?= e($game['name']) ?></div>
-                                    <div class="dash-item-meta"><?= e($game['box_name'] ?? 'Keine Box') ?></div>
+                                    <div class="dash-item-meta"><?= e($game['box_name'] ?? __('misc.no_box')) ?></div>
                                 </div>
                             </a>
                         <?php endforeach; ?>
@@ -1086,7 +1086,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 var empty = document.createElement('div');
                 empty.className = 'mini-cal-popover-empty';
-                empty.textContent = 'Keine Termine';
+                empty.textContent = '<?= __('calendar.no_events') ?>';
                 popoverBody.appendChild(empty);
             }
 

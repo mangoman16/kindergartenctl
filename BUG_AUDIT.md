@@ -11,11 +11,11 @@
 
 | Severity | Found | Fixed |
 |----------|-------|-------|
-| Critical | 6 | 6 |
+| Critical | 7 | 7 |
 | High | 5 | 5 |
-| Medium | 12 | 12 |
+| Medium | 17 | 17 |
 | Low | 2 | 2 |
-| **Total** | **25** | **25** |
+| **Total** | **31** | **31** |
 
 ---
 
@@ -145,6 +145,36 @@
 - **Files:** `src/views/partials/header.php`, `src/controllers/ApiController.php:377-489`
 - **Problem:** Search prioritized results based on current page section (games page → more games, materials page → more materials). User expected fully global search.
 - **Fix:** Removed context detection. Equalized API result limits across all entity types. Added filter chips, search history (localStorage), and recently found items to the search palette.
+
+### BUG-26 (Critical): Duplicate Check API Sends POST to GET-Only Route
+- **File:** `public/assets/js/app.js:325`
+- **Problem:** JavaScript sent `POST /api/{type}/check-duplicate` with JSON body, but the route is `GET /api/check-duplicate` and the controller reads query params via `$this->getQuery()`. Duplicate name checking silently failed on all forms.
+- **Fix:** Changed to `GET /api/check-duplicate?type=...&value=...&exclude_id=...` with proper query parameters.
+
+### BUG-27 (Medium): Missing `response.ok` Checks in Fetch Calls
+- **Files:** `src/views/games/show.php:314`, `src/views/materials/show.php:203`
+- **Problem:** Fetch calls went straight to `.json()` without checking HTTP status. 4xx/5xx errors caused silent JSON parse failures.
+- **Fix:** Added `if (!response.ok) throw new Error('HTTP ' + response.status)` before `.json()` in all fetch calls.
+
+### BUG-28 (Medium): Duplicate Dark Mode CSS Rule for Search Mark
+- **File:** `public/assets/css/style.css:390-392`
+- **Problem:** `.search-palette-item-name mark` had two conflicting dark mode overrides with different highlight colors (rgb 245,158,11 vs 234,179,8). Second silently overrode first.
+- **Fix:** Removed duplicate rule, kept the first (consistent with light mode).
+
+### BUG-29 (Medium): Missing Dark Mode Overrides for Major UI Components
+- **File:** `public/assets/css/style.css`
+- **Problem:** Icon rail, context sidebar, top header, user dropdown, help panel, card footer, form labels, breadcrumbs, pagination, and modals all lacked dark mode overrides, making them unreadable.
+- **Fix:** Added `[data-theme="dark"]` overrides for all affected components.
+
+### BUG-30 (Medium): No Mobile Breakpoint Below 480px
+- **File:** `public/assets/css/style.css`
+- **Problem:** Only breakpoints at 1200px, 992px, and 768px existed. Small phones (<480px) had oversized padding, cramped layouts, and overflowing elements.
+- **Fix:** Added `@media (max-width: 480px)` breakpoint reducing padding, grid columns, and min-widths.
+
+### BUG-31 (Medium): Hundreds of Hardcoded German Strings Across Views
+- **Files:** `src/views/changelog/index.php`, `src/views/calendar/index.php`, `src/views/materials/index.php`, `src/views/games/index.php`, `src/views/boxes/index.php`, `src/views/categories/index.php`, `src/views/tags/index.php`, `src/views/groups/index.php`, `src/views/materials/show.php`, `src/views/dashboard/index.php`
+- **Problem:** Filter labels, empty states, modal titles/buttons, bulk action labels, badge text, error messages, and pagination text were hardcoded in German instead of using `__()` translation function.
+- **Fix:** Added 80+ new translation keys to `src/lang/de.php` and `src/lang/en.php`. Updated all affected views to use `__()` calls.
 
 ---
 

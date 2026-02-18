@@ -387,16 +387,152 @@
     border-color: var(--color-gray-700);
     color: var(--color-gray-500);
 }
-[data-theme="dark"] .search-palette-item-name mark {
-    background: rgba(234, 179, 8, 0.3);
-    color: var(--color-gray-100);
-}
 [data-theme="dark"] .tag-badge {
     background: var(--color-gray-700);
     color: var(--color-gray-200);
 }
 [data-theme="dark"] .material-list li {
     border-bottom-color: var(--color-gray-700);
+}
+
+/* Dark mode: Navigation */
+[data-theme="dark"] .icon-rail {
+    border-right-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .context-sidebar {
+    border-right-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .quick-create-popup {
+    border: 1px solid var(--color-gray-300);
+}
+
+/* Dark mode: Header & Dropdowns */
+[data-theme="dark"] .top-header {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .search-dropdown {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .search-dropdown-item:hover,
+[data-theme="dark"] .search-dropdown-item.active {
+    background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .search-dropdown-more:hover {
+    background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .user-dropdown {
+    border: 1px solid var(--color-gray-300);
+}
+
+[data-theme="dark"] .user-dropdown-header {
+    border-bottom-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .user-dropdown-item:hover {
+    background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .user-dropdown-footer {
+    border-top-color: var(--color-gray-300);
+}
+
+/* Dark mode: Help Panel */
+[data-theme="dark"] .help-panel {
+    border-left-color: var(--color-gray-200);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .help-panel-header {
+    border-bottom-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .help-toc {
+    border-bottom-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .help-toc-item:hover {
+    background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .help-section {
+    border-bottom-color: var(--color-gray-300);
+}
+
+/* Dark mode: Cards & Containers */
+[data-theme="dark"] .card-footer {
+    background: var(--color-gray-50);
+}
+
+/* Dark mode: Forms */
+[data-theme="dark"] .form-label {
+    color: var(--color-gray-800);
+}
+
+/* Dark mode: Breadcrumbs */
+[data-theme="dark"] .breadcrumbs a {
+    color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .breadcrumbs a:hover {
+    color: var(--color-primary);
+}
+
+/* Dark mode: Pagination */
+[data-theme="dark"] .pagination-link {
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .pagination-link:hover {
+    background: var(--color-gray-200);
+}
+
+/* Dark mode: Settings menu icons */
+[data-theme="dark"] .settings-menu-icon {
+    opacity: 0.85;
+}
+
+/* Dark mode: Modal content */
+[data-theme="dark"] .modal-content {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+}
+
+[data-theme="dark"] .modal-header {
+    border-bottom-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .modal-footer {
+    border-top-color: var(--color-gray-300);
+}
+
+/* Dark mode: Changelog table */
+[data-theme="dark"] .table td {
+    border-bottom-color: var(--color-gray-200);
+}
+
+/* Dark mode: Badge */
+[data-theme="dark"] .badge {
+    background: var(--color-gray-200);
+    color: var(--color-gray-800);
+}
+
+/* Dark mode: Filter toggle */
+[data-theme="dark"] .filter-toggle-bar .btn-ghost {
+    color: var(--color-gray-600);
+    border-color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .filter-toggle-bar .btn-ghost:hover {
+    background: var(--color-gray-200);
 }
 
 /* ============================================
@@ -3404,5 +3540,48 @@ body[data-pattern="clouds"] .page-content {
 
     .storage-stats {
         flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content {
+        padding: var(--spacing-3);
+    }
+
+    .card-body {
+        padding: var(--spacing-3);
+    }
+
+    .card-footer {
+        padding: var(--spacing-3);
+    }
+
+    .quick-action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .user-dropdown {
+        min-width: 220px;
+    }
+
+    .search-palette {
+        margin: 0 var(--spacing-2);
+    }
+
+    .top-header {
+        padding: var(--spacing-3) var(--spacing-4);
+    }
+
+    .page-header {
+        gap: var(--spacing-3);
+    }
+
+    .page-actions {
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+    }
+
+    .inline-filters {
+        gap: var(--spacing-2);
     }
 }

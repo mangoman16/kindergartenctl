@@ -24,8 +24,8 @@
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
             </div>
-            <h3 class="empty-state-title">Noch keine Kategorien vorhanden</h3>
-            <p class="empty-state-text">Erstellen Sie Kategorien, um Spiele zu kategorisieren.</p>
+            <h3 class="empty-state-title"><?= __('category.empty_title') ?></h3>
+            <p class="empty-state-text"><?= __('category.empty_text') ?></p>
             <a href="<?= url('/categories/create') ?>" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
