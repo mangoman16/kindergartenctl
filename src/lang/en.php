@@ -604,6 +604,46 @@ return [
     'misc.no_description' => 'No description available.',
     'misc.no_box' => 'No box',
 
+    // Not found messages
+    'game.not_found' => 'Game not found.',
+    'material.not_found' => 'Material not found.',
+    'box.not_found' => 'Box not found.',
+    'category.not_found' => 'Category not found.',
+    'tag.not_found' => 'Topic not found.',
+    'group.not_found' => 'Group not found.',
+    'calendar.event_not_found' => 'Event not found.',
+    'user.not_found' => 'User not found.',
+
+    // Print
+    'print.game_list' => 'Game List',
+
+    // Changelog field labels
+    'changelog.field.name' => 'Name',
+    'changelog.field.description' => 'Description',
+    'changelog.field.color' => 'Color',
+    'changelog.field.image' => 'Image',
+    'changelog.field.location' => 'Location',
+    'changelog.field.label' => 'Label',
+    'changelog.field.sort_order' => 'Sort Order',
+    'changelog.field.min_players' => 'Min. Players',
+    'changelog.field.max_players' => 'Max. Players',
+    'changelog.field.duration' => 'Duration',
+    'changelog.field.instructions' => 'Instructions',
+    'changelog.field.is_outdoor' => 'Outdoor',
+    'changelog.field.is_active' => 'Active',
+    'changelog.field.box' => 'Box',
+    'changelog.field.category' => 'Age Group',
+
+    // Changelog entity types
+    'changelog.entity.game' => 'Game',
+    'changelog.entity.box' => 'Box',
+    'changelog.entity.category' => 'Age Group',
+    'changelog.entity.tag' => 'Topic',
+    'changelog.entity.material' => 'Material',
+    'changelog.entity.group' => 'Group',
+    'changelog.entity.event' => 'Event',
+    'changelog.entity.user' => 'User',
+
     // Flash messages
     'flash.success' => 'Success',
     'flash.error' => 'Error',
@@ -615,4 +655,62 @@ return [
     'flash.saved' => 'Changes saved',
     'flash.added_to_group' => 'Successfully added to group!',
     'flash.error_generic' => 'An error occurred.',
+    'flash.error_creating' => 'Error creating.',
+    'flash.error_updating' => 'Error updating: :error',
+    'flash.error_deleting' => 'Error deleting: :error',
+    'flash.error_duplicating' => 'Error duplicating.',
+    'flash.error_deleting_image' => 'Error deleting image.',
+    'flash.design_updated' => 'Design updated.',
+    'flash.duplicated' => ':item has been duplicated.',
+
+    // Validation extended
+    'validation.title_required' => 'Title is required.',
+    'validation.title_max_255' => 'Title may not exceed 255 characters.',
+    'validation.description_max_5000' => 'Description may not exceed 5000 characters.',
+    'validation.start_date_required' => 'Start date is required.',
+    'validation.invalid_date_format' => 'Invalid date format.',
+    'validation.end_date_format' => 'Invalid end date format.',
+    'validation.end_before_start' => 'End date must be after start date.',
+    'validation.max_gte_min_players' => 'Maximum players must be greater than or equal to minimum players.',
+    'validation.name_required' => 'Name is required.',
+    'validation.name_max_100' => 'Name may not exceed 100 characters.',
+    'validation.invalid_ip' => 'Invalid IP address.',
+    'validation.invalid_image_type' => 'Invalid image type.',
+    'validation.invalid_image_path' => 'Invalid image path.',
+    'validation.no_file_uploaded' => 'No file uploaded.',
+    'validation.invalid_type' => 'Invalid type.',
+    'validation.type_value_required' => 'Type and value are required.',
+    'validation.no_path' => 'No image path specified.',
+
+    // Settings extended
+    'settings.wrong_password' => 'The current password is incorrect.',
+    'settings.wrong_password_generic' => 'The password is incorrect.',
+    'settings.invalid_sender_email' => 'Invalid sender email address.',
+    'settings.smtp_save_failed' => 'Email settings could not be saved.',
+    'settings.smtp_saved' => 'Email settings saved.',
+    'settings.smtp_not_configured' => 'SMTP is not configured. Please save settings first.',
+    'settings.ip_already_banned' => 'This IP address is already banned.',
+    'settings.ip_banned_success' => 'IP address has been banned.',
+    'settings.ip_unbanned' => 'IP ban has been removed.',
+    'settings.save_failed' => 'Settings could not be saved.',
+    'settings.temp_cleared' => 'Temporary files deleted.',
+    'settings.ban_reason_default' => 'Manually banned',
+    'settings.debug_mode_enabled' => 'Debug mode enabled.',
+    'settings.debug_mode_disabled' => 'Debug mode disabled.',
+    'settings.language_changed_msg' => 'Language changed.',
+
+    // Print extended
+    'print.print_view' => 'Print View',
+    'print.preparation_list' => 'Preparation List',
+
+    // Misc extended
+    'misc.unknown_box' => 'Unknown box',
+    'misc.unknown_error' => 'Unknown error',
+
+    // API
+    'api.rate_limit' => 'Too many requests. Please wait a moment.',
+    'api.group_type_item_required' => 'Group, type and item are required.',
+    'api.invalid_item_type' => 'Invalid item type.',
+    'api.add_item_failed' => 'Item could not be added.',
+    'api.remove_item_failed' => 'Item could not be removed.',
 ];

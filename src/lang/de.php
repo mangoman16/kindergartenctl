@@ -604,6 +604,46 @@ return [
     'misc.no_description' => 'Keine Beschreibung vorhanden.',
     'misc.no_box' => 'Keine Box',
 
+    // Not found messages
+    'game.not_found' => 'Spiel nicht gefunden.',
+    'material.not_found' => 'Material nicht gefunden.',
+    'box.not_found' => 'Box nicht gefunden.',
+    'category.not_found' => 'Kategorie nicht gefunden.',
+    'tag.not_found' => 'Thema nicht gefunden.',
+    'group.not_found' => 'Gruppe nicht gefunden.',
+    'calendar.event_not_found' => 'Termin nicht gefunden.',
+    'user.not_found' => 'Benutzer nicht gefunden.',
+
+    // Print
+    'print.game_list' => 'Spieleliste',
+
+    // Changelog field labels
+    'changelog.field.name' => 'Name',
+    'changelog.field.description' => 'Beschreibung',
+    'changelog.field.color' => 'Farbe',
+    'changelog.field.image' => 'Bild',
+    'changelog.field.location' => 'Standort',
+    'changelog.field.label' => 'Etikett',
+    'changelog.field.sort_order' => 'Sortierung',
+    'changelog.field.min_players' => 'Min. Spieler',
+    'changelog.field.max_players' => 'Max. Spieler',
+    'changelog.field.duration' => 'Dauer',
+    'changelog.field.instructions' => 'Anleitung',
+    'changelog.field.is_outdoor' => 'Outdoor',
+    'changelog.field.is_active' => 'Aktiv',
+    'changelog.field.box' => 'Box',
+    'changelog.field.category' => 'Altersgruppe',
+
+    // Changelog entity types
+    'changelog.entity.game' => 'Spiel',
+    'changelog.entity.box' => 'Box',
+    'changelog.entity.category' => 'Altersgruppe',
+    'changelog.entity.tag' => 'Thema',
+    'changelog.entity.material' => 'Material',
+    'changelog.entity.group' => 'Gruppe',
+    'changelog.entity.event' => 'Termin',
+    'changelog.entity.user' => 'Benutzer',
+
     // Flash messages
     'flash.success' => 'Erfolg',
     'flash.error' => 'Fehler',
@@ -615,4 +655,62 @@ return [
     'flash.saved' => 'Änderungen gespeichert',
     'flash.added_to_group' => 'Erfolgreich zur Gruppe hinzugefügt!',
     'flash.error_generic' => 'Ein Fehler ist aufgetreten.',
+    'flash.error_creating' => 'Fehler beim Erstellen.',
+    'flash.error_updating' => 'Fehler beim Aktualisieren: :error',
+    'flash.error_deleting' => 'Fehler beim Löschen: :error',
+    'flash.error_duplicating' => 'Fehler beim Duplizieren.',
+    'flash.error_deleting_image' => 'Fehler beim Löschen des Bildes.',
+    'flash.design_updated' => 'Design wurde aktualisiert.',
+    'flash.duplicated' => ':item wurde dupliziert.',
+
+    // Validation extended
+    'validation.title_required' => 'Titel ist erforderlich.',
+    'validation.title_max_255' => 'Titel darf maximal 255 Zeichen lang sein.',
+    'validation.description_max_5000' => 'Beschreibung darf maximal 5000 Zeichen lang sein.',
+    'validation.start_date_required' => 'Startdatum ist erforderlich.',
+    'validation.invalid_date_format' => 'Ungültiges Datumsformat.',
+    'validation.end_date_format' => 'Ungültiges Enddatumsformat.',
+    'validation.end_before_start' => 'Enddatum muss nach dem Startdatum liegen.',
+    'validation.max_gte_min_players' => 'Maximale Spieleranzahl muss größer oder gleich der minimalen Anzahl sein.',
+    'validation.name_required' => 'Name ist erforderlich.',
+    'validation.name_max_100' => 'Name darf maximal 100 Zeichen haben.',
+    'validation.invalid_ip' => 'Ungültige IP-Adresse.',
+    'validation.invalid_image_type' => 'Ungültiger Bildtyp.',
+    'validation.invalid_image_path' => 'Ungültiger Bildpfad.',
+    'validation.no_file_uploaded' => 'Keine Datei hochgeladen.',
+    'validation.invalid_type' => 'Ungültiger Typ.',
+    'validation.type_value_required' => 'Typ und Wert sind erforderlich.',
+    'validation.no_path' => 'Kein Bildpfad angegeben.',
+
+    // Settings extended
+    'settings.wrong_password' => 'Das aktuelle Passwort ist falsch.',
+    'settings.wrong_password_generic' => 'Das Passwort ist falsch.',
+    'settings.invalid_sender_email' => 'Ungültige Absender-E-Mail-Adresse.',
+    'settings.smtp_save_failed' => 'E-Mail-Einstellungen konnten nicht gespeichert werden.',
+    'settings.smtp_saved' => 'E-Mail-Einstellungen wurden gespeichert.',
+    'settings.smtp_not_configured' => 'SMTP ist nicht konfiguriert. Bitte speichern Sie zuerst die Einstellungen.',
+    'settings.ip_already_banned' => 'Diese IP-Adresse ist bereits gesperrt.',
+    'settings.ip_banned_success' => 'IP-Adresse wurde gesperrt.',
+    'settings.ip_unbanned' => 'IP-Sperre wurde aufgehoben.',
+    'settings.save_failed' => 'Einstellungen konnten nicht gespeichert werden.',
+    'settings.temp_cleared' => 'Temporäre Dateien wurden gelöscht.',
+    'settings.ban_reason_default' => 'Manuell gesperrt',
+    'settings.debug_mode_enabled' => 'Debug-Modus wurde aktiviert.',
+    'settings.debug_mode_disabled' => 'Debug-Modus wurde deaktiviert.',
+    'settings.language_changed_msg' => 'Sprache wurde geändert.',
+
+    // Print extended
+    'print.print_view' => 'Druckansicht',
+    'print.preparation_list' => 'Vorbereitungsliste',
+
+    // Misc extended
+    'misc.unknown_box' => 'Unbekannte Box',
+    'misc.unknown_error' => 'Unbekannter Fehler',
+
+    // API
+    'api.rate_limit' => 'Zu viele Anfragen. Bitte warten Sie einen Moment.',
+    'api.group_type_item_required' => 'Gruppe, Typ und Element sind erforderlich.',
+    'api.invalid_item_type' => 'Ungültiger Elementtyp.',
+    'api.add_item_failed' => 'Element konnte nicht hinzugefügt werden.',
+    'api.remove_item_failed' => 'Element konnte nicht entfernt werden.',
 ];

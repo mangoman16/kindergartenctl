@@ -92,7 +92,7 @@ class MaterialController extends Controller
         $materialId = Material::create($data);
 
         if (!$materialId) {
-            Session::setFlash('error', 'Fehler beim Erstellen des Materials.');
+            Session::setFlash('error', __('flash.error_creating'));
             Session::setOldInput($data);
             $this->redirect('/materials/create');
             return;
@@ -116,7 +116,7 @@ class MaterialController extends Controller
         $material = Material::findWithGameCount((int)$id);
 
         if (!$material) {
-            Session::setFlash('error', 'Material nicht gefunden.');
+            Session::setFlash('error', __('material.not_found'));
             $this->redirect('/materials');
             return;
         }
@@ -145,7 +145,7 @@ class MaterialController extends Controller
         $material = Material::find((int)$id);
 
         if (!$material) {
-            Session::setFlash('error', 'Material nicht gefunden.');
+            Session::setFlash('error', __('material.not_found'));
             $this->redirect('/materials');
             return;
         }
@@ -173,7 +173,7 @@ class MaterialController extends Controller
         $material = Material::find((int)$id);
 
         if (!$material) {
-            Session::setFlash('error', 'Material nicht gefunden.');
+            Session::setFlash('error', __('material.not_found'));
             $this->redirect('/materials');
             return;
         }
@@ -233,7 +233,7 @@ class MaterialController extends Controller
         $material = Material::find((int)$id);
 
         if (!$material) {
-            Session::setFlash('error', 'Material nicht gefunden.');
+            Session::setFlash('error', __('material.not_found'));
             $this->redirect('/materials');
             return;
         }
@@ -264,14 +264,14 @@ class MaterialController extends Controller
         $material = Material::findWithGameCount((int)$id);
 
         if (!$material) {
-            Session::setFlash('error', 'Material nicht gefunden.');
+            Session::setFlash('error', __('material.not_found'));
             $this->redirect('/materials');
             return;
         }
 
         $games = Material::getGames((int)$id);
 
-        $this->setTitle($material['name'] . ' - Druckansicht');
+        $this->setTitle($material['name'] . ' - ' . __('print.print_view'));
         $this->setLayout('print');
 
         $this->render('materials/print', [

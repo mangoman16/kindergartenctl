@@ -89,7 +89,7 @@ class GroupController extends Controller
         $groupId = Group::create($data);
 
         if (!$groupId) {
-            Session::setFlash('error', 'Fehler beim Erstellen der Gruppe.');
+            Session::setFlash('error', __('flash.error_creating'));
             Session::setOldInput(array_merge($data, ['games' => $gameIds, 'materials' => $materials]));
             $this->redirect('/groups/create');
             return;
@@ -116,7 +116,7 @@ class GroupController extends Controller
         $group = Group::findWithCounts((int)$id);
 
         if (!$group) {
-            Session::setFlash('error', 'Gruppe nicht gefunden.');
+            Session::setFlash('error', __('group.not_found'));
             $this->redirect('/groups');
             return;
         }
@@ -147,7 +147,7 @@ class GroupController extends Controller
         $group = Group::find((int)$id);
 
         if (!$group) {
-            Session::setFlash('error', 'Gruppe nicht gefunden.');
+            Session::setFlash('error', __('group.not_found'));
             $this->redirect('/groups');
             return;
         }
@@ -183,7 +183,7 @@ class GroupController extends Controller
         $group = Group::find((int)$id);
 
         if (!$group) {
-            Session::setFlash('error', 'Gruppe nicht gefunden.');
+            Session::setFlash('error', __('group.not_found'));
             $this->redirect('/groups');
             return;
         }
@@ -248,7 +248,7 @@ class GroupController extends Controller
         $group = Group::find((int)$id);
 
         if (!$group) {
-            Session::setFlash('error', 'Gruppe nicht gefunden.');
+            Session::setFlash('error', __('group.not_found'));
             $this->redirect('/groups');
             return;
         }
@@ -279,7 +279,7 @@ class GroupController extends Controller
         $group = Group::findWithCounts((int)$id);
 
         if (!$group) {
-            Session::setFlash('error', 'Gruppe nicht gefunden.');
+            Session::setFlash('error', __('group.not_found'));
             $this->redirect('/groups');
             return;
         }
@@ -292,7 +292,7 @@ class GroupController extends Controller
             'group' => $group,
             'games' => $games,
             'materials' => $materials,
-            'printTitle' => 'Gruppe: ' . $group['name'],
+            'printTitle' => __('group.title') . ': ' . $group['name'],
         ]);
     }
 
@@ -306,7 +306,7 @@ class GroupController extends Controller
         $group = Group::findWithCounts((int)$id);
 
         if (!$group) {
-            Session::setFlash('error', 'Gruppe nicht gefunden.');
+            Session::setFlash('error', __('group.not_found'));
             $this->redirect('/groups');
             return;
         }
@@ -322,7 +322,7 @@ class GroupController extends Controller
                 $boxKey = $material['box_id'];
                 if (!isset($materialsByBox[$boxKey])) {
                     $materialsByBox[$boxKey] = [
-                        'box_name' => $material['box_name'] ?? 'Unbekannte Box',
+                        'box_name' => $material['box_name'] ?? __('misc.unknown_box'),
                         'materials' => [],
                     ];
                 }
@@ -341,7 +341,7 @@ class GroupController extends Controller
             'materialsByBox' => $materialsByBox,
             'noBoxMaterials' => $noBoxMaterials,
             'totalMaterials' => count($materials),
-            'printTitle' => 'Vorbereitungsliste: ' . $group['name'],
+            'printTitle' => __('print.preparation_list') . ': ' . $group['name'],
         ]);
     }
 

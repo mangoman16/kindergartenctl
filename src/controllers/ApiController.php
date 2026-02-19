@@ -104,7 +104,7 @@ class ApiController extends Controller
         if (!checkRateLimit($key, $maxAttempts, $decaySeconds)) {
             $this->json([
                 'success' => false,
-                'error' => 'Zu viele Anfragen. Bitte warten Sie einen Moment.',
+                'error' => __('api.rate_limit'),
             ], 429);
         }
     }
@@ -132,7 +132,7 @@ class ApiController extends Controller
         $allowedTypes = ['games', 'boxes', 'categories', 'tags', 'materials'];
 
         if (!in_array($type, $allowedTypes)) {
-            $this->jsonError('Ungültiger Bildtyp.', 400);
+            $this->jsonError(__('validation.invalid_image_type'), 400);
             return;
         }
 
@@ -157,7 +157,7 @@ class ApiController extends Controller
 
         // Regular file upload
         if (!isset($_FILES['image']) || $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE) {
-            $this->jsonError('Keine Datei hochgeladen.', 400);
+            $this->jsonError(__('validation.no_file_uploaded'), 400);
             return;
         }
 
@@ -193,7 +193,7 @@ class ApiController extends Controller
         $path = $this->getPost('path', '');
 
         if (empty($path)) {
-            $this->jsonError('Kein Bildpfad angegeben.', 400);
+            $this->jsonError(__('validation.no_path'), 400);
             return;
         }
 
@@ -203,7 +203,7 @@ class ApiController extends Controller
         $allowedSubdirs = ['full', 'thumbs'];
 
         if (!preg_match('#^([a-z]+)/(full|thumbs)/([a-zA-Z0-9_]+\.webp)$#', $path, $matches)) {
-            $this->jsonError('Ungültiger Bildpfad.', 400);
+            $this->jsonError(__('validation.invalid_image_path'), 400);
             return;
         }
 
@@ -213,7 +213,7 @@ class ApiController extends Controller
 
         // Validate type against whitelist
         if (!in_array($type, $allowedTypes, true)) {
-            $this->jsonError('Ungültiger Bildtyp.', 400);
+            $this->jsonError(__('validation.invalid_image_type'), 400);
             return;
         }
 
@@ -226,7 +226,7 @@ class ApiController extends Controller
         if ($processor->delete($safePath)) {
             $this->json(['success' => true]);
         } else {
-            $this->jsonError('Fehler beim Löschen des Bildes.', 500);
+            $this->jsonError(__('flash.error_deleting_image'), 500);
         }
     }
 
@@ -240,7 +240,7 @@ class ApiController extends Controller
         $excludeId = $this->getQuery('exclude_id', '');
 
         if (empty($type) || empty($value)) {
-            $this->jsonError('Typ und Wert sind erforderlich.', 400);
+            $this->jsonError(__('validation.type_value_required'), 400);
             return;
         }
 
@@ -284,7 +284,7 @@ class ApiController extends Controller
                 break;
 
             default:
-                $this->jsonError('Ungültiger Typ.', 400);
+                $this->jsonError(__('validation.invalid_type'), 400);
                 return;
         }
 
@@ -488,12 +488,12 @@ class ApiController extends Controller
         $name = trim($this->getPost('name', ''));
 
         if (empty($name)) {
-            $this->jsonError('Name ist erforderlich.', 400);
+            $this->jsonError(__('validation.name_required'), 400);
             return;
         }
 
         if (strlen($name) > 100) {
-            $this->jsonError('Name darf maximal 100 Zeichen haben.', 400);
+            $this->jsonError(__('validation.name_max_100'), 400);
             return;
         }
 
@@ -521,7 +521,7 @@ class ApiController extends Controller
                 ],
             ]);
         } else {
-            $this->jsonError('Fehler beim Erstellen des Themas.', 500);
+            $this->jsonError(__('flash.error_creating'), 500);
         }
     }
 
@@ -535,12 +535,12 @@ class ApiController extends Controller
         $name = trim($this->getPost('name', ''));
 
         if (empty($name)) {
-            $this->jsonError('Name ist erforderlich.', 400);
+            $this->jsonError(__('validation.name_required'), 400);
             return;
         }
 
         if (strlen($name) > 100) {
-            $this->jsonError('Name darf maximal 100 Zeichen haben.', 400);
+            $this->jsonError(__('validation.name_max_100'), 400);
             return;
         }
 
@@ -567,7 +567,7 @@ class ApiController extends Controller
                 ],
             ]);
         } else {
-            $this->jsonError('Fehler beim Erstellen des Materials.', 500);
+            $this->jsonError(__('flash.error_creating'), 500);
         }
     }
 
@@ -683,7 +683,7 @@ class ApiController extends Controller
 
         $game = Game::find((int)$gameId);
         if (!$game) {
-            $this->jsonError('Spiel nicht gefunden.', 404);
+            $this->jsonError(__('game.not_found'), 404);
             return;
         }
 
@@ -706,7 +706,7 @@ class ApiController extends Controller
 
         $material = Material::find((int)$materialId);
         if (!$material) {
-            $this->jsonError('Material nicht gefunden.', 404);
+            $this->jsonError(__('material.not_found'), 404);
             return;
         }
 
@@ -760,7 +760,7 @@ class ApiController extends Controller
         } else {
             $this->json([
                 'success' => false,
-                'message' => 'Kein passendes Spiel gefunden.',
+                'message' => __('game.not_found'),
             ]);
         }
     }
@@ -791,12 +791,12 @@ class ApiController extends Controller
         $itemId = (int)$this->getPost('item_id', 0);
 
         if (!$groupId || !$itemType || !$itemId) {
-            $this->jsonError('Gruppe, Typ und Element sind erforderlich.', 400);
+            $this->jsonError(__('api.group_type_item_required'), 400);
             return;
         }
 
         if (!in_array($itemType, ['game', 'material'], true)) {
-            $this->jsonError('Ungültiger Elementtyp.', 400);
+            $this->jsonError(__('api.invalid_item_type'), 400);
             return;
         }
 
@@ -805,7 +805,7 @@ class ApiController extends Controller
         if ($result) {
             $this->json(['success' => true]);
         } else {
-            $this->jsonError('Element konnte nicht hinzugefügt werden.', 500);
+            $this->jsonError(__('api.add_item_failed'), 500);
         }
     }
 
@@ -826,12 +826,12 @@ class ApiController extends Controller
         $itemId = (int)$this->getPost('item_id', 0);
 
         if (!$groupId || !$itemType || !$itemId) {
-            $this->jsonError('Gruppe, Typ und Element sind erforderlich.', 400);
+            $this->jsonError(__('api.group_type_item_required'), 400);
             return;
         }
 
         if (!in_array($itemType, ['game', 'material'], true)) {
-            $this->jsonError('Ungültiger Elementtyp.', 400);
+            $this->jsonError(__('api.invalid_item_type'), 400);
             return;
         }
 
@@ -840,7 +840,7 @@ class ApiController extends Controller
         if ($result) {
             $this->json(['success' => true]);
         } else {
-            $this->jsonError('Element konnte nicht entfernt werden.', 500);
+            $this->jsonError(__('api.remove_item_failed'), 500);
         }
     }
 
