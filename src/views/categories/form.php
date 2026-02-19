@@ -15,7 +15,7 @@
                 <input type="text" id="name" name="name"
                        class="form-control <?= hasError('name', $errors ?? []) ? 'is-invalid' : '' ?>"
                        value="<?= old('name', $category['name'] ?? '') ?>"
-                       required maxlength="50" placeholder="z.B. 2-3 Jahre">
+                       required maxlength="50" placeholder="<?= __('form.placeholder.category_name') ?>">
                 <?php if (hasError('name', $errors ?? [])): ?>
                     <div class="form-error"><?= getError('name', $errors) ?></div>
                 <?php endif; ?>
@@ -26,7 +26,7 @@
                     <?= __('form.description') ?>
                 </label>
                 <textarea id="description" name="description" class="form-control" rows="3"
-                          placeholder="Optionale Beschreibung der Altersgruppe"><?= old('description', $category['description'] ?? '') ?></textarea>
+                          placeholder="<?= __('form.placeholder.category_description') ?>"><?= old('description', $category['description'] ?? '') ?></textarea>
             </div>
 
             <div class="form-group">
@@ -38,7 +38,7 @@
                        class="form-control" style="width: 100px;"
                        value="<?= old('sort_order', $category['sort_order'] ?? $nextSortOrder ?? 0) ?>"
                        min="0">
-                <div class="form-hint">Niedrigere Zahlen werden zuerst angezeigt.</div>
+                <div class="form-hint"><?= __('form.sort_order_hint') ?></div>
             </div>
 
             <!-- Image Upload -->
@@ -56,7 +56,7 @@
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>
                                 </svg>
-                                <div class="text-xs mt-1">Bild</div>
+                                <div class="text-xs mt-1"><?= __('form.image') ?></div>
                             </div>
                         <?php endif; ?>
                     </div>

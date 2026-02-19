@@ -10,7 +10,7 @@
         <div style="grid-column: span 2;">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="card-title">Grundinformationen</h2>
+                    <h2 class="card-title"><?= __('form.basic_info') ?></h2>
                 </div>
                 <div class="card-body">
                     <div class="form-group">
@@ -22,7 +22,7 @@
                                value="<?= old('name', $group['name'] ?? '') ?>"
                                data-check-duplicate="groups"
                                <?= $isEdit ? 'data-exclude-id="' . $group['id'] . '"' : '' ?>
-                               required maxlength="100" placeholder="z.B. Sommerfest, Turntag">
+                               required maxlength="100" placeholder="<?= __('form.placeholder.group_name') ?>">
                         <?php if (hasError('name', $errors ?? [])): ?>
                             <div class="form-error"><?= getError('name', $errors) ?></div>
                         <?php endif; ?>
@@ -33,7 +33,7 @@
                             <?= __('form.description') ?>
                         </label>
                         <textarea id="description" name="description" class="form-control" rows="3"
-                                  placeholder="Beschreibung der Gruppe"><?= old('description', $group['description'] ?? '') ?></textarea>
+                                  placeholder="<?= __('form.placeholder.group_description') ?>"><?= old('description', $group['description'] ?? '') ?></textarea>
                     </div>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                                 </svg>
                                 <span class="flex-1"><?= e($game['name']) ?></span>
                                 <input type="hidden" name="games[]" value="<?= $game['id'] ?>">
-                                <button type="button" class="btn btn-sm btn-danger remove-item" title="Entfernen">
+                                <button type="button" class="btn btn-sm btn-danger remove-item" title="<?= __('action.remove') ?>">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -69,7 +69,7 @@
 
                     <div class="mt-3">
                         <select id="add-game" class="form-control">
-                            <option value="">Spiel hinzufügen...</option>
+                            <option value=""><?= __('form.add_game') ?></option>
                             <?php foreach ($games as $game): ?>
                                 <option value="<?= $game['id'] ?>" data-name="<?= e($game['name']) ?>">
                                     <?= e($game['name']) ?>
@@ -94,7 +94,7 @@
                                        class="form-control" style="width: 60px;">
                                 <span class="flex-1"><?= e($material['name']) ?></span>
                                 <input type="hidden" name="materials[<?= $material['id'] ?>][id]" value="<?= $material['id'] ?>">
-                                <button type="button" class="btn btn-sm btn-danger remove-item" title="Entfernen">
+                                <button type="button" class="btn btn-sm btn-danger remove-item" title="<?= __('action.remove') ?>">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -106,7 +106,7 @@
 
                     <div class="mt-3">
                         <select id="add-material" class="form-control">
-                            <option value="">Material hinzufügen...</option>
+                            <option value=""><?= __('form.add_material') ?></option>
                             <?php foreach ($materials as $material): ?>
                                 <option value="<?= $material['id'] ?>" data-name="<?= e($material['name']) ?>">
                                     <?= e($material['name']) ?>
@@ -138,7 +138,7 @@
                                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                         <polyline points="21 15 16 10 5 21"></polyline>
                                     </svg>
-                                    <div class="mt-2">Bild hochladen</div>
+                                    <div class="mt-2"><?= __('form.upload_image') ?></div>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Check if already added
         if (gamesList.querySelector(`input[value="${gameId}"]`)) {
-            alert('Spiel bereits hinzugefügt');
+            alert('<?= __('form.game_already_added') ?>');
             this.value = '';
             return;
         }
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </svg>
             <span class="flex-1">${gameName}</span>
             <input type="hidden" name="games[]" value="${gameId}">
-            <button type="button" class="btn btn-sm btn-danger remove-item" title="Entfernen">
+            <button type="button" class="btn btn-sm btn-danger remove-item" title="<?= __('action.remove') ?>">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!materialId) return;
 
         if (materialsList.querySelector(`input[value="${materialId}"]`)) {
-            alert('Material bereits hinzugefügt');
+            alert('<?= __('form.material_already_added') ?>');
             this.value = '';
             return;
         }
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
                    class="form-control" style="width: 60px;">
             <span class="flex-1">${materialName}</span>
             <input type="hidden" name="materials[${materialId}][id]" value="${materialId}">
-            <button type="button" class="btn btn-sm btn-danger remove-item" title="Entfernen">
+            <button type="button" class="btn btn-sm btn-danger remove-item" title="<?= __('action.remove') ?>">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>

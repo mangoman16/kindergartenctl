@@ -713,4 +713,47 @@ return [
     'api.invalid_item_type' => 'Ungültiger Elementtyp.',
     'api.add_item_failed' => 'Element konnte nicht hinzugefügt werden.',
     'api.remove_item_failed' => 'Element konnte nicht entfernt werden.',
+
+    // Form placeholders & hints
+    'form.placeholder.game_name' => 'Name des Spiels',
+    'form.placeholder.game_description' => 'Kurze Beschreibung des Spiels',
+    'form.placeholder.game_instructions' => 'Spielanleitung, Regeln, Tipps...',
+    'form.placeholder.material_name' => 'z.B. Bälle, Seile, Stifte',
+    'form.placeholder.material_description' => 'Optionale Beschreibung des Materials',
+    'form.placeholder.group_name' => 'z.B. Sommerfest, Turntag',
+    'form.placeholder.group_description' => 'Beschreibung der Gruppe',
+    'form.placeholder.tag_name' => 'z.B. Weihnachten, Farben, Jahreszeiten',
+    'form.placeholder.tag_description' => 'Optionale Beschreibung des Themas',
+    'form.placeholder.tag_color_hint' => 'Optional: Farbe zur Kennzeichnung des Themas',
+    'form.placeholder.category_name' => 'z.B. 2-3 Jahre',
+    'form.placeholder.category_description' => 'Optionale Beschreibung der Altersgruppe',
+    'form.placeholder.box_number' => 'z.B. 001',
+    'form.placeholder.box_label' => 'z.B. Spielkiste A',
+    'form.placeholder.example_2' => 'z.B. 2',
+    'form.placeholder.example_10' => 'z.B. 10',
+    'form.placeholder.example_15' => 'z.B. 15',
+    'form.upload_image' => 'Bild hochladen',
+    'form.basic_info' => 'Grundinformationen',
+    'form.no_age_group' => '-- Keine Altersgruppe --',
+    'form.minutes_short' => 'Min.',
+    'form.quantity_hint' => 'Verfügbare Anzahl (0 = unbekannt)',
+    'form.consumable_hint' => 'Verbrauchsmaterial wird nach Nutzung aufgebraucht',
+    'form.sort_order_hint' => 'Niedrigere Zahlen werden zuerst angezeigt.',
+    'form.add_game' => 'Spiel hinzufügen...',
+    'form.add_material' => 'Material hinzufügen...',
+    'form.game_already_added' => 'Spiel bereits hinzugefügt',
+    'form.material_already_added' => 'Material bereits hinzugefügt',
+    'form.no_tags_exist' => 'Keine Themen vorhanden.',
+
+    // Action extended
+    'action.remove' => 'Entfernen',
+    'action.create_one' => 'Erstellen',
+
+    // Group show
+    'group.no_games' => 'Keine Spiele in dieser Gruppe.',
+    'group.no_materials' => 'Keine Materialien in dieser Gruppe.',
+
+    // Misc extended
+    'misc.not_specified' => 'Nicht angegeben',
+    'misc.printed_on' => 'Gedruckt am',
 ];

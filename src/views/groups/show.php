@@ -28,17 +28,17 @@
                         <?php if ($group['description']): ?>
                             <p><?= nl2br(e($group['description'])) ?></p>
                         <?php else: ?>
-                            <p class="text-muted">Keine Beschreibung vorhanden.</p>
+                            <p class="text-muted"><?= __('misc.no_description') ?></p>
                         <?php endif; ?>
 
                         <div class="flex gap-4 mt-4">
                             <div class="stat-box">
                                 <div class="stat-value"><?= $group['game_count'] ?></div>
-                                <div class="stat-label"><?= pluralize($group['game_count'], 'Spiel', 'Spiele') ?></div>
+                                <div class="stat-label"><?= pluralize($group['game_count'], __('game.title'), __('game.title_plural')) ?></div>
                             </div>
                             <div class="stat-box">
                                 <div class="stat-value"><?= $group['material_count'] ?></div>
-                                <div class="stat-label"><?= pluralize($group['material_count'], 'Material', 'Materialien') ?></div>
+                                <div class="stat-label"><?= pluralize($group['material_count'], __('material.title'), __('material.title_plural')) ?></div>
                             </div>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
             </div>
             <?php if (empty($games)): ?>
                 <div class="card-body">
-                    <p class="text-muted">Keine Spiele in dieser Gruppe.</p>
+                    <p class="text-muted"><?= __('group.no_games') ?></p>
                 </div>
             <?php else: ?>
                 <div class="card-body p-0">
@@ -117,7 +117,7 @@
             </div>
             <?php if (empty($materials)): ?>
                 <div class="card-body">
-                    <p class="text-muted">Keine Materialien in dieser Gruppe.</p>
+                    <p class="text-muted"><?= __('group.no_materials') ?></p>
                 </div>
             <?php else: ?>
                 <div class="card-body p-0">

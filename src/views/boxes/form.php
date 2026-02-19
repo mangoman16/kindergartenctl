@@ -32,7 +32,7 @@
                     <input type="text" id="number" name="number"
                            class="form-control"
                            value="<?= old('number', $box['number'] ?? '') ?>"
-                           maxlength="20" placeholder="z.B. 001">
+                           maxlength="20" placeholder="<?= __('form.placeholder.box_number') ?>">
                 </div>
 
                 <div class="form-group">
@@ -43,7 +43,7 @@
                     <input type="text" id="label" name="label"
                            class="form-control"
                            value="<?= old('label', $box['label'] ?? '') ?>"
-                           maxlength="50" placeholder="z.B. Spielkiste A">
+                           maxlength="50" placeholder="<?= __('form.placeholder.box_label') ?>">
                 </div>
             </div>
 
@@ -91,7 +91,7 @@
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>
                                 </svg>
-                                <div class="text-sm mt-2">Bild hochladen</div>
+                                <div class="text-sm mt-2"><?= __('form.upload_image') ?></div>
                             </div>
                         <?php endif; ?>
                     </div>

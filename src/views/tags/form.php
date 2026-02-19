@@ -17,7 +17,7 @@
                        value="<?= old('name', $tag['name'] ?? '') ?>"
                        data-check-duplicate="tags"
                        <?= $isEdit ? 'data-exclude-id="' . $tag['id'] . '"' : '' ?>
-                       required maxlength="100" placeholder="z.B. Weihnachten, Farben, Jahreszeiten">
+                       required maxlength="100" placeholder="<?= __('form.placeholder.tag_name') ?>">
                 <?php if (hasError('name', $errors ?? [])): ?>
                     <div class="form-error"><?= getError('name', $errors) ?></div>
                 <?php endif; ?>
@@ -28,7 +28,7 @@
                     <?= __('form.description') ?>
                 </label>
                 <textarea id="description" name="description" class="form-control" rows="3"
-                          placeholder="Optionale Beschreibung des Themas"><?= old('description', $tag['description'] ?? '') ?></textarea>
+                          placeholder="<?= __('form.placeholder.tag_description') ?>"><?= old('description', $tag['description'] ?? '') ?></textarea>
             </div>
 
             <div class="form-group">
@@ -44,7 +44,7 @@
                            value="<?= old('color', $tag['color'] ?? '#4F46E5') ?>"
                            pattern="^#[0-9A-Fa-f]{6}$" placeholder="#RRGGBB">
                 </div>
-                <div class="form-hint">Optional: Farbe zur Kennzeichnung des Themas</div>
+                <div class="form-hint"><?= __('form.placeholder.tag_color_hint') ?></div>
             </div>
 
             <!-- Image Upload -->
@@ -62,7 +62,7 @@
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>
                                 </svg>
-                                <div class="text-xs mt-1">Bild</div>
+                                <div class="text-xs mt-1"><?= __('form.image') ?></div>
                             </div>
                         <?php endif; ?>
                     </div>

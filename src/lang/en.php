@@ -713,4 +713,47 @@ return [
     'api.invalid_item_type' => 'Invalid item type.',
     'api.add_item_failed' => 'Item could not be added.',
     'api.remove_item_failed' => 'Item could not be removed.',
+
+    // Form placeholders & hints
+    'form.placeholder.game_name' => 'Name of the game',
+    'form.placeholder.game_description' => 'Short description of the game',
+    'form.placeholder.game_instructions' => 'Game instructions, rules, tips...',
+    'form.placeholder.material_name' => 'e.g. Balls, Ropes, Pens',
+    'form.placeholder.material_description' => 'Optional description of the material',
+    'form.placeholder.group_name' => 'e.g. Summer Party, Sports Day',
+    'form.placeholder.group_description' => 'Description of the group',
+    'form.placeholder.tag_name' => 'e.g. Christmas, Colors, Seasons',
+    'form.placeholder.tag_description' => 'Optional description of the topic',
+    'form.placeholder.tag_color_hint' => 'Optional: Color to identify the topic',
+    'form.placeholder.category_name' => 'e.g. 2-3 years',
+    'form.placeholder.category_description' => 'Optional description of the age group',
+    'form.placeholder.box_number' => 'e.g. 001',
+    'form.placeholder.box_label' => 'e.g. Game Box A',
+    'form.placeholder.example_2' => 'e.g. 2',
+    'form.placeholder.example_10' => 'e.g. 10',
+    'form.placeholder.example_15' => 'e.g. 15',
+    'form.upload_image' => 'Upload image',
+    'form.basic_info' => 'Basic Information',
+    'form.no_age_group' => '-- No Age Group --',
+    'form.minutes_short' => 'Min.',
+    'form.quantity_hint' => 'Available quantity (0 = unknown)',
+    'form.consumable_hint' => 'Consumable material is used up after use',
+    'form.sort_order_hint' => 'Lower numbers are shown first.',
+    'form.add_game' => 'Add game...',
+    'form.add_material' => 'Add material...',
+    'form.game_already_added' => 'Game already added',
+    'form.material_already_added' => 'Material already added',
+    'form.no_tags_exist' => 'No topics available.',
+
+    // Action extended
+    'action.remove' => 'Remove',
+    'action.create_one' => 'Create',
+
+    // Group show
+    'group.no_games' => 'No games in this group.',
+    'group.no_materials' => 'No materials in this group.',
+
+    // Misc extended
+    'misc.not_specified' => 'Not specified',
+    'misc.printed_on' => 'Printed on',
 ];
