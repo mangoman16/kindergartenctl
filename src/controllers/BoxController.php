@@ -48,7 +48,7 @@ class BoxController extends Controller
         $box = Box::findWithMaterialCount((int)$id);
 
         if (!$box) {
-            Session::setFlash('error', 'Box nicht gefunden.');
+            Session::setFlash('error', __('box.not_found'));
             $this->redirect('/boxes');
             return;
         }
@@ -91,6 +91,7 @@ class BoxController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Box.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
 
         $locationId = $this->getPost('location_id', '');
         $data = [
@@ -126,14 +127,14 @@ class BoxController extends Controller
         $boxId = Box::create($data);
 
         if (!$boxId) {
-            Session::setFlash('error', 'Fehler beim Erstellen der Box.');
+            Session::setFlash('error', __('flash.error_generic'));
             Session::setOldInput($data);
             $this->redirect('/boxes/create');
             return;
         }
 
         // Log change
-        $this->logChange('box', $boxId, $data['name'], 'create', $data);
+        ChangelogService::getInstance()->logCreate('box', $boxId, $data['name'], $data);
 
         Session::setFlash('success', __('flash.created', ['item' => __('box.title')]));
         $this->redirect('/boxes/' . $boxId);
@@ -150,7 +151,7 @@ class BoxController extends Controller
         $box = Box::find((int)$id);
 
         if (!$box) {
-            Session::setFlash('error', 'Box nicht gefunden.');
+            Session::setFlash('error', __('box.not_found'));
             $this->redirect('/boxes');
             return;
         }
@@ -175,11 +176,12 @@ class BoxController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Box.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
 
         $box = Box::find((int)$id);
 
         if (!$box) {
-            Session::setFlash('error', 'Box nicht gefunden.');
+            Session::setFlash('error', __('box.not_found'));
             $this->redirect('/boxes');
             return;
         }
@@ -215,15 +217,14 @@ class BoxController extends Controller
         }
 
         // Track changes for changelog
-        $changes = $this->getChanges($box, $data);
+        $changelog = ChangelogService::getInstance();
+        $changes = $changelog->getChanges($box, $data, ['name', 'number', 'label', 'location_id', 'description', 'notes', 'image_path']);
 
         // Update box
         Box::update((int)$id, $data);
 
         // Log change if there were any
-        if (!empty($changes)) {
-            $this->logChange('box', (int)$id, $data['name'], 'update', $changes);
-        }
+        $changelog->logUpdate('box', (int)$id, $data['name'], $changes);
 
         Session::setFlash('success', __('flash.updated', ['item' => __('box.title')]));
         $this->redirect('/boxes/' . $id);
@@ -237,24 +238,26 @@ class BoxController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Box.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
+        require_once SRC_PATH . '/services/ImageProcessor.php';
 
         $box = Box::find((int)$id);
 
         if (!$box) {
-            Session::setFlash('error', 'Box nicht gefunden.');
+            Session::setFlash('error', __('box.not_found'));
             $this->redirect('/boxes');
             return;
         }
 
         // Log change before deletion
-        $this->logChange('box', (int)$id, $box['name'], 'delete', $box);
+        ChangelogService::getInstance()->logDelete('box', (int)$id, $box['name'], $box);
 
         // Delete box (materials will have box_id set to NULL due to foreign key)
         Box::delete((int)$id);
 
         // Delete image if exists
         if ($box['image_path']) {
-            $this->deleteImage($box['image_path']);
+            (new ImageProcessor())->delete($box['image_path']);
         }
 
         Session::setFlash('success', __('flash.deleted', ['item' => __('box.title')]));
@@ -271,7 +274,7 @@ class BoxController extends Controller
         $box = Box::find((int)$id);
 
         if (!$box) {
-            Session::setFlash('error', 'Box nicht gefunden.');
+            Session::setFlash('error', __('box.not_found'));
             $this->redirect('/boxes');
             return;
         }
@@ -288,75 +291,4 @@ class BoxController extends Controller
         ]);
     }
 
-    /**
-     * Log a change to the changelog
-     */
-    private function logChange(string $entityType, int $entityId, string $entityName, string $action, array $data): void
-    {
-        try {
-            $db = Database::getInstance();
-            $userId = Auth::id();
-
-            $stmt = $db->prepare("
-                INSERT INTO changelog (user_id, entity_type, entity_id, entity_name, action, changes)
-                VALUES (:user_id, :entity_type, :entity_id, :entity_name, :action, :changes)
-            ");
-
-            $stmt->execute([
-                'user_id' => $userId,
-                'entity_type' => $entityType,
-                'entity_id' => $entityId,
-                'entity_name' => $entityName,
-                'action' => $action,
-                'changes' => json_encode($data, JSON_UNESCAPED_UNICODE),
-            ]);
-        } catch (Exception $e) {
-            // Log error but don't fail the main operation
-            Logger::error('Failed to log change', [
-                'error' => $e->getMessage(),
-                'entity_type' => $entityType,
-                'entity_id' => $entityId
-            ]);
-        }
-    }
-
-    /**
-     * Get changes between old and new data
-     */
-    private function getChanges(array $old, array $new): array
-    {
-        $changes = [];
-        $trackFields = ['name', 'number', 'label', 'location_id', 'description', 'notes', 'image_path'];
-
-        foreach ($trackFields as $field) {
-            $oldValue = $old[$field] ?? '';
-            $newValue = $new[$field] ?? '';
-
-            if ($oldValue !== $newValue) {
-                $changes[$field] = [
-                    'old' => $oldValue,
-                    'new' => $newValue,
-                ];
-            }
-        }
-
-        return $changes;
-    }
-
-    /**
-     * Delete an image file
-     */
-    private function deleteImage(string $path): void
-    {
-        $fullPath = UPLOADS_PATH . '/' . $path;
-        if (file_exists($fullPath)) {
-            unlink($fullPath);
-        }
-
-        // Also delete thumbnail
-        $thumbPath = str_replace('/full/', '/thumbs/', $fullPath);
-        if (file_exists($thumbPath)) {
-            unlink($thumbPath);
-        }
-    }
 }
