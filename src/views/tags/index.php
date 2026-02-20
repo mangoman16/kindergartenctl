@@ -36,7 +36,7 @@
 </div>
 <?php else: ?>
 <!-- Tags Grid -->
-<div class="grid grid-cols-4">
+<div class="grid grid-cols-4 gap-4">
     <?php foreach ($tags as $tag): ?>
     <div class="card">
         <div class="card-body">
