@@ -169,23 +169,23 @@ $searchPlaceholder = __('search.global_placeholder');
         document.body.classList.add('sidebar-collapsed');
     }
 
-    // Restore sidebar section on pages without a context sidebar (e.g. home)
+    // Restore sidebar section on pages without their own context section
     if (contextSidebar && !sidebarCollapsed) {
-        if (!contextSidebar.classList.contains('open')) {
+        var activeSection = contextSidebar.dataset.active;
+        var hasVisibleSection = contextSidebar.querySelector('.ctx-section.visible');
+
+        if (!hasVisibleSection) {
+            // No section visible (e.g. home page) - restore last saved section
             var savedSection = localStorage.getItem('ctxSidebarSection');
             if (savedSection) {
                 var savedTarget = contextSidebar.querySelector('.ctx-section[data-for="' + savedSection + '"]');
                 if (savedTarget) {
                     savedTarget.classList.add('visible');
                     contextSidebar.classList.add('open');
-                    contextSidebar.dataset.active = savedSection;
-                    document.querySelectorAll('.rail-btn[data-section]').forEach(function(b) { b.classList.remove('active'); });
-                    var matchBtn = document.querySelector('.rail-btn[data-section="' + savedSection + '"]');
-                    if (matchBtn) matchBtn.classList.add('active');
                 }
             }
-        } else if (contextSidebar.dataset.active) {
-            localStorage.setItem('ctxSidebarSection', contextSidebar.dataset.active);
+        } else if (activeSection && activeSection !== 'home') {
+            localStorage.setItem('ctxSidebarSection', activeSection);
         }
     }
 

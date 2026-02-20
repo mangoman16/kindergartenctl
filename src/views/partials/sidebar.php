@@ -10,7 +10,7 @@ if (strpos($currentPath, '/games') === 0 || strpos($currentPath, '/categories') 
 } elseif (strpos($currentPath, '/changelog') === 0 || strpos($currentPath, '/settings') === 0 || strpos($currentPath, '/user/settings') === 0) {
     $navSection = 'settings';
 }
-$hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar']);
+$hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calendar']);
 ?>
 
 <!-- Icon Rail -->
@@ -76,6 +76,13 @@ $hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar']);
 
 <!-- Context Sidebar -->
 <aside class="context-sidebar <?= $hasContextSidebar ? 'open' : '' ?>" id="contextSidebar" data-active="<?= $navSection ?>">
+    <div class="ctx-home-link">
+        <a href="<?= url('/') ?>" class="ctx-link <?= $navSection === 'home' ? 'active' : '' ?>">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <?= __('nav.dashboard') ?>
+        </a>
+    </div>
+
     <div class="ctx-section <?= $navSection === 'games' ? 'visible' : '' ?>" data-for="games">
         <div class="ctx-header"><?= __('nav.games') ?></div>
         <nav class="ctx-nav">

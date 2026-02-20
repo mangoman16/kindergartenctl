@@ -847,7 +847,7 @@ class ApiController extends Controller
     /**
      * Send JSON response
      */
-    private function json(array $data, int $status = 200): void
+    protected function json(array $data, int $status = 200): void
     {
         http_response_code($status);
         header('Content-Type: application/json; charset=utf-8');

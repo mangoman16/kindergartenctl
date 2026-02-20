@@ -683,6 +683,14 @@ small {
     width: var(--ctx-sidebar-width);
 }
 
+.ctx-home-link {
+    padding: var(--spacing-4) var(--spacing-4) 0;
+}
+
+.ctx-home-link .ctx-link {
+    font-weight: var(--font-weight-semibold);
+}
+
 .ctx-section {
     display: none;
     padding: var(--spacing-4);
