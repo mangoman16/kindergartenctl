@@ -11,11 +11,11 @@
 
 | Severity | Found | Fixed |
 |----------|-------|-------|
-| Critical | 8 | 8 |
+| Critical | 10 | 10 |
 | High | 6 | 6 |
-| Medium | 20 | 20 |
+| Medium | 21 | 21 |
 | Low | 4 | 4 |
-| **Total** | **38** | **38** |
+| **Total** | **41** | **41** |
 
 ---
 
@@ -210,6 +210,21 @@
 - **File:** `public/assets/css/style.css`
 - **Problem:** The `.search-trigger` button had hover styles but no `:focus` state, making keyboard navigation invisible. Violates WCAG 2.1 focus indicator requirement.
 - **Fix:** Added `.search-trigger:focus` with a 2px primary-color outline.
+
+### BUG-39 (Critical): `Session::getCsrfToken()` Fatal Error on Calendar Page
+- **File:** `src/views/calendar/index.php:356`
+- **Problem:** View called `Session::getCsrfToken()` which does not exist. The correct method is `Session::csrfToken()`. This caused a fatal error every time the calendar page was loaded.
+- **Fix:** Replaced `Session::getCsrfToken()` with `$csrfToken` (already available in views via `Controller::render()`).
+
+### BUG-40 (Critical): `ApiController::json()` Access Level Fatal Error
+- **File:** `src/controllers/ApiController.php:850`
+- **Problem:** `ApiController` declared `private function json()`, but the parent `Controller` has `protected function json()`. PHP forbids narrowing visibility in child classes, causing a fatal error on any API request.
+- **Fix:** Changed `private function json()` to `protected function json()` to match parent visibility.
+
+### BUG-41 (Medium): Undefined `csrf()` Function in Game/Material Views
+- **Files:** `src/views/materials/show.php:197,233`, `src/views/games/show.php:308,345`
+- **Problem:** Views called `csrf()` which does not exist as a function. The available helpers are `csrfField()` (returns full HTML input) and `Session::csrfToken()` (returns token string). The `$csrfToken` variable is also available in views. This caused fatal errors when toggling favorites or adding to groups.
+- **Fix:** Replaced `csrf()` with `e($csrfToken)` which outputs the escaped CSRF token value.
 
 ---
 

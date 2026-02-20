@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleBtn.disabled = true;
 
             const formData = new FormData();
-            formData.append('csrf_token', '<?= csrf() ?>');
+            formData.append('csrf_token', '<?= e($csrfToken) ?>');
 
             fetch('<?= url('/api/materials/') ?>' + materialId + '/toggle-favorite', {
                 method: 'POST',
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         addToGroupForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            formData.append('csrf_token', '<?= csrf() ?>');
+            formData.append('csrf_token', '<?= e($csrfToken) ?>');
             formData.append('item_type', 'material');
             formData.append('item_id', '<?= $material['id'] ?>');
 

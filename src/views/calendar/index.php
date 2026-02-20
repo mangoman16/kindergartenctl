@@ -353,7 +353,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('event-modal');
     const form = document.getElementById('event-form');
-    const csrfToken = '<?= e(Session::getCsrfToken()) ?>';
+    const csrfToken = '<?= e($csrfToken) ?>';
     let calendar;
     let currentEvent = null;
 
