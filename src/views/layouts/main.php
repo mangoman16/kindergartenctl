@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <?php $darkModePref = userPreference('dark_mode_preference', 'system'); ?>
 <?php $currentLang = userPreference('language', 'de'); ?>
+<?php $fontSize = userPreference('font_size', 'medium'); ?>
 <html lang="<?= e($currentLang) ?>" data-theme="<?= e($darkModePref === 'dark' ? 'dark' : ($darkModePref === 'light' ? 'light' : 'light')) ?>" data-dark-mode-pref="<?= e($darkModePref) ?>" data-font-size="<?= e($fontSize) ?>">
 <head>
     <meta charset="UTF-8">
