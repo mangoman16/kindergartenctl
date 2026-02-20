@@ -273,6 +273,9 @@ class SettingsController extends Controller
         if (empty($smtpPass) && !empty($existingConfig['smtp_pass'])) {
             // Keep existing (already encrypted) password
             $encryptedPass = $existingConfig['smtp_pass'];
+        } elseif (empty($smtpPass)) {
+            // No password provided and none stored — store empty string
+            $encryptedPass = '';
         } else {
             // Encrypt new password before storage
             $encryptedPass = encryptValue($smtpPass);
@@ -299,8 +302,10 @@ class SettingsController extends Controller
             return;
         }
 
-        // Restrict file permissions
-        chmod($configPath, 0640);
+        // Restrict file permissions (non-fatal if it fails on some hosting setups)
+        if (!chmod($configPath, 0640)) {
+            Logger::warning('Failed to chmod SMTP config file', ['path' => $configPath]);
+        }
 
         Session::setFlash('success', __('settings.smtp_saved'));
         $this->redirect('/settings/email');
@@ -746,9 +751,7 @@ class SettingsController extends Controller
         $this->savePreferences($preferences);
 
         // Return JSON for AJAX requests
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'preference' => $darkModePref]);
-        exit;
+        $this->json(['success' => true, 'preference' => $darkModePref]);
     }
 
     /**
