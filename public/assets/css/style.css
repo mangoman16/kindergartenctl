@@ -2702,6 +2702,14 @@ select.form-control,
     padding: var(--spacing-4) var(--spacing-6);
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.install-footer-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
 }
 
 /* Requirements List */

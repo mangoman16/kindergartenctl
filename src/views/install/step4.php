@@ -66,17 +66,31 @@
     </div>
 
     <div class="install-footer">
-        <form action="<?= url('/install/step4/skip') ?>" method="POST" style="display: inline;">
-            <button type="submit" class="btn btn-secondary">
+        <a href="<?= url('/install/step3') ?>" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <?= __('install.back') ?>
+        </a>
+        <div class="install-footer-right">
+            <button type="button" class="btn btn-secondary" id="skipEmailBtn">
                 <?= __('install.email_skip') ?>
             </button>
-        </form>
-        <button type="submit" class="btn btn-primary">
-            <?= __('install.next') ?>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-        </button>
+            <button type="submit" class="btn btn-primary">
+                <?= __('install.next') ?>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </div>
     </div>
 </form>
+
+<form id="skipEmailForm" action="<?= url('/install/step4/skip') ?>" method="POST" style="display:none;"></form>
+<script<?= cspNonce() ?>>
+document.getElementById('skipEmailBtn').addEventListener('click', function() {
+    document.getElementById('skipEmailForm').submit();
+});
+</script>
