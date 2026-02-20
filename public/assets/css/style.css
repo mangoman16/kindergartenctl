@@ -3585,3 +3585,158 @@ body[data-pattern="clouds"] .page-content {
         gap: var(--spacing-2);
     }
 }
+
+/* ====================================================
+   FONT SIZE SCALING
+   ==================================================== */
+[data-font-size="small"] {
+    font-size: 13px;
+}
+[data-font-size="medium"] {
+    font-size: 15px;
+}
+[data-font-size="large"] {
+    font-size: 17px;
+}
+
+/* ====================================================
+   COMPACT SIDEBAR
+   ==================================================== */
+[data-compact-sidebar] .context-sidebar {
+    width: 160px;
+    font-size: 0.85rem;
+}
+[data-compact-sidebar] .context-sidebar .sidebar-nav-item {
+    padding: 0.35rem 0.75rem;
+}
+[data-compact-sidebar] .main-content {
+    margin-left: calc(56px + 160px);
+}
+@media (max-width: 992px) {
+    [data-compact-sidebar] .main-content {
+        margin-left: 56px;
+    }
+}
+
+/* ====================================================
+   ADDITIONAL BACKGROUND PATTERNS
+   ==================================================== */
+body[data-pattern="grid"]::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.04;
+    background-image:
+        linear-gradient(var(--color-primary) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-primary) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+body[data-pattern="waves"]::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='20' viewBox='0 0 100 20'%3E%3Cpath d='M21.184 20c.357-.13.72-.264 1.088-.402l1.768-.661C33.64 15.347 39.647 14 50 14c10.271 0 15.362 1.222 24.629 4.928.955.383 1.869.74 2.75 1.072h6.225c-2.51-.73-5.139-1.691-8.233-2.928C65.888 13.278 60.562 12 50 12c-10.626 0-16.855 1.397-26.66 5.063l-1.767.662c-2.475.923-4.66 1.674-6.724 2.275h6.335zm0-20C13.258 2.892 8.077 4 0 4V2c5.744 0 9.951-.574 14.85-2h6.334zM77.38 0C85.239 2.966 90.502 4 100 4V2c-6.842 0-11.386-.542-16.396-2h-6.225zM0 14c8.44 0 13.718-1.21 22.272-4.402l1.768-.661C33.64 5.347 39.647 4 50 4c10.271 0 15.362 1.222 24.629 4.928C84.112 12.722 89.438 14 100 14v-2c-10.271 0-15.362-1.222-24.629-4.928C65.888 3.278 60.562 2 50 2 39.374 2 33.145 3.397 23.34 7.063l-1.767.662C13.223 10.84 8.163 12 0 12v2z' fill='currentColor' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* ====================================================
+   CUSTOMIZATION UI ELEMENTS
+   ==================================================== */
+.font-size-picker {
+    display: flex;
+    gap: 1rem;
+}
+.font-size-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: 0.75rem 1.5rem;
+    transition: all 0.15s;
+    min-width: 100px;
+    text-align: center;
+}
+.font-size-option input { display: none; }
+.font-size-option.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-bg);
+}
+.font-size-option:hover {
+    border-color: var(--color-primary-light);
+}
+.font-size-preview.font-size-small { font-size: 0.85rem; }
+.font-size-preview.font-size-medium { font-size: 1rem; }
+.font-size-preview.font-size-large { font-size: 1.15rem; }
+
+.toggle-group {
+    display: flex;
+    gap: 0.75rem;
+}
+.toggle-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: 0.75rem 1.5rem;
+    transition: all 0.15s;
+    min-width: 120px;
+    text-align: center;
+}
+.toggle-option input { display: none; }
+.toggle-option.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-bg);
+}
+.toggle-option:hover {
+    border-color: var(--color-primary-light);
+}
+
+.settings-hint {
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Dark mode overrides for new elements */
+[data-theme="dark"] .font-size-option,
+[data-theme="dark"] .toggle-option {
+    border-color: var(--color-gray-600);
+}
+[data-theme="dark"] .font-size-option.active,
+[data-theme="dark"] .toggle-option.active {
+    border-color: var(--color-primary);
+    background: rgba(79, 70, 229, 0.15);
+}
+[data-theme="dark"] .settings-hint {
+    color: var(--color-gray-400);
+}
+
+/* Dark mode overrides for secondary buttons */
+[data-theme="dark"] .btn-secondary {
+    background: var(--color-gray-700);
+    color: var(--color-gray-100);
+    border-color: var(--color-gray-600);
+}
+[data-theme="dark"] .btn-secondary:hover {
+    background: var(--color-gray-600);
+    color: var(--color-gray-100);
+}
+
+/* Focus state for search trigger (accessibility fix) */
+.search-trigger:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Ensure cropper modal appears above search palette */
+.cropper-modal-overlay {
+    z-index: 10000 !important;
+}

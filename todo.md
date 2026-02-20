@@ -248,6 +248,82 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Replaced hardcoded "Keine Box" and "Keine Termine" in dashboard/index.php
 - [x] Added 80+ new translation keys to de.php and en.php (bulk.*, calendar.*, changelog.*, pagination.*, material.empty_*, box.sort_*, game.basic_info/details/found, flash.added_to_group/error_generic, misc.no_box/no_description)
 
+### February 2026 - Debugging & Comprehensive Audit
+- [x] Refactored CategoryController, TagController, LocationController to use ChangelogService + ImageProcessor
+- [x] Complete i18n: translated all hardcoded German strings across 9 controllers (GameController, MaterialController, GroupController, CalendarController, SettingsController, ApiController, ChangelogController, BoxController, LocationController)
+- [x] Complete i18n for form views and show pages (games, materials, boxes, categories, tags, groups)
+- [x] Added JS translation system (window.AppTranslations from layout, t() helper in app.js)
+- [x] Fixed favorite toggle URL bug (missing ID in URL path)
+- [x] Fixed all hardcoded German strings in app.js (14 strings → i18n via AppTranslations)
+- [x] Fixed hardcoded `lang="de"` in main.php layout (now uses user language preference)
+- [x] Fixed Controller.php: requireAuth() and requireCsrf() now use __() translations
+- [x] Fixed Router.php: 404 handler now uses __() translations
+- [x] Fixed 4 XSS vulnerabilities (innerHTML with unescaped API data in games/index, materials/index, groups/form, changelog/index)
+- [x] Fixed ImageProcessor::isValidCropData() - now validates x/y >= 0 and width/height > 0
+- [x] Fixed SQL direction parameter injection in LocationController and BoxController (whitelist validation)
+- [x] Fixed Box.php GROUP BY clause (added l.id for SQL strict mode compliance)
+- [x] Added 6 missing indexes on FK columns (games.box_id, games.category_id, materials.box_id, calendar_events.game_id/group_id, changelog.user_id)
+- [x] Added 30+ new translation keys to de.php and en.php (js.*, auth.*, error.404_*, changelog.entries_deleted)
+
+### February 2026 - Frontend Security Audit & Fixes
+- [x] Fixed 4 XSS vulnerabilities: innerHTML with unescaped group.name (games/index, materials/index), materialName (games/form), gameName/materialName (groups/form), changelog fields (changelog/index)
+- [x] Added error handling to bulk group loading fetch calls (games/index, materials/index) with try/catch, response.ok checks, and data validation
+- [x] Added null checks for add-material select and materials-list elements (games/form)
+- [x] Added 10-second timeout to canvas.toBlob() callback to prevent frozen crop modal UI
+- [x] Fixed z-index conflict: cropper modal now renders above search palette overlay (z-index 10000)
+- [x] Added dark mode styles for .btn-secondary buttons
+- [x] Added keyboard focus state for .search-trigger button (WCAG accessibility)
+- [x] Added font size preference (small/medium/large) with CSS scaling
+- [x] Added compact sidebar mode preference
+- [x] Added extended color palette (16 presets + custom picker) and 2 new background patterns (grid, waves)
+- [x] Updated BUG_AUDIT.md with 7 new bug entries (BUG-32 through BUG-38)
+- [x] Updated SECURITY_AUDIT.md with frontend XSS finding (SEC-033)
+
+---
+
+## Development Roadmap
+
+### Phase 8: Customization & Personalization (Current)
+- [x] Font size preference (small/medium/large) with CSS scaling
+- [x] Configurable default landing page after login
+- [x] Compact sidebar mode preference
+- [x] Extended color palette (16 preset colors + custom picker)
+- [x] More background patterns (6 total)
+- [ ] Dashboard widget visibility toggles
+- [ ] Per-section default view preference (grid/list)
+
+### Phase 9: Productivity Features (Next)
+- [ ] Keyboard shortcuts overlay (? key)
+- [ ] Quick-add from anywhere (Ctrl+N)
+- [ ] Drag-and-drop group reordering
+- [ ] Batch edit for games/materials
+- [ ] Recent items quick-access in sidebar
+- [ ] Pinned/starred games on dashboard
+- [ ] Notes/annotations on games (per-user)
+
+### Phase 10: Advanced Features
+- [ ] Export to PDF (games, groups, preparation lists)
+- [ ] Import/export data (CSV/JSON)
+- [ ] Calendar recurring events
+- [ ] Calendar week view
+- [ ] Game usage statistics/analytics
+- [ ] Material inventory alerts (low stock)
+- [ ] Activity planner (week/day planning view)
+
+### Phase 11: Mobile & Offline
+- [ ] Progressive Web App (PWA) support
+- [ ] Offline mode with service worker
+- [ ] Touch-optimized mobile UI
+- [ ] Native share/print on mobile
+- [ ] Camera integration for quick image capture
+
+### Phase 12: Collaboration
+- [ ] Multi-user roles (admin, teacher, viewer)
+- [ ] Shared game collections
+- [ ] User activity feed
+- [ ] Comments on games
+- [ ] Notification system
+
 ---
 
 ## Technical Debt / Improvements
@@ -258,6 +334,9 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Add rate limiting for API endpoints (rateLimit method in ApiController)
 - [x] Optimize database queries for large datasets (migration adds composite indexes)
 - [x] Add database migration system (database/Migration.php + migrate.php CLI)
+- [ ] Remove redundant `location` VARCHAR column from boxes table (use only location_id FK)
+- [ ] Refactor DashboardController to use model methods instead of raw queries
+- [ ] Add error logging to Dashboard catch block
 
 ---
 
@@ -321,12 +400,12 @@ All tables from specification are present:
 
 ## Related Documents
 
-- **`SECURITY_AUDIT.md`** - Full security audit with 48 tracked issues, all resolved (0 open)
-- **`BUG_AUDIT.md`** - Complete bug tracking with 34 issues found and fixed
+- **`SECURITY_AUDIT.md`** - Full security audit with 49 tracked issues, all resolved (0 open)
+- **`BUG_AUDIT.md`** - Complete bug tracking with 38 issues found and fixed
 - **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
 - **`project.md`** - Full project specification and database schema
 - **`README.md`** - Installation guide and requirements
 
 ---
 
-*Last updated: 2026-02-11*
+*Last updated: 2026-02-20*

@@ -49,7 +49,7 @@ class Box extends Model
                 FROM boxes b
                 LEFT JOIN materials m ON m.box_id = b.id
                 LEFT JOIN locations l ON l.id = b.location_id
-                GROUP BY b.id
+                GROUP BY b.id, l.id
                 ORDER BY b.{$orderBy} {$direction}";
 
         $stmt = $db->query($sql);

@@ -18,12 +18,15 @@ class BoxController extends Controller
         require_once SRC_PATH . '/models/Box.php';
 
         $orderBy = $this->getQuery('sort', 'name');
-        $direction = $this->getQuery('dir', 'ASC');
+        $direction = strtoupper($this->getQuery('dir', 'ASC'));
 
         // Validate sort column
         $allowedSort = ['name', 'number', 'location', 'created_at'];
         if (!in_array($orderBy, $allowedSort)) {
             $orderBy = 'name';
+        }
+        if (!in_array($direction, ['ASC', 'DESC'])) {
+            $direction = 'ASC';
         }
 
         $boxes = Box::allWithMaterialCount($orderBy, $direction);

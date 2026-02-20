@@ -194,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         const row = document.createElement('div');
         row.className = 'item-row flex items-center gap-2 mb-2';
         row.innerHTML = `
@@ -205,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <line x1="3" y1="12" x2="3.01" y2="12"></line>
                 <line x1="3" y1="18" x2="3.01" y2="18"></line>
             </svg>
-            <span class="flex-1">${gameName}</span>
+            <span class="flex-1">${escHtml(gameName)}</span>
             <input type="hidden" name="games[]" value="${gameId}">
             <button type="button" class="btn btn-sm btn-danger remove-item" title="<?= __('action.remove') ?>">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -239,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
         row.innerHTML = `
             <input type="number" name="materials[${materialId}][quantity]" value="1" min="1" max="99"
                    class="form-control" style="width: 60px;">
-            <span class="flex-1">${materialName}</span>
+            <span class="flex-1">${escHtml(materialName)}</span>
             <input type="hidden" name="materials[${materialId}][id]" value="${materialId}">
             <button type="button" class="btn btn-sm btn-danger remove-item" title="<?= __('action.remove') ?>">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

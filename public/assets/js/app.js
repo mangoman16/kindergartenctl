@@ -8,6 +8,11 @@
     // CSRF Token from meta tag
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
+    // Translation helper - falls back to key if not found
+    function t(key) {
+        return (window.AppTranslations && window.AppTranslations[key]) || key;
+    }
+
     /**
      * Add CSRF token to fetch requests
      */
@@ -68,7 +73,7 @@
     function initConfirmDialogs() {
         document.querySelectorAll('[data-confirm]').forEach(el => {
             el.addEventListener('click', function(e) {
-                const message = this.dataset.confirm || 'Sind Sie sicher?';
+                const message = this.dataset.confirm || t('confirm_default');
                 if (!confirm(message)) {
                     e.preventDefault();
                 }
@@ -87,7 +92,7 @@
 
                 const type = this.dataset.type;
                 const id = this.dataset.id;
-                const url = `/api/${type}/toggle-favorite`;
+                const url = `/api/${type}/${id}/toggle-favorite`;
 
                 try {
                     const response = await fetchWithCsrf(url, {
@@ -98,6 +103,7 @@
                         body: JSON.stringify({ id: id }),
                     });
 
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
                     const data = await response.json();
 
                     if (data.success) {
@@ -121,10 +127,10 @@
                 removeItemButton: true,
                 searchEnabled: true,
                 placeholder: true,
-                placeholderValue: el.dataset.placeholder || 'Auswählen...',
-                noResultsText: 'Keine Ergebnisse gefunden',
-                noChoicesText: 'Keine Optionen verfügbar',
-                itemSelectText: 'Klicken zum Auswählen',
+                placeholderValue: el.dataset.placeholder || t('select_placeholder'),
+                noResultsText: t('no_results'),
+                noChoicesText: t('no_options'),
+                itemSelectText: t('click_to_select'),
             });
         });
     }
@@ -139,7 +145,6 @@
             const input = container.querySelector('input[type="file"]');
             const preview = container.querySelector('.image-preview');
             const hiddenInput = container.querySelector('input[type="hidden"]');
-            let cropper = null;
 
             if (!input) return;
 
@@ -149,13 +154,13 @@
 
                 // Validate file type
                 if (!file.type.match(/^image\/(jpeg|png|gif|webp)$/)) {
-                    alert('Bitte wählen Sie ein gültiges Bildformat (JPG, PNG, GIF, WebP).');
+                    alert(t('invalid_image_format'));
                     return;
                 }
 
                 // Validate file size (10MB)
                 if (file.size > 10 * 1024 * 1024) {
-                    alert('Das Bild ist zu groß. Maximale Größe: 10MB.');
+                    alert(t('image_too_large'));
                     return;
                 }
 
@@ -175,7 +180,7 @@
                             })
                             .catch(error => {
                                 console.error('Upload failed:', error);
-                                alert('Fehler beim Hochladen des Bildes.');
+                                alert(t('upload_error'));
                             });
                     });
                 };
@@ -193,19 +198,19 @@
         modal.className = 'cropper-modal-overlay';
         modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex !important;align-items:center;justify-content:center;z-index:2000;opacity:1 !important;visibility:visible !important;';
         modal.innerHTML = `
-            <div class="cropper-dialog" style="background:#fff;border-radius:0.75rem;width:90%;max-width:600px;max-height:90vh;overflow:hidden;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);transform:scale(1) !important;">
-                <div style="padding:1rem 1.25rem;border-bottom:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center;">
-                    <h3 style="font-size:1.125rem;font-weight:600;margin:0;">Bild zuschneiden</h3>
-                    <button type="button" class="cropper-modal-close" style="background:none;border:none;cursor:pointer;color:#9CA3AF;padding:0.25rem;font-size:1.5rem;line-height:1;">&times;</button>
+            <div class="cropper-dialog" style="background:var(--color-white, #fff);border-radius:0.75rem;width:90%;max-width:600px;max-height:90vh;overflow:hidden;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);transform:scale(1) !important;">
+                <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--color-gray-200, #E5E7EB);display:flex;justify-content:space-between;align-items:center;">
+                    <h3 style="font-size:1.125rem;font-weight:600;margin:0;">${t('crop_title')}</h3>
+                    <button type="button" class="cropper-modal-close" style="background:none;border:none;cursor:pointer;color:var(--color-gray-400, #9CA3AF);padding:0.25rem;font-size:1.5rem;line-height:1;">&times;</button>
                 </div>
                 <div style="padding:1.25rem;overflow-y:auto;max-height:calc(90vh - 140px);">
                     <div style="max-height: 400px; overflow: hidden;">
                         <img id="cropperImage" src="${imageSrc}" style="max-width: 100%;">
                     </div>
                 </div>
-                <div style="padding:1rem 1.25rem;border-top:1px solid #E5E7EB;display:flex;justify-content:flex-end;gap:0.75rem;">
-                    <button type="button" class="btn btn-secondary" id="cancelCrop">Abbrechen</button>
-                    <button type="button" class="btn btn-primary" id="applyCrop">Zuschneiden</button>
+                <div style="padding:1rem 1.25rem;border-top:1px solid var(--color-gray-200, #E5E7EB);display:flex;justify-content:flex-end;gap:0.75rem;">
+                    <button type="button" class="btn btn-secondary" id="cancelCrop">${t('crop_cancel')}</button>
+                    <button type="button" class="btn btn-primary" id="applyCrop">${t('crop_apply')}</button>
                 </div>
             </div>
         `;
@@ -232,6 +237,7 @@
         function closeModal() {
             cropper.destroy();
             modal.remove();
+            document.removeEventListener('keydown', handleEscape);
         }
 
         modal.querySelector('.cropper-modal-close').addEventListener('click', closeModal);
@@ -244,11 +250,19 @@
             }
         });
 
+        // Close on Escape key
+        function handleEscape(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        }
+        document.addEventListener('keydown', handleEscape);
+
         // Apply crop
         modal.querySelector('#applyCrop').addEventListener('click', () => {
             const applyBtn = modal.querySelector('#applyCrop');
             applyBtn.disabled = true;
-            applyBtn.textContent = 'Verarbeite...';
+            applyBtn.textContent = t('crop_processing');
 
             const canvas = cropper.getCroppedCanvas({
                 width: 600,
@@ -259,7 +273,14 @@
 
             // Try WebP first, fall back to JPEG for browser compatibility
             function tryBlob(mimeType, quality, fallbackMime) {
+                const timeout = setTimeout(() => {
+                    applyBtn.disabled = false;
+                    applyBtn.textContent = t('crop_apply');
+                    alert(t('crop_error'));
+                }, 10000);
+
                 canvas.toBlob((blob) => {
+                    clearTimeout(timeout);
                     if (blob) {
                         onCrop(blob);
                         closeModal();
@@ -267,8 +288,8 @@
                         tryBlob(fallbackMime, 0.9, null);
                     } else {
                         applyBtn.disabled = false;
-                        applyBtn.textContent = 'Zuschneiden';
-                        alert('Fehler beim Verarbeiten des Bildes. Bitte versuchen Sie ein anderes Format.');
+                        applyBtn.textContent = t('crop_apply');
+                        alert(t('crop_error'));
                     }
                 }, mimeType, quality);
             }
@@ -290,6 +311,10 @@
             method: 'POST',
             body: formData,
         });
+
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
 
         const data = await response.json();
 
@@ -334,7 +359,7 @@
                         if (data.exists) {
                             const warning = document.createElement('div');
                             warning.className = 'duplicate-warning form-hint text-warning';
-                            warning.textContent = 'Ein Eintrag mit diesem Namen existiert bereits.';
+                            warning.textContent = t('duplicate_exists');
                             this.closest('.form-group').appendChild(warning);
                         }
                     } catch (error) {
@@ -369,6 +394,8 @@
             timeout = setTimeout(async () => {
                 try {
                     const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
                     const data = await response.json();
 
                     if (searchDropdown) {
@@ -404,8 +431,6 @@
 
         // Specifically fix description fields - use unique names for autocomplete
         document.querySelectorAll('textarea[name="description"]').forEach(textarea => {
-            const form = textarea.closest('form');
-            const action = form ? form.getAttribute('action') : '';
             textarea.setAttribute('autocomplete', 'off');
             textarea.setAttribute('name', 'description');
         });
@@ -423,5 +448,6 @@
     window.App = {
         fetchWithCsrf,
         uploadImage,
+        t,
     };
 })();

@@ -18,11 +18,14 @@ class LocationController extends Controller
         require_once SRC_PATH . '/models/Location.php';
 
         $orderBy = $this->getQuery('sort', 'name');
-        $direction = $this->getQuery('dir', 'ASC');
+        $direction = strtoupper($this->getQuery('dir', 'ASC'));
 
         $allowedSort = ['name', 'created_at'];
         if (!in_array($orderBy, $allowedSort)) {
             $orderBy = 'name';
+        }
+        if (!in_array($direction, ['ASC', 'DESC'])) {
+            $direction = 'ASC';
         }
 
         $locations = Location::allWithBoxCount($orderBy, $direction);

@@ -11,11 +11,11 @@
 
 | Severity | Found | Fixed |
 |----------|-------|-------|
-| Critical | 7 | 7 |
-| High | 5 | 5 |
-| Medium | 17 | 17 |
-| Low | 2 | 2 |
-| **Total** | **31** | **31** |
+| Critical | 8 | 8 |
+| High | 6 | 6 |
+| Medium | 20 | 20 |
+| Low | 4 | 4 |
+| **Total** | **38** | **38** |
 
 ---
 
@@ -175,6 +175,41 @@
 - **Files:** `src/views/changelog/index.php`, `src/views/calendar/index.php`, `src/views/materials/index.php`, `src/views/games/index.php`, `src/views/boxes/index.php`, `src/views/categories/index.php`, `src/views/tags/index.php`, `src/views/groups/index.php`, `src/views/materials/show.php`, `src/views/dashboard/index.php`
 - **Problem:** Filter labels, empty states, modal titles/buttons, bulk action labels, badge text, error messages, and pagination text were hardcoded in German instead of using `__()` translation function.
 - **Fix:** Added 80+ new translation keys to `src/lang/de.php` and `src/lang/en.php`. Updated all affected views to use `__()` calls.
+
+### BUG-32 (Critical): Frontend XSS via innerHTML with Unescaped API Data
+- **Files:** `src/views/games/index.php:547`, `src/views/materials/index.php:355`, `src/views/games/form.php:283-294`, `src/views/groups/form.php:199,239`, `src/views/changelog/index.php:299-310`
+- **Problem:** Multiple views used `innerHTML` with unescaped data from API responses or select options. Group names, material names, game names, and changelog field/values were injected directly into innerHTML template literals without sanitization, allowing stored XSS.
+- **Fix:** Replaced innerHTML with `createElement`/`textContent` (games/index, materials/index) and added `escHtml()` / `esc()` helper functions that use `textContent`→`innerHTML` escaping technique (games/form, groups/form, changelog/index).
+
+### BUG-33 (High): Missing Error Handling in Bulk Group Loading
+- **Files:** `src/views/games/index.php:541-553`, `src/views/materials/index.php:349-361`
+- **Problem:** The bulk "add to group" feature fetched groups from `/api/groups` without any error handling. No `response.ok` check, no try/catch around the fetch, and no validation of the response data structure. Network failures or server errors would cause silent JSON parse exceptions.
+- **Fix:** Wrapped in try/catch, added `response.ok` check, validated response structure with `Array.isArray()`, and added property existence checks before DOM insertion.
+
+### BUG-34 (Medium): Missing Null Check in Games Form Material Select
+- **File:** `src/views/games/form.php:264-267`
+- **Problem:** `addMaterialSelect.addEventListener('change', ...)` was called without checking if the element exists. On pages where the `#add-material` select is absent, this throws a TypeError.
+- **Fix:** Added `if (!addMaterialSelect || !materialsList) return;` guard before attaching event listener.
+
+### BUG-35 (Medium): Race Condition in Image Crop toBlob Callback
+- **File:** `public/assets/js/app.js:275-288`
+- **Problem:** `canvas.toBlob()` could fail to call its callback in rare edge cases (browser bugs, memory pressure), leaving the crop modal UI frozen with a disabled "Apply" button indefinitely.
+- **Fix:** Added a 10-second timeout that re-enables the button and shows an error message if the blob callback never fires.
+
+### BUG-36 (Medium): Z-index Conflict Between Search Palette and Cropper Modal
+- **File:** `public/assets/css/style.css`
+- **Problem:** Search palette overlay had `z-index: 9999` while cropper modal had `z-index: 2000`. If search palette was open when triggering image crop, the search overlay would block the cropper.
+- **Fix:** Added `.cropper-modal-overlay { z-index: 10000 !important; }` to ensure cropper always appears above search palette.
+
+### BUG-37 (Low): Missing Dark Mode Styles for `.btn-secondary`
+- **File:** `public/assets/css/style.css`
+- **Problem:** Secondary buttons had no `[data-theme="dark"]` overrides, making them nearly invisible or poorly contrasted in dark mode (e.g., the cropper modal's Cancel button).
+- **Fix:** Added dark mode styles with `--color-gray-700` background and `--color-gray-100` text color.
+
+### BUG-38 (Low): Missing Focus State for Search Trigger Button
+- **File:** `public/assets/css/style.css`
+- **Problem:** The `.search-trigger` button had hover styles but no `:focus` state, making keyboard navigation invisible. Violates WCAG 2.1 focus indicator requirement.
+- **Fix:** Added `.search-trigger:focus` with a 2px primary-color outline.
 
 ---
 

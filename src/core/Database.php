@@ -736,6 +736,14 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
             // Add user_id to ideas table if it exists without it
             "ALTER TABLE ideas ADD COLUMN IF NOT EXISTS user_id INT UNSIGNED NOT NULL DEFAULT 1 AFTER id",
+
+            // Add missing indexes on foreign key columns for query performance
+            "ALTER TABLE games ADD INDEX IF NOT EXISTS idx_box_id (box_id)",
+            "ALTER TABLE games ADD INDEX IF NOT EXISTS idx_category_id (category_id)",
+            "ALTER TABLE materials ADD INDEX IF NOT EXISTS idx_box_id (box_id)",
+            "ALTER TABLE calendar_events ADD INDEX IF NOT EXISTS idx_game_id (game_id)",
+            "ALTER TABLE calendar_events ADD INDEX IF NOT EXISTS idx_group_id (group_id)",
+            "ALTER TABLE changelog ADD INDEX IF NOT EXISTS idx_user_id (user_id)",
         ];
 
         foreach ($migrations as $sql) {

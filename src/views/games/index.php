@@ -538,16 +538,28 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedIds.size === 0) return alert('<?= __('bulk.no_items_selected') ?>');
 
         // Load groups
-        const response = await fetch('<?= url('/api/groups') ?>');
-        const data = await response.json();
+        try {
+            const response = await fetch('<?= url('/api/groups') ?>');
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            const data = await response.json();
 
-        const select = document.getElementById('bulk-group-select');
-        select.innerHTML = '<option value=""><?= __('form.select_option') ?></option>';
-        (data.groups || data).forEach(group => {
-            select.innerHTML += `<option value="${group.id}">${group.name}</option>`;
-        });
+            const groups = Array.isArray(data.groups) ? data.groups : (Array.isArray(data) ? data : []);
+            const select = document.getElementById('bulk-group-select');
+            select.innerHTML = '<option value=""><?= __('form.select_option') ?></option>';
+            groups.forEach(group => {
+                if (group.id && group.name) {
+                    const opt = document.createElement('option');
+                    opt.value = group.id;
+                    opt.textContent = group.name;
+                    select.appendChild(opt);
+                }
+            });
 
-        document.getElementById('add-to-group-modal').style.display = 'flex';
+            document.getElementById('add-to-group-modal').style.display = 'flex';
+        } catch (error) {
+            console.error('Failed to load groups:', error);
+            alert('<?= __('flash.error') ?>');
+        }
     });
 
     // Make functions globally accessible for modal

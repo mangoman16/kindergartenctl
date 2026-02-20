@@ -293,18 +293,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const changes = JSON.parse(this.dataset.changes);
             changesTable.innerHTML = '';
 
+            function esc(text) {
+                const d = document.createElement('div');
+                d.textContent = String(text);
+                return d.innerHTML;
+            }
+
             for (const [field, values] of Object.entries(changes)) {
                 const row = document.createElement('tr');
                 if (typeof values === 'object' && values.old !== undefined) {
                     row.innerHTML = `
-                        <td><strong>${field}</strong></td>
-                        <td class="text-muted">${values.old || '-'}</td>
-                        <td>${values.new || '-'}</td>
+                        <td><strong>${esc(field)}</strong></td>
+                        <td class="text-muted">${esc(values.old || '-')}</td>
+                        <td>${esc(values.new || '-')}</td>
                     `;
                 } else {
                     row.innerHTML = `
-                        <td><strong>${field}</strong></td>
-                        <td colspan="2">${typeof values === 'object' ? JSON.stringify(values) : values}</td>
+                        <td><strong>${esc(field)}</strong></td>
+                        <td colspan="2">${esc(typeof values === 'object' ? JSON.stringify(values) : values)}</td>
                     `;
                 }
                 changesTable.appendChild(row);

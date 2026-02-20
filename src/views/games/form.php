@@ -264,6 +264,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const addMaterialSelect = document.getElementById('add-material');
     const materialsList = document.getElementById('materials-list');
 
+    if (!addMaterialSelect || !materialsList) return;
+
     addMaterialSelect.addEventListener('change', function() {
         const materialId = this.value;
         const materialName = this.options[this.selectedIndex].dataset.name;
@@ -277,13 +279,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Add new material row
+        // Add new material row (escape name to prevent XSS)
+        function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         const row = document.createElement('div');
         row.className = 'material-row flex items-center gap-2 mb-2';
         row.innerHTML = `
             <input type="number" name="materials[${materialId}][quantity]" value="1" min="1" max="99"
                    class="form-control" style="width: 60px;">
-            <span class="flex-1">${materialName}</span>
+            <span class="flex-1">${escHtml(materialName)}</span>
             <input type="hidden" name="materials[${materialId}][id]" value="${materialId}">
             <button type="button" class="btn btn-sm btn-danger remove-material" title="<?= __('action.remove') ?>">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
