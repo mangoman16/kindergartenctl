@@ -442,6 +442,8 @@ return [
     'install.db_connection_failed' => 'Verbindung fehlgeschlagen. Bitte überprüfen Sie die Eingaben.',
     'install.db_creating' => 'Erstelle Datenbank und Tabellen...',
     'install.db_created' => 'Datenbank erfolgreich eingerichtet!',
+    'install.db_create_failed' => 'Datenbank konnte nicht erstellt werden.',
+    'install.schema_failed' => 'Tabellen konnten nicht erstellt werden.',
 
     // Admin user
     'install.admin_username' => 'Benutzername',
@@ -449,6 +451,7 @@ return [
     'install.admin_password' => 'Passwort',
     'install.admin_password_confirm' => 'Passwort bestätigen',
     'install.admin_created' => 'Administrator erfolgreich erstellt!',
+    'install.admin_create_failed' => 'Administrator konnte nicht erstellt werden.',
 
     // Email setup
     'install.email_optional' => 'Die E-Mail-Einrichtung ist optional. Sie können sie später in den Einstellungen vornehmen.',

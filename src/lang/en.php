@@ -442,6 +442,8 @@ return [
     'install.db_connection_failed' => 'Connection failed. Please check your input.',
     'install.db_creating' => 'Creating database and tables...',
     'install.db_created' => 'Database set up successfully!',
+    'install.db_create_failed' => 'Could not create database.',
+    'install.schema_failed' => 'Could not create tables.',
 
     // Admin user
     'install.admin_username' => 'Username',
@@ -449,6 +451,7 @@ return [
     'install.admin_password' => 'Password',
     'install.admin_password_confirm' => 'Confirm Password',
     'install.admin_created' => 'Administrator created successfully!',
+    'install.admin_create_failed' => 'Could not create administrator.',
 
     // Email setup
     'install.email_optional' => 'Email setup is optional. You can configure it later in the settings.',

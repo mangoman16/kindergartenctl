@@ -115,7 +115,7 @@ class InstallController extends Controller
 
         // Create database if it doesn't exist
         if (!Database::createDatabase($config)) {
-            Session::setFlash('error', 'Datenbank konnte nicht erstellt werden.');
+            Session::setFlash('error', __('install.db_create_failed'));
             Session::setOldInput($config);
             $this->redirect('/install/step2');
             return;
@@ -143,7 +143,7 @@ class InstallController extends Controller
         ]));
 
         if (!Database::runSchema()) {
-            Session::setFlash('error', 'Tabellen konnten nicht erstellt werden.');
+            Session::setFlash('error', __('install.schema_failed'));
             $this->redirect('/install/step2');
             return;
         }
@@ -202,7 +202,7 @@ class InstallController extends Controller
         );
 
         if (!$userId) {
-            Session::setFlash('error', 'Administrator konnte nicht erstellt werden.');
+            Session::setFlash('error', __('install.admin_create_failed'));
             Session::setOldInput($data);
             $this->redirect('/install/step3');
             return;
