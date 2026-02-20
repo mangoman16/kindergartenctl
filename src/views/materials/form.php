@@ -17,7 +17,7 @@
                        value="<?= old('name', $material['name'] ?? '') ?>"
                        data-check-duplicate="materials"
                        <?= $isEdit ? 'data-exclude-id="' . $material['id'] . '"' : '' ?>
-                       required maxlength="100" placeholder="z.B. Bälle, Seile, Stifte">
+                       required maxlength="100" placeholder="<?= __('form.placeholder.material_name') ?>">
                 <?php if (hasError('name', $errors ?? [])): ?>
                     <div class="form-error"><?= getError('name', $errors) ?></div>
                 <?php endif; ?>
@@ -28,7 +28,7 @@
                     <?= __('form.description') ?>
                 </label>
                 <textarea id="description" name="description" class="form-control" rows="3"
-                          placeholder="Optionale Beschreibung des Materials"><?= old('description', $material['description'] ?? '') ?></textarea>
+                          placeholder="<?= __('form.placeholder.material_description') ?>"><?= old('description', $material['description'] ?? '') ?></textarea>
             </div>
 
             <div class="grid grid-cols-2">
@@ -41,7 +41,7 @@
                            class="form-control" style="width: 100px;"
                            value="<?= old('quantity', $material['quantity'] ?? 0) ?>"
                            min="0">
-                    <div class="form-hint">Verfügbare Anzahl (0 = unbekannt)</div>
+                    <div class="form-hint"><?= __('form.quantity_hint') ?></div>
                 </div>
 
                 <div class="form-group">
@@ -52,7 +52,7 @@
                                    <?= old('is_consumable', $material['is_consumable'] ?? 0) ? 'checked' : '' ?>>
                             <span><?= __('material.is_consumable') ?></span>
                         </label>
-                        <div class="form-hint mt-1">Verbrauchsmaterial wird nach Nutzung aufgebraucht</div>
+                        <div class="form-hint mt-1"><?= __('form.consumable_hint') ?></div>
                     </div>
                 </div>
             </div>
@@ -72,7 +72,7 @@
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>
                                 </svg>
-                                <div class="text-xs mt-1">Bild</div>
+                                <div class="text-xs mt-1"><?= __('form.image') ?></div>
                             </div>
                         <?php endif; ?>
                     </div>

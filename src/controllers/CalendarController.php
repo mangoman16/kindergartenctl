@@ -106,39 +106,39 @@ class CalendarController extends Controller
 
         // Validate
         if (empty($eventData['title'])) {
-            $this->jsonError('Titel ist erforderlich.', 400);
+            $this->jsonError(__('validation.title_required'), 400);
             return;
         }
 
         if (mb_strlen($eventData['title']) > 255) {
-            $this->jsonError('Titel darf maximal 255 Zeichen lang sein.', 400);
+            $this->jsonError(__('validation.title_max_255'), 400);
             return;
         }
 
         if (mb_strlen($eventData['description']) > 5000) {
-            $this->jsonError('Beschreibung darf maximal 5000 Zeichen lang sein.', 400);
+            $this->jsonError(__('validation.description_max_5000'), 400);
             return;
         }
 
         if (empty($eventData['start_date'])) {
-            $this->jsonError('Startdatum ist erforderlich.', 400);
+            $this->jsonError(__('validation.start_date_required'), 400);
             return;
         }
 
         // Validate date format (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
         if (!preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{2}:\d{2}(:\d{2})?)?$/', $eventData['start_date'])) {
-            $this->jsonError('Ungültiges Datumsformat.', 400);
+            $this->jsonError(__('validation.invalid_date_format'), 400);
             return;
         }
 
         // Validate end_date format and that it's >= start_date
         if (!empty($eventData['end_date'])) {
             if (!preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{2}:\d{2}(:\d{2})?)?$/', $eventData['end_date'])) {
-                $this->jsonError('Ungültiges Enddatumsformat.', 400);
+                $this->jsonError(__('validation.end_date_format'), 400);
                 return;
             }
             if ($eventData['end_date'] < $eventData['start_date']) {
-                $this->jsonError('Enddatum muss nach dem Startdatum liegen.', 400);
+                $this->jsonError(__('validation.end_before_start'), 400);
                 return;
             }
         }
@@ -152,7 +152,7 @@ class CalendarController extends Controller
         $eventId = CalendarEvent::create($eventData);
 
         if (!$eventId) {
-            $this->jsonError('Fehler beim Erstellen des Termins.', 500);
+            $this->jsonError(__('flash.error_creating'), 500);
             return;
         }
 
@@ -178,7 +178,7 @@ class CalendarController extends Controller
 
         $event = CalendarEvent::find((int)$id);
         if (!$event) {
-            $this->jsonError('Termin nicht gefunden.', 404);
+            $this->jsonError(__('calendar.event_not_found'), 404);
             return;
         }
 
@@ -197,37 +197,37 @@ class CalendarController extends Controller
 
         // Validate (same rules as store())
         if (empty($eventData['title'])) {
-            $this->jsonError('Titel ist erforderlich.', 400);
+            $this->jsonError(__('validation.title_required'), 400);
             return;
         }
 
         if (mb_strlen($eventData['title']) > 255) {
-            $this->jsonError('Titel darf maximal 255 Zeichen lang sein.', 400);
+            $this->jsonError(__('validation.title_max_255'), 400);
             return;
         }
 
         if (mb_strlen($eventData['description']) > 5000) {
-            $this->jsonError('Beschreibung darf maximal 5000 Zeichen lang sein.', 400);
+            $this->jsonError(__('validation.description_max_5000'), 400);
             return;
         }
 
         if (empty($eventData['start_date'])) {
-            $this->jsonError('Startdatum ist erforderlich.', 400);
+            $this->jsonError(__('validation.start_date_required'), 400);
             return;
         }
 
         if (!preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{2}:\d{2}(:\d{2})?)?$/', $eventData['start_date'])) {
-            $this->jsonError('Ungültiges Datumsformat.', 400);
+            $this->jsonError(__('validation.invalid_date_format'), 400);
             return;
         }
 
         if (!empty($eventData['end_date'])) {
             if (!preg_match('/^\d{4}-\d{2}-\d{2}(\s\d{2}:\d{2}(:\d{2})?)?$/', $eventData['end_date'])) {
-                $this->jsonError('Ungültiges Enddatumsformat.', 400);
+                $this->jsonError(__('validation.end_date_format'), 400);
                 return;
             }
             if ($eventData['end_date'] < $eventData['start_date']) {
-                $this->jsonError('Enddatum muss nach dem Startdatum liegen.', 400);
+                $this->jsonError(__('validation.end_before_start'), 400);
                 return;
             }
         }
@@ -267,7 +267,7 @@ class CalendarController extends Controller
 
         $event = CalendarEvent::find((int)$id);
         if (!$event) {
-            $this->jsonError('Termin nicht gefunden.', 404);
+            $this->jsonError(__('calendar.event_not_found'), 404);
             return;
         }
 

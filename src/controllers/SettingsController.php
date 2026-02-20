@@ -19,7 +19,7 @@ class SettingsController extends Controller
 
         $user = User::find(Auth::id());
         if (!$user) {
-            Session::setFlash('error', 'Benutzer nicht gefunden.');
+            Session::setFlash('error', __('user.not_found'));
             $this->redirect('/login');
             return;
         }
@@ -129,12 +129,12 @@ class SettingsController extends Controller
 
         if (file_put_contents($configPath, $content) === false) {
             Logger::error('Failed to save preferences', ['path' => $configPath]);
-            Session::setFlash('error', 'Einstellungen konnten nicht gespeichert werden.');
+            Session::setFlash('error', __('settings.save_failed'));
             $this->redirect('/settings');
             return;
         }
 
-        Session::setFlash('success', 'Einstellungen wurden gespeichert.');
+        Session::setFlash('success', __('flash.saved'));
         $this->redirect('/settings');
     }
 
@@ -153,14 +153,14 @@ class SettingsController extends Controller
 
         $user = User::find(Auth::id());
         if (!$user) {
-            Session::setFlash('error', 'Benutzer nicht gefunden.');
+            Session::setFlash('error', __('user.not_found'));
             $this->redirect('/login');
             return;
         }
 
         // Validate current password
         if (!password_verify($currentPassword, $user['password_hash'])) {
-            Session::setFlash('error', 'Das aktuelle Passwort ist falsch.');
+            Session::setFlash('error', __('settings.wrong_password'));
             $this->redirect('/user/settings');
             return;
         }
@@ -204,14 +204,14 @@ class SettingsController extends Controller
 
         $user = User::find(Auth::id());
         if (!$user) {
-            Session::setFlash('error', 'Benutzer nicht gefunden.');
+            Session::setFlash('error', __('user.not_found'));
             $this->redirect('/login');
             return;
         }
 
         // Validate password
         if (!password_verify($password, $user['password_hash'])) {
-            Session::setFlash('error', 'Das Passwort ist falsch.');
+            Session::setFlash('error', __('settings.wrong_password_generic'));
             $this->redirect('/user/settings');
             return;
         }
@@ -263,7 +263,7 @@ class SettingsController extends Controller
 
         // Validate email format for from address if provided
         if (!empty($smtpFrom) && !filter_var($smtpFrom, FILTER_VALIDATE_EMAIL)) {
-            Session::setFlash('error', 'Ungültige Absender-E-Mail-Adresse.');
+            Session::setFlash('error', __('settings.invalid_sender_email'));
             $this->redirect('/settings/email');
             return;
         }
@@ -294,7 +294,7 @@ class SettingsController extends Controller
 
         if (file_put_contents($configPath, $content, LOCK_EX) === false) {
             Logger::error('Failed to save SMTP config', ['path' => $configPath]);
-            Session::setFlash('error', 'E-Mail-Einstellungen konnten nicht gespeichert werden.');
+            Session::setFlash('error', __('settings.smtp_save_failed'));
             $this->redirect('/settings/email');
             return;
         }
@@ -302,7 +302,7 @@ class SettingsController extends Controller
         // Restrict file permissions
         chmod($configPath, 0640);
 
-        Session::setFlash('success', 'E-Mail-Einstellungen wurden gespeichert.');
+        Session::setFlash('success', __('settings.smtp_saved'));
         $this->redirect('/settings/email');
     }
 
@@ -316,7 +316,7 @@ class SettingsController extends Controller
         $testEmail = trim($_POST['test_email'] ?? '');
 
         if (!filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
-            Session::setFlash('error', 'Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+            Session::setFlash('error', __('validation.invalid_email'));
             $this->redirect('/settings/email');
             return;
         }
@@ -326,7 +326,7 @@ class SettingsController extends Controller
         $mailer = new Mailer();
 
         if (!$mailer->isConfigured()) {
-            Session::setFlash('error', 'SMTP ist nicht konfiguriert. Bitte speichern Sie zuerst die Einstellungen.');
+            Session::setFlash('error', __('settings.smtp_not_configured'));
             $this->redirect('/settings/email');
             return;
         }
@@ -335,7 +335,7 @@ class SettingsController extends Controller
             Session::setFlash('success', __('settings.smtp_test_success'));
         } else {
             $errors = $mailer->getErrors();
-            $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Unbekannter Fehler';
+            $errorMsg = !empty($errors) ? implode(', ', $errors) : __('misc.unknown_error');
             Session::setFlash('error', str_replace(':error', $errorMsg, __('settings.smtp_test_failed')));
         }
 
@@ -350,10 +350,10 @@ class SettingsController extends Controller
         $this->requireCsrf();
 
         $ip = trim($_POST['ip'] ?? '');
-        $reason = trim($_POST['reason'] ?? 'Manuell gesperrt');
+        $reason = trim($_POST['reason'] ?? __('settings.ban_reason_default'));
 
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
-            Session::setFlash('error', 'Ungültige IP-Adresse.');
+            Session::setFlash('error', __('validation.invalid_ip'));
             $this->redirect('/settings/data');
             return;
         }
@@ -364,7 +364,7 @@ class SettingsController extends Controller
         $stmt = $db->prepare("SELECT id FROM ip_bans WHERE ip_address = :ip");
         $stmt->execute(['ip' => $ip]);
         if ($stmt->fetch()) {
-            Session::setFlash('error', 'Diese IP-Adresse ist bereits gesperrt.');
+            Session::setFlash('error', __('settings.ip_already_banned'));
             $this->redirect('/settings/data');
             return;
         }
@@ -373,7 +373,7 @@ class SettingsController extends Controller
         $stmt = $db->prepare("INSERT INTO ip_bans (ip_address, reason, is_permanent, created_at) VALUES (:ip, :reason, 1, NOW())");
         $stmt->execute(['ip' => $ip, 'reason' => $reason]);
 
-        Session::setFlash('success', 'IP-Adresse wurde gesperrt.');
+        Session::setFlash('success', __('settings.ip_banned_success'));
         $this->redirect('/settings/data');
     }
 
@@ -387,7 +387,7 @@ class SettingsController extends Controller
         $ip = trim($_POST['ip'] ?? '');
 
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
-            Session::setFlash('error', 'Ungültige IP-Adresse.');
+            Session::setFlash('error', __('validation.invalid_ip'));
             $this->redirect('/settings/data');
             return;
         }
@@ -396,7 +396,7 @@ class SettingsController extends Controller
         $stmt = $db->prepare("DELETE FROM ip_bans WHERE ip_address = :ip");
         $stmt->execute(['ip' => $ip]);
 
-        Session::setFlash('success', 'IP-Sperre wurde aufgehoben.');
+        Session::setFlash('success', __('settings.ip_unbanned'));
         $this->redirect('/settings/data');
     }
 
@@ -503,7 +503,7 @@ class SettingsController extends Controller
 
         $user = User::find(Auth::id());
         if (!$user) {
-            Session::setFlash('error', 'Benutzer nicht gefunden.');
+            Session::setFlash('error', __('user.not_found'));
             $this->redirect('/login');
             return;
         }
@@ -667,7 +667,7 @@ class SettingsController extends Controller
         $preferences['language'] = $language;
         $this->savePreferences($preferences);
 
-        Session::setFlash('success', 'Sprache wurde geändert.');
+        Session::setFlash('success', __('settings.language_changed_msg'));
         $this->redirect('/settings/language');
     }
 
@@ -702,7 +702,7 @@ class SettingsController extends Controller
         $preferences['theme_pattern'] = $themePattern;
         $this->savePreferences($preferences);
 
-        Session::setFlash('success', 'Design wurde aktualisiert.');
+        Session::setFlash('success', __('flash.design_updated'));
         $this->redirect('/settings/customization');
     }
 
@@ -718,11 +718,11 @@ class SettingsController extends Controller
         if (file_exists($debugFlagPath)) {
             // Disable debug mode
             unlink($debugFlagPath);
-            Session::setFlash('success', 'Debug-Modus wurde deaktiviert.');
+            Session::setFlash('success', __('settings.debug_mode_disabled'));
         } else {
             // Enable debug mode
             file_put_contents($debugFlagPath, date('Y-m-d H:i:s'));
-            Session::setFlash('success', 'Debug-Modus wurde aktiviert.');
+            Session::setFlash('success', __('settings.debug_mode_enabled'));
         }
 
         $this->redirect('/settings/debug');
@@ -776,7 +776,7 @@ class SettingsController extends Controller
 
         $this->deleteDirectory(TEMP_PATH, false);
 
-        Session::setFlash('success', 'Temporäre Dateien wurden gelöscht.');
+        Session::setFlash('success', __('settings.temp_cleared'));
         $this->redirect('/settings/data');
     }
 

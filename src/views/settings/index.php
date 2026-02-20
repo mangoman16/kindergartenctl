@@ -79,6 +79,20 @@
         <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
     </a>
 
+    <a href="<?= url('/changelog') ?>" class="settings-menu-item">
+        <span class="settings-menu-icon" style="background: #FFF7ED; color: #EA580C;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+        </span>
+        <span class="settings-menu-text">
+            <span class="settings-menu-label"><?= __('nav.changelog') ?></span>
+            <span class="settings-menu-desc"><?= __('changelog.title') ?></span>
+        </span>
+        <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
+
     <a href="<?= url('/settings/help') ?>" class="settings-menu-item">
         <span class="settings-menu-icon" style="background: #F5F3FF; color: #8B5CF6;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

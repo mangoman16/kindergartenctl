@@ -392,8 +392,10 @@ class ImageProcessor
             && is_numeric($data['y'])
             && is_numeric($data['width'])
             && is_numeric($data['height'])
-            && $data['width'] > 0
-            && $data['height'] > 0;
+            && (float)$data['x'] >= 0
+            && (float)$data['y'] >= 0
+            && (float)$data['width'] > 0
+            && (float)$data['height'] > 0;
     }
 
     /**

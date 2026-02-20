@@ -7,12 +7,10 @@ if (strpos($currentPath, '/games') === 0 || strpos($currentPath, '/categories') 
     $navSection = 'inventory';
 } elseif (strpos($currentPath, '/calendar') === 0) {
     $navSection = 'calendar';
-} elseif (strpos($currentPath, '/changelog') === 0) {
-    $navSection = 'changelog';
-} elseif (strpos($currentPath, '/settings') === 0 || strpos($currentPath, '/user/settings') === 0) {
+} elseif (strpos($currentPath, '/changelog') === 0 || strpos($currentPath, '/settings') === 0 || strpos($currentPath, '/user/settings') === 0) {
     $navSection = 'settings';
 }
-$hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar', 'changelog']);
+$hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calendar']);
 ?>
 
 <!-- Icon Rail -->
@@ -38,9 +36,6 @@ $hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar', 'c
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         </button>
 
-        <button class="rail-btn <?= $navSection === 'changelog' ? 'active' : '' ?>" data-section="changelog" data-href="<?= url('/changelog') ?>" title="<?= __('nav.changelog') ?>">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        </button>
     </div>
 
     <div class="rail-bottom">
@@ -73,7 +68,7 @@ $hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar', 'c
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
         <?= __('group.add_new') ?>
     </a>
-    <a href="<?= url('/calendar/create') ?>" class="quick-create-item">
+    <a href="<?= url('/calendar?create=1') ?>" class="quick-create-item">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
         <?= __('calendar.add_event') ?>
     </a>
@@ -81,6 +76,13 @@ $hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar', 'c
 
 <!-- Context Sidebar -->
 <aside class="context-sidebar <?= $hasContextSidebar ? 'open' : '' ?>" id="contextSidebar" data-active="<?= $navSection ?>">
+    <div class="ctx-home-link">
+        <a href="<?= url('/') ?>" class="ctx-link <?= $navSection === 'home' ? 'active' : '' ?>">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <?= __('nav.dashboard') ?>
+        </a>
+    </div>
+
     <div class="ctx-section <?= $navSection === 'games' ? 'visible' : '' ?>" data-for="games">
         <div class="ctx-header"><?= __('nav.games') ?></div>
         <nav class="ctx-nav">
@@ -131,13 +133,4 @@ $hasContextSidebar = in_array($navSection, ['games', 'inventory', 'calendar', 'c
         </nav>
     </div>
 
-    <div class="ctx-section <?= $navSection === 'changelog' ? 'visible' : '' ?>" data-for="changelog">
-        <div class="ctx-header"><?= __('nav.changelog') ?></div>
-        <nav class="ctx-nav">
-            <a href="<?= url('/changelog') ?>" class="ctx-link active">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <?= __('nav.changelog') ?>
-            </a>
-        </nav>
-    </div>
 </aside>

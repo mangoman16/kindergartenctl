@@ -18,11 +18,14 @@ class LocationController extends Controller
         require_once SRC_PATH . '/models/Location.php';
 
         $orderBy = $this->getQuery('sort', 'name');
-        $direction = $this->getQuery('dir', 'ASC');
+        $direction = strtoupper($this->getQuery('dir', 'ASC'));
 
         $allowedSort = ['name', 'created_at'];
         if (!in_array($orderBy, $allowedSort)) {
             $orderBy = 'name';
+        }
+        if (!in_array($direction, ['ASC', 'DESC'])) {
+            $direction = 'ASC';
         }
 
         $locations = Location::allWithBoxCount($orderBy, $direction);
@@ -87,6 +90,7 @@ class LocationController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Location.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
 
         $data = [
             'name' => trim($this->getPost('name', '')),
@@ -111,13 +115,13 @@ class LocationController extends Controller
         $locationId = Location::create($data);
 
         if (!$locationId) {
-            Session::setFlash('error', __('flash.error'));
+            Session::setFlash('error', __('flash.error_generic'));
             Session::setOldInput($data);
             $this->redirect('/locations/create');
             return;
         }
 
-        $this->logChange('location', $locationId, $data['name'], 'create', $data);
+        ChangelogService::getInstance()->logCreate('location', $locationId, $data['name'], $data);
 
         Session::setFlash('success', __('flash.created', ['item' => __('location.title')]));
         $this->redirect('/locations/' . $locationId);
@@ -157,6 +161,7 @@ class LocationController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Location.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
 
         $location = Location::find((int)$id);
 
@@ -186,13 +191,14 @@ class LocationController extends Controller
             return;
         }
 
-        $changes = $this->getChanges($location, $data);
+        // Track changes for changelog
+        $changelog = ChangelogService::getInstance();
+        $changes = $changelog->getChanges($location, $data, ['name', 'description']);
 
         Location::update((int)$id, $data);
 
-        if (!empty($changes)) {
-            $this->logChange('location', (int)$id, $data['name'], 'update', $changes);
-        }
+        // Log change if there were any
+        $changelog->logUpdate('location', (int)$id, $data['name'], $changes);
 
         Session::setFlash('success', __('flash.updated', ['item' => __('location.title')]));
         $this->redirect('/locations/' . $id);
@@ -206,6 +212,7 @@ class LocationController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Location.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
 
         $location = Location::find((int)$id);
 
@@ -215,65 +222,11 @@ class LocationController extends Controller
             return;
         }
 
-        $this->logChange('location', (int)$id, $location['name'], 'delete', $location);
+        ChangelogService::getInstance()->logDelete('location', (int)$id, $location['name'], $location);
 
         Location::delete((int)$id);
 
         Session::setFlash('success', __('flash.deleted', ['item' => __('location.title')]));
         $this->redirect('/locations');
-    }
-
-    /**
-     * Log a change to the changelog
-     */
-    private function logChange(string $entityType, int $entityId, string $entityName, string $action, array $data): void
-    {
-        try {
-            $db = Database::getInstance();
-            $userId = Auth::id();
-
-            $stmt = $db->prepare("
-                INSERT INTO changelog (user_id, entity_type, entity_id, entity_name, action, changes)
-                VALUES (:user_id, :entity_type, :entity_id, :entity_name, :action, :changes)
-            ");
-
-            $stmt->execute([
-                'user_id' => $userId,
-                'entity_type' => $entityType,
-                'entity_id' => $entityId,
-                'entity_name' => $entityName,
-                'action' => $action,
-                'changes' => json_encode($data, JSON_UNESCAPED_UNICODE),
-            ]);
-        } catch (Exception $e) {
-            Logger::error('Failed to log change', [
-                'error' => $e->getMessage(),
-                'entity_type' => $entityType,
-                'entity_id' => $entityId
-            ]);
-        }
-    }
-
-    /**
-     * Get changes between old and new data
-     */
-    private function getChanges(array $old, array $new): array
-    {
-        $changes = [];
-        $trackFields = ['name', 'description'];
-
-        foreach ($trackFields as $field) {
-            $oldValue = $old[$field] ?? '';
-            $newValue = $new[$field] ?? '';
-
-            if ($oldValue !== $newValue) {
-                $changes[$field] = [
-                    'old' => $oldValue,
-                    'new' => $newValue,
-                ];
-            }
-        }
-
-        return $changes;
     }
 }

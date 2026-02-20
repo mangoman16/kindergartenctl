@@ -258,7 +258,7 @@ abstract class Controller
     protected function requireAuth(): void
     {
         if (!Auth::check()) {
-            Session::setFlash('error', 'Bitte melden Sie sich an.');
+            Session::setFlash('error', __('auth.please_login'));
             $this->redirect('/login');
         }
     }
@@ -326,9 +326,9 @@ abstract class Controller
     {
         if (!$this->verifyCsrf()) {
             if ($this->isAjax()) {
-                $this->json(['error' => 'Ungültiges CSRF-Token'], 403);
+                $this->json(['error' => __('auth.invalid_csrf')], 403);
             } else {
-                Session::setFlash('error', 'Ungültige Anfrage. Bitte versuchen Sie es erneut.');
+                Session::setFlash('error', __('auth.invalid_request'));
                 $this->back();
             }
         }

@@ -10,7 +10,7 @@
         <div style="grid-column: span 2;">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="card-title">Grundinformationen</h2>
+                    <h2 class="card-title"><?= __('form.basic_info') ?></h2>
                 </div>
                 <div class="card-body">
                     <div class="form-group">
@@ -23,7 +23,7 @@
                                value="<?= old('name', $game['name'] ?? '') ?>"
                                data-check-duplicate="games"
                                <?= $isEdit ? 'data-exclude-id="' . $game['id'] . '"' : '' ?>
-                               required maxlength="255" placeholder="Name des Spiels">
+                               required maxlength="255" placeholder="<?= __('form.placeholder.game_name') ?>">
                         <?php if (hasError('name', $errors ?? [])): ?>
                             <div class="form-error"><?= getError('name', $errors) ?></div>
                         <?php endif; ?>
@@ -35,7 +35,7 @@
                             <span class="help-tooltip" data-help="<?= e(__('help.field_description')) ?>">?</span>
                         </label>
                         <textarea id="description" name="description" class="form-control" rows="4"
-                                  placeholder="Kurze Beschreibung des Spiels"><?= old('description', $game['description'] ?? '') ?></textarea>
+                                  placeholder="<?= __('form.placeholder.game_description') ?>"><?= old('description', $game['description'] ?? '') ?></textarea>
                     </div>
 
                     <div class="form-group">
@@ -43,14 +43,14 @@
                             <?= __('game.instructions') ?>
                         </label>
                         <textarea id="instructions" name="instructions" class="form-control" rows="6"
-                                  placeholder="Spielanleitung, Regeln, Tipps..."><?= old('instructions', $game['instructions'] ?? '') ?></textarea>
+                                  placeholder="<?= __('form.placeholder.game_instructions') ?>"><?= old('instructions', $game['instructions'] ?? '') ?></textarea>
                     </div>
                 </div>
             </div>
 
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="card-title">Spieldetails</h2>
+                    <h2 class="card-title"><?= __('game.details') ?></h2>
                 </div>
                 <div class="card-body">
                     <div class="grid grid-cols-4 gap-4">
@@ -59,7 +59,7 @@
                             <input type="number" id="min_players" name="min_players"
                                    class="form-control" min="1" max="100"
                                    value="<?= old('min_players', $game['min_players'] ?? '') ?>"
-                                   placeholder="z.B. 2">
+                                   placeholder="<?= __('form.placeholder.example_2') ?>">
                         </div>
 
                         <div class="form-group">
@@ -67,7 +67,7 @@
                             <input type="number" id="max_players" name="max_players"
                                    class="form-control" min="1" max="100"
                                    value="<?= old('max_players', $game['max_players'] ?? '') ?>"
-                                   placeholder="z.B. 10">
+                                   placeholder="<?= __('form.placeholder.example_10') ?>">
                         </div>
 
                         <div class="form-group">
@@ -76,8 +76,8 @@
                                 <input type="number" id="duration_minutes" name="duration_minutes"
                                        class="form-control" min="1" max="999"
                                        value="<?= old('duration_minutes', $game['duration_minutes'] ?? '') ?>"
-                                       placeholder="z.B. 15">
-                                <span class="text-muted">Min.</span>
+                                       placeholder="<?= __('form.placeholder.example_15') ?>">
+                                <span class="text-muted"><?= __('form.minutes_short') ?></span>
                             </div>
                         </div>
 
@@ -95,7 +95,7 @@
                         <div class="form-group">
                             <label for="box_id" class="form-label"><?= __('nav.boxes') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_box')) ?>">?</span></label>
                             <select id="box_id" name="box_id" class="form-control">
-                                <option value="">-- Keine Box --</option>
+                                <option value="">-- <?= __('material.no_box') ?> --</option>
                                 <?php foreach ($boxes as $box): ?>
                                     <option value="<?= $box['id'] ?>" <?= old('box_id', $game['box_id'] ?? '') == $box['id'] ? 'selected' : '' ?>>
                                         <?= e($box['name']) ?>
@@ -107,7 +107,7 @@
                         <div class="form-group">
                             <label for="category_id" class="form-label"><?= __('game.age_group') ?> <span class="help-tooltip" data-help="<?= e(__('help.field_age_group')) ?>">?</span></label>
                             <select id="category_id" name="category_id" class="form-control">
-                                <option value="">-- Keine Altersgruppe --</option>
+                                <option value=""><?= __('form.no_age_group') ?></option>
                                 <?php foreach ($categories as $category): ?>
                                     <option value="<?= $category['id'] ?>" <?= old('category_id', $game['category_id'] ?? '') == $category['id'] ? 'selected' : '' ?>>
                                         <?= e($category['name']) ?>
@@ -154,7 +154,7 @@
                                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                         <polyline points="21 15 16 10 5 21"></polyline>
                                     </svg>
-                                    <div class="mt-2">Bild hochladen</div>
+                                    <div class="mt-2"><?= __('form.upload_image') ?></div>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -184,7 +184,7 @@
                         <?php endforeach; ?>
                     </div>
                     <?php if (empty($tags)): ?>
-                        <p class="text-muted text-sm">Keine Themen vorhanden. <a href="<?= url('/tags/create') ?>">Erstellen</a></p>
+                        <p class="text-muted text-sm"><?= __('form.no_tags_exist') ?> <a href="<?= url('/tags/create') ?>"><?= __('action.create_one') ?></a></p>
                     <?php endif; ?>
                 </div>
             </div>
@@ -203,7 +203,7 @@
                                        class="form-control" style="width: 60px;">
                                 <span class="flex-1"><?= e($material['name']) ?></span>
                                 <input type="hidden" name="materials[<?= $material['id'] ?>][id]" value="<?= $material['id'] ?>">
-                                <button type="button" class="btn btn-sm btn-danger remove-material" title="Entfernen">
+                                <button type="button" class="btn btn-sm btn-danger remove-material" title="<?= __('action.remove') ?>">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -215,7 +215,7 @@
 
                     <div class="mt-3">
                         <select id="add-material" class="form-control">
-                            <option value="">Material hinzufügen...</option>
+                            <option value=""><?= __('form.add_material') ?></option>
                             <?php foreach ($materials as $material): ?>
                                 <option value="<?= $material['id'] ?>" data-name="<?= e($material['name']) ?>">
                                     <?= e($material['name']) ?>
@@ -264,6 +264,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const addMaterialSelect = document.getElementById('add-material');
     const materialsList = document.getElementById('materials-list');
 
+    if (!addMaterialSelect || !materialsList) return;
+
     addMaterialSelect.addEventListener('change', function() {
         const materialId = this.value;
         const materialName = this.options[this.selectedIndex].dataset.name;
@@ -272,20 +274,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Check if already added
         if (materialsList.querySelector(`input[value="${materialId}"]`)) {
-            alert('Material bereits hinzugefügt');
+            alert('<?= __('form.material_already_added') ?>');
             this.value = '';
             return;
         }
 
-        // Add new material row
+        // Add new material row (escape name to prevent XSS)
+        function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         const row = document.createElement('div');
         row.className = 'material-row flex items-center gap-2 mb-2';
         row.innerHTML = `
             <input type="number" name="materials[${materialId}][quantity]" value="1" min="1" max="99"
                    class="form-control" style="width: 60px;">
-            <span class="flex-1">${materialName}</span>
+            <span class="flex-1">${escHtml(materialName)}</span>
             <input type="hidden" name="materials[${materialId}][id]" value="${materialId}">
-            <button type="button" class="btn btn-sm btn-danger remove-material" title="Entfernen">
+            <button type="button" class="btn btn-sm btn-danger remove-material" title="<?= __('action.remove') ?>">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>

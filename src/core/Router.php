@@ -227,9 +227,9 @@ class Router
         if (file_exists($notFoundView)) {
             include $notFoundView;
         } else {
-            echo '<h1>404 - Seite nicht gefunden</h1>';
-            echo '<p>Die angeforderte Seite existiert nicht.</p>';
-            echo '<p><a href="/">Zurück zur Startseite</a></p>';
+            echo '<h1>' . __('error.404_title') . '</h1>';
+            echo '<p>' . __('error.404_text') . '</p>';
+            echo '<p><a href="/">' . __('error.404_back') . '</a></p>';
         }
     }
 

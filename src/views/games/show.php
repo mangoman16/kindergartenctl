@@ -45,7 +45,7 @@
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-3">
                             <?php if (!$game['is_active']): ?>
-                                <span class="badge badge-danger">Inaktiv</span>
+                                <span class="badge badge-danger"><?= __('game.inactive') ?></span>
                             <?php endif; ?>
                             <?php if ($game['is_outdoor']): ?>
                                 <span class="badge badge-warning">
@@ -54,7 +54,7 @@
                                         <line x1="12" y1="1" x2="12" y2="3"></line>
                                         <line x1="12" y1="21" x2="12" y2="23"></line>
                                     </svg>
-                                    Outdoor
+                                    <?= __('game.outdoor') ?>
                                 </span>
                             <?php endif; ?>
                         </div>
@@ -81,22 +81,22 @@
                             <dt><?= __('game.players') ?></dt>
                             <dd>
                                 <?php if ($game['min_players'] && $game['max_players']): ?>
-                                    <?= $game['min_players'] ?> - <?= $game['max_players'] ?> Spieler
+                                    <?= $game['min_players'] ?> - <?= $game['max_players'] ?> <?= __('game.players') ?>
                                 <?php elseif ($game['min_players']): ?>
-                                    ab <?= $game['min_players'] ?> Spieler
+                                    <?= __('misc.from') ?> <?= $game['min_players'] ?> <?= __('game.players') ?>
                                 <?php elseif ($game['max_players']): ?>
-                                    bis <?= $game['max_players'] ?> Spieler
+                                    <?= __('misc.to') ?> <?= $game['max_players'] ?> <?= __('game.players') ?>
                                 <?php else: ?>
-                                    <span class="text-muted">Nicht angegeben</span>
+                                    <span class="text-muted"><?= __('misc.not_specified') ?></span>
                                 <?php endif; ?>
                             </dd>
 
                             <dt><?= __('game.duration') ?></dt>
                             <dd>
                                 <?php if ($game['duration_minutes']): ?>
-                                    <?= $game['duration_minutes'] ?> Minuten
+                                    <?= $game['duration_minutes'] ?> <?= __('game.minutes') ?>
                                 <?php else: ?>
-                                    <span class="text-muted">Nicht angegeben</span>
+                                    <span class="text-muted"><?= __('misc.not_specified') ?></span>
                                 <?php endif; ?>
                             </dd>
                         </dl>
@@ -143,7 +143,7 @@
                     <svg id="favorite-icon-outline" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="<?= !empty($game['is_favorite']) ? 'display:none;' : '' ?>">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
-                    <span id="favorite-text"><?= !empty($game['is_favorite']) ? 'Favorit entfernen' : 'Als Favorit markieren' ?></span>
+                    <span id="favorite-text"><?= !empty($game['is_favorite']) ? __('misc.remove_from_favorites') : __('misc.add_to_favorites') ?></span>
                 </button>
             </div>
         </div>
@@ -198,7 +198,7 @@
                             <line x1="12" y1="11" x2="12" y2="17"></line>
                             <line x1="9" y1="14" x2="15" y2="14"></line>
                         </svg>
-                        Zur Gruppe hinzufügen
+                        <?= __('group.add_to') ?>
                     </button>
                     <?php endif; ?>
                 </div>
@@ -305,13 +305,16 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleBtn.disabled = true;
 
             const formData = new FormData();
-            formData.append('csrf_token', '<?= csrf() ?>');
+            formData.append('csrf_token', '<?= e($csrfToken) ?>');
 
             fetch('<?= url('/api/games/') ?>' + gameId + '/toggle-favorite', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     const newFavorite = data.is_favorite;
@@ -319,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     toggleBtn.className = 'btn btn-block ' + (newFavorite ? 'btn-warning' : 'btn-secondary');
                     document.getElementById('favorite-icon-filled').style.display = newFavorite ? '' : 'none';
                     document.getElementById('favorite-icon-outline').style.display = newFavorite ? 'none' : '';
-                    document.getElementById('favorite-text').textContent = newFavorite ? 'Favorit entfernen' : 'Als Favorit markieren';
+                    document.getElementById('favorite-text').textContent = newFavorite ? '<?= __('misc.remove_from_favorites') ?>' : '<?= __('misc.add_to_favorites') ?>';
                 }
             })
             .catch(error => {
@@ -339,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         addToGroupForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            formData.append('csrf_token', '<?= csrf() ?>');
+            formData.append('csrf_token', '<?= e($csrfToken) ?>');
             formData.append('item_type', 'game');
             formData.append('item_id', '<?= $game['id'] ?>');
 
@@ -350,24 +353,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     closeAddToGroupModal();
-                    alert('Spiel wurde zur Gruppe hinzugefügt!');
+                    alert('<?= __('flash.added_to_group') ?>');
                 } else {
-                    alert(data.error || 'Ein Fehler ist aufgetreten.');
+                    alert(data.error || '<?= __('flash.error_generic') ?>');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Ein Fehler ist aufgetreten.');
+                alert('<?= __('flash.error_generic') ?>');
             })
             .finally(() => {
                 submitBtn.disabled = false;
             });
         });
     }
+
+    // Escape key to close modals
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAddToGroupModal();
+        }
+    });
 });
 
 function openAddToGroupModal() {
@@ -391,15 +404,15 @@ function closeAddToGroupModal() {
     <div class="modal-backdrop" onclick="closeAddToGroupModal()"></div>
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title">Zur Gruppe hinzufügen</h3>
+            <h3 class="modal-title"><?= __('group.add_to') ?></h3>
             <button type="button" class="modal-close" onclick="closeAddToGroupModal()">&times;</button>
         </div>
         <form id="add-to-group-form">
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="group_id">Gruppe auswählen</label>
+                    <label for="group_id"><?= __('group.select') ?></label>
                     <select name="group_id" id="group_id" class="form-control" required>
-                        <option value="">Bitte wählen...</option>
+                        <option value=""><?= __('form.select_option') ?></option>
                         <?php foreach ($groups as $group): ?>
                             <option value="<?= $group['id'] ?>"><?= e($group['name']) ?></option>
                         <?php endforeach; ?>
@@ -407,15 +420,15 @@ function closeAddToGroupModal() {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeAddToGroupModal()">Abbrechen</button>
-                <button type="submit" class="btn btn-primary">Hinzufügen</button>
+                <button type="button" class="btn btn-secondary" onclick="closeAddToGroupModal()"><?= __('action.cancel') ?></button>
+                <button type="submit" class="btn btn-primary"><?= __('action.add') ?></button>
             </div>
         </form>
     </div>
 </div>
 
 <style<?= cspNonce() ?>>
-.modal {
+#add-to-group-modal.modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -426,35 +439,35 @@ function closeAddToGroupModal() {
     align-items: center;
     justify-content: center;
 }
-.modal-backdrop {
-    position: absolute;
+#add-to-group-modal .modal-backdrop {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
 }
-.modal-content {
+#add-to-group-modal .modal-content {
     position: relative;
-    background: white;
+    background: var(--color-white);
     border-radius: var(--radius-lg);
     width: 100%;
     max-width: 400px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
-.modal-header {
+#add-to-group-modal .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
     border-bottom: 1px solid var(--color-gray-200);
 }
-.modal-title {
+#add-to-group-modal .modal-title {
     margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
 }
-.modal-close {
+#add-to-group-modal .modal-close {
     background: none;
     border: none;
     font-size: 1.5rem;
@@ -462,13 +475,13 @@ function closeAddToGroupModal() {
     color: var(--color-gray-500);
     line-height: 1;
 }
-.modal-close:hover {
+#add-to-group-modal .modal-close:hover {
     color: var(--color-gray-700);
 }
-.modal-body {
+#add-to-group-modal .modal-body {
     padding: 20px;
 }
-.modal-footer {
+#add-to-group-modal .modal-footer {
     display: flex;
     gap: 12px;
     justify-content: flex-end;

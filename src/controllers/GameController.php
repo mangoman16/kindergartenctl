@@ -123,7 +123,7 @@ class GameController extends Controller
         // Additional validation: max_players should be >= min_players
         if ($data['min_players'] !== null && $data['max_players'] !== null) {
             if ($data['max_players'] < $data['min_players']) {
-                $validator->addError('max_players', 'Maximale Spieleranzahl muss größer oder gleich der minimalen Anzahl sein');
+                $validator->addError('max_players', __('validation.max_gte_min_players'));
             }
         }
 
@@ -148,7 +148,7 @@ class GameController extends Controller
                 $gameId = Game::create($data);
 
                 if (!$gameId) {
-                    throw new RuntimeException('Fehler beim Erstellen des Spiels.');
+                    throw new RuntimeException(__('flash.error_creating'));
                 }
 
                 // Update tags and materials
@@ -181,7 +181,7 @@ class GameController extends Controller
         $game = Game::findWithRelations((int)$id);
 
         if (!$game) {
-            Session::setFlash('error', 'Spiel nicht gefunden.');
+            Session::setFlash('error', __('game.not_found'));
             $this->redirect('/games');
             return;
         }
@@ -212,7 +212,7 @@ class GameController extends Controller
         $game = Game::findWithRelations((int)$id);
 
         if (!$game) {
-            Session::setFlash('error', 'Spiel nicht gefunden.');
+            Session::setFlash('error', __('game.not_found'));
             $this->redirect('/games');
             return;
         }
@@ -248,7 +248,7 @@ class GameController extends Controller
         $game = Game::find((int)$id);
 
         if (!$game) {
-            Session::setFlash('error', 'Spiel nicht gefunden.');
+            Session::setFlash('error', __('game.not_found'));
             $this->redirect('/games');
             return;
         }
@@ -285,7 +285,7 @@ class GameController extends Controller
         // Additional validation: max_players should be >= min_players
         if ($data['min_players'] !== null && $data['max_players'] !== null) {
             if ($data['max_players'] < $data['min_players']) {
-                $validator->addError('max_players', 'Maximale Spieleranzahl muss größer oder gleich der minimalen Anzahl sein');
+                $validator->addError('max_players', __('validation.max_gte_min_players'));
             }
         }
 
@@ -331,7 +331,7 @@ class GameController extends Controller
             Session::setFlash('success', __('flash.updated', ['item' => __('game.title')]));
             $this->redirect('/games/' . $id);
         } catch (Exception $e) {
-            Session::setFlash('error', 'Fehler beim Aktualisieren: ' . $e->getMessage());
+            Session::setFlash('error', __('flash.error_updating', ['error' => $e->getMessage()]));
             Session::setOldInput(array_merge($data, ['tags' => $tagIds, 'materials' => $materials]));
             $this->redirect('/games/' . $id . '/edit');
         }
@@ -352,7 +352,7 @@ class GameController extends Controller
         $game = Game::find((int)$id);
 
         if (!$game) {
-            Session::setFlash('error', 'Spiel nicht gefunden.');
+            Session::setFlash('error', __('game.not_found'));
             $this->redirect('/games');
             return;
         }
@@ -380,7 +380,7 @@ class GameController extends Controller
             Session::setFlash('success', __('flash.deleted', ['item' => __('game.title')]));
             $this->redirect('/games');
         } catch (Exception $e) {
-            Session::setFlash('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            Session::setFlash('error', __('flash.error_deleting', ['error' => $e->getMessage()]));
             $this->redirect('/games/' . $id);
         }
     }
@@ -395,12 +395,12 @@ class GameController extends Controller
         $game = Game::findWithRelations((int)$id);
 
         if (!$game) {
-            Session::setFlash('error', 'Spiel nicht gefunden.');
+            Session::setFlash('error', __('game.not_found'));
             $this->redirect('/games');
             return;
         }
 
-        $this->setTitle($game['name'] . ' - Druckansicht');
+        $this->setTitle($game['name'] . ' - ' . __('print.print_view'));
         $this->setLayout('print');
 
         $this->render('games/print', [
@@ -422,7 +422,7 @@ class GameController extends Controller
         $game = Game::find((int)$id);
 
         if (!$game) {
-            Session::setFlash('error', 'Spiel nicht gefunden.');
+            Session::setFlash('error', __('game.not_found'));
             $this->redirect('/games');
             return;
         }
@@ -435,7 +435,7 @@ class GameController extends Controller
                 $newGameId = Game::duplicate((int)$id);
 
                 if (!$newGameId) {
-                    throw new RuntimeException('Fehler beim Duplizieren des Spiels.');
+                    throw new RuntimeException(__('flash.error_duplicating'));
                 }
 
                 $newGame = Game::find($newGameId);
@@ -444,7 +444,7 @@ class GameController extends Controller
                 return $newGameId;
             }, $game);
 
-            Session::setFlash('success', 'Spiel wurde dupliziert.');
+            Session::setFlash('success', __('flash.duplicated', ['item' => __('game.title')]));
             $this->redirect('/games/' . $newGameId . '/edit');
         } catch (Exception $e) {
             Session::setFlash('error', $e->getMessage());

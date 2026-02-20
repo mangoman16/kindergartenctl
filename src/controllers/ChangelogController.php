@@ -67,7 +67,7 @@ class ChangelogController extends Controller
         $keepDays = (int)($_POST['keep_days'] ?? 365);
         $deleted = ChangelogService::getInstance()->cleanup($keepDays);
 
-        Session::setFlash('success', $deleted . ' alte Einträge wurden gelöscht.');
+        Session::setFlash('success', __('changelog.entries_deleted', ['count' => $deleted]));
         $this->redirect('/changelog');
     }
 }

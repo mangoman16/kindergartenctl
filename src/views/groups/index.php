@@ -21,8 +21,8 @@
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                 </svg>
             </div>
-            <h3 class="empty-state-title">Noch keine Gruppen vorhanden</h3>
-            <p class="empty-state-text">Erstellen Sie Gruppen, um Spiele und Materialien für bestimmte Aktivitäten zusammenzufassen.</p>
+            <h3 class="empty-state-title"><?= __('group.empty_title') ?></h3>
+            <p class="empty-state-text"><?= __('group.empty_text') ?></p>
             <a href="<?= url('/groups/create') ?>" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>

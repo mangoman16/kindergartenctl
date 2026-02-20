@@ -10,29 +10,29 @@ require_once SRC_PATH . '/services/ChangelogService.php';
     <div class="card-body">
         <form action="<?= url('/changelog') ?>" method="GET" class="flex gap-4 items-end">
             <div class="form-group mb-0">
-                <label class="form-label">Typ</label>
+                <label class="form-label"><?= __('changelog.type') ?></label>
                 <select name="type" class="form-control">
-                    <option value="">Alle Typen</option>
-                    <option value="game" <?= $filterType === 'game' ? 'selected' : '' ?>>Spiele</option>
-                    <option value="material" <?= $filterType === 'material' ? 'selected' : '' ?>>Materialien</option>
-                    <option value="box" <?= $filterType === 'box' ? 'selected' : '' ?>>Boxen</option>
-                    <option value="category" <?= $filterType === 'category' ? 'selected' : '' ?>>Altersgruppen</option>
-                    <option value="tag" <?= $filterType === 'tag' ? 'selected' : '' ?>>Themen</option>
-                    <option value="group" <?= $filterType === 'group' ? 'selected' : '' ?>>Gruppen</option>
+                    <option value=""><?= __('changelog.all_types') ?></option>
+                    <option value="game" <?= $filterType === 'game' ? 'selected' : '' ?>><?= __('game.title_plural') ?></option>
+                    <option value="material" <?= $filterType === 'material' ? 'selected' : '' ?>><?= __('material.title_plural') ?></option>
+                    <option value="box" <?= $filterType === 'box' ? 'selected' : '' ?>><?= __('box.title_plural') ?></option>
+                    <option value="category" <?= $filterType === 'category' ? 'selected' : '' ?>><?= __('category.title_plural') ?></option>
+                    <option value="tag" <?= $filterType === 'tag' ? 'selected' : '' ?>><?= __('tag.title_plural') ?></option>
+                    <option value="group" <?= $filterType === 'group' ? 'selected' : '' ?>><?= __('group.title_plural') ?></option>
                 </select>
             </div>
             <div class="form-group mb-0">
-                <label class="form-label">Aktion</label>
+                <label class="form-label"><?= __('changelog.action') ?></label>
                 <select name="action" class="form-control">
-                    <option value="">Alle Aktionen</option>
-                    <option value="create" <?= $filterAction === 'create' ? 'selected' : '' ?>>Erstellt</option>
-                    <option value="update" <?= $filterAction === 'update' ? 'selected' : '' ?>>Aktualisiert</option>
-                    <option value="delete" <?= $filterAction === 'delete' ? 'selected' : '' ?>>Gelöscht</option>
+                    <option value=""><?= __('changelog.all_actions') ?></option>
+                    <option value="create" <?= $filterAction === 'create' ? 'selected' : '' ?>><?= __('changelog.action.create') ?></option>
+                    <option value="update" <?= $filterAction === 'update' ? 'selected' : '' ?>><?= __('changelog.action.update') ?></option>
+                    <option value="delete" <?= $filterAction === 'delete' ? 'selected' : '' ?>><?= __('changelog.action.delete') ?></option>
                 </select>
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="btn btn-secondary">Filtern</button>
-                <a href="<?= url('/changelog') ?>" class="btn btn-secondary">Zurücksetzen</a>
+                <button type="submit" class="btn btn-secondary"><?= __('action.filter') ?></button>
+                <a href="<?= url('/changelog') ?>" class="btn btn-secondary"><?= __('action.reset') ?></a>
             </div>
         </form>
     </div>
@@ -51,8 +51,8 @@ require_once SRC_PATH . '/services/ChangelogService.php';
                     <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
             </div>
-            <h3 class="empty-state-title">Keine Änderungen vorhanden</h3>
-            <p class="empty-state-text">Änderungen an Spielen, Materialien und anderen Elementen werden hier protokolliert.</p>
+            <h3 class="empty-state-title"><?= __('changelog.empty_title') ?></h3>
+            <p class="empty-state-text"><?= __('changelog.empty_text') ?></p>
         </div>
     </div>
 </div>
@@ -67,11 +67,11 @@ require_once SRC_PATH . '/services/ChangelogService.php';
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 160px;">Datum</th>
-                    <th style="width: 100px;">Aktion</th>
-                    <th style="width: 120px;">Typ</th>
-                    <th>Element</th>
-                    <th>Benutzer</th>
+                    <th style="width: 160px;"><?= __('changelog.date') ?></th>
+                    <th style="width: 100px;"><?= __('changelog.action') ?></th>
+                    <th style="width: 120px;"><?= __('changelog.type') ?></th>
+                    <th><?= __('changelog.entity') ?></th>
+                    <th><?= __('changelog.user') ?></th>
                     <th style="width: 50px;"></th>
                 </tr>
             </thead>
@@ -111,7 +111,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
                                 default => null
                             };
                             if ($url): ?>
-                                <a href="<?= $url ?>" class="text-sm ml-2">anzeigen &rarr;</a>
+                                <a href="<?= $url ?>" class="text-sm ml-2"><?= __('action.view') ?> &rarr;</a>
                             <?php endif; ?>
                         <?php endif; ?>
                     </td>
@@ -119,7 +119,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
                     <td>
                         <?php if ($entry['changes']): ?>
                             <button type="button" class="btn btn-sm btn-secondary changelog-details"
-                                    data-changes="<?= e($entry['changes']) ?>" title="Details anzeigen">
+                                    data-changes="<?= e($entry['changes']) ?>" title="<?= __('changelog.show_details') ?>">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"></circle>
                                     <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -141,14 +141,14 @@ require_once SRC_PATH . '/services/ChangelogService.php';
     <nav class="pagination">
         <?php if ($currentPage > 1): ?>
             <a href="<?= url('/changelog?page=' . ($currentPage - 1) . ($filterType ? '&type=' . $filterType : '') . ($filterAction ? '&action=' . $filterAction : '')) ?>"
-               class="pagination-link">&larr; Zurück</a>
+               class="pagination-link"><?= __('pagination.previous') ?></a>
         <?php endif; ?>
 
-        <span class="pagination-info">Seite <?= $currentPage ?> von <?= $totalPages ?></span>
+        <span class="pagination-info"><?= __('pagination.page') ?> <?= $currentPage ?> <?= __('pagination.of') ?> <?= $totalPages ?></span>
 
         <?php if ($currentPage < $totalPages): ?>
             <a href="<?= url('/changelog?page=' . ($currentPage + 1) . ($filterType ? '&type=' . $filterType : '') . ($filterAction ? '&action=' . $filterAction : '')) ?>"
-               class="pagination-link">Weiter &rarr;</a>
+               class="pagination-link"><?= __('pagination.next') ?></a>
         <?php endif; ?>
     </nav>
 </div>
@@ -157,20 +157,20 @@ require_once SRC_PATH . '/services/ChangelogService.php';
 <!-- Cleanup Section -->
 <div class="card mb-4">
     <div class="card-header">
-        <h2 class="card-title">Changelog bereinigen</h2>
+        <h2 class="card-title"><?= __('changelog.purge_title') ?></h2>
     </div>
     <div class="card-body">
-        <p class="text-muted mb-3">Alte Changelog-Einträge löschen, um Speicherplatz freizugeben.</p>
+        <p class="text-muted mb-3"><?= __('changelog.purge_text') ?></p>
         <form action="<?= url('/changelog/clear') ?>" method="POST" class="flex items-end gap-3"
-              onsubmit="return confirm('Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden.')">
+              onsubmit="return confirm('<?= __('changelog.purge_confirm') ?>')">
             <?= csrfField() ?>
             <div class="form-group mb-0">
-                <label class="form-label">Einträge behalten für</label>
+                <label class="form-label"><?= __('changelog.keep_for') ?></label>
                 <select name="keep_days" class="form-control">
-                    <option value="30">30 Tage</option>
-                    <option value="90">90 Tage</option>
-                    <option value="180">6 Monate</option>
-                    <option value="365" selected>1 Jahr</option>
+                    <option value="30"><?= __('changelog.30_days') ?></option>
+                    <option value="90"><?= __('changelog.90_days') ?></option>
+                    <option value="180"><?= __('changelog.6_months') ?></option>
+                    <option value="365" selected><?= __('changelog.1_year') ?></option>
                 </select>
             </div>
             <button type="submit" class="btn btn-danger">
@@ -178,7 +178,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                 </svg>
-                Alte Einträge löschen
+                <?= __('changelog.purge_button') ?>
             </button>
         </form>
     </div>
@@ -190,16 +190,16 @@ require_once SRC_PATH . '/services/ChangelogService.php';
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title">Änderungsdetails</h3>
+            <h3 class="modal-title"><?= __('changelog.details') ?></h3>
             <button type="button" class="modal-close">&times;</button>
         </div>
         <div class="modal-body">
             <table class="table" id="changes-table">
                 <thead>
                     <tr>
-                        <th>Feld</th>
-                        <th>Vorher</th>
-                        <th>Nachher</th>
+                        <th><?= __('changelog.field') ?></th>
+                        <th><?= __('changelog.before') ?></th>
+                        <th><?= __('changelog.after') ?></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -293,18 +293,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const changes = JSON.parse(this.dataset.changes);
             changesTable.innerHTML = '';
 
+            function esc(text) {
+                const d = document.createElement('div');
+                d.textContent = String(text);
+                return d.innerHTML;
+            }
+
             for (const [field, values] of Object.entries(changes)) {
                 const row = document.createElement('tr');
                 if (typeof values === 'object' && values.old !== undefined) {
                     row.innerHTML = `
-                        <td><strong>${field}</strong></td>
-                        <td class="text-muted">${values.old || '-'}</td>
-                        <td>${values.new || '-'}</td>
+                        <td><strong>${esc(field)}</strong></td>
+                        <td class="text-muted">${esc(values.old || '-')}</td>
+                        <td>${esc(values.new || '-')}</td>
                     `;
                 } else {
                     row.innerHTML = `
-                        <td><strong>${field}</strong></td>
-                        <td colspan="2">${typeof values === 'object' ? JSON.stringify(values) : values}</td>
+                        <td><strong>${esc(field)}</strong></td>
+                        <td colspan="2">${esc(typeof values === 'object' ? JSON.stringify(values) : values)}</td>
                     `;
                 }
                 changesTable.appendChild(row);

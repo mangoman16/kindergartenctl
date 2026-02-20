@@ -53,6 +53,7 @@ class CategoryController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Category.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
 
         $data = [
             'name' => trim($this->getPost('name', '')),
@@ -82,14 +83,14 @@ class CategoryController extends Controller
         $categoryId = Category::create($data);
 
         if (!$categoryId) {
-            Session::setFlash('error', 'Fehler beim Erstellen der Altersgruppe.');
+            Session::setFlash('error', __('flash.error_generic'));
             Session::setOldInput($data);
             $this->redirect('/categories/create');
             return;
         }
 
         // Log change
-        $this->logChange('category', $categoryId, $data['name'], 'create', $data);
+        ChangelogService::getInstance()->logCreate('category', $categoryId, $data['name'], $data);
 
         Session::setFlash('success', __('flash.created', ['item' => __('category.title')]));
         $this->redirect('/categories');
@@ -105,7 +106,7 @@ class CategoryController extends Controller
         $category = Category::find((int)$id);
 
         if (!$category) {
-            Session::setFlash('error', 'Altersgruppe nicht gefunden.');
+            Session::setFlash('error', __('category.not_found'));
             $this->redirect('/categories');
             return;
         }
@@ -128,11 +129,12 @@ class CategoryController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Category.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
 
         $category = Category::find((int)$id);
 
         if (!$category) {
-            Session::setFlash('error', 'Altersgruppe nicht gefunden.');
+            Session::setFlash('error', __('category.not_found'));
             $this->redirect('/categories');
             return;
         }
@@ -161,16 +163,15 @@ class CategoryController extends Controller
             return;
         }
 
-        // Track changes
-        $changes = $this->getChanges($category, $data);
+        // Track changes for changelog
+        $changelog = ChangelogService::getInstance();
+        $changes = $changelog->getChanges($category, $data, ['name', 'description', 'sort_order', 'image_path']);
 
         // Update category
         Category::update((int)$id, $data);
 
-        // Log change
-        if (!empty($changes)) {
-            $this->logChange('category', (int)$id, $data['name'], 'update', $changes);
-        }
+        // Log change if there were any
+        $changelog->logUpdate('category', (int)$id, $data['name'], $changes);
 
         Session::setFlash('success', __('flash.updated', ['item' => __('category.title')]));
         $this->redirect('/categories');
@@ -187,7 +188,7 @@ class CategoryController extends Controller
         $category = Category::findWithGameCount((int)$id);
 
         if (!$category) {
-            Session::setFlash('error', 'Altersgruppe nicht gefunden.');
+            Session::setFlash('error', __('category.not_found'));
             $this->redirect('/categories');
             return;
         }
@@ -199,7 +200,7 @@ class CategoryController extends Controller
         $this->render('categories/print', [
             'category' => $category,
             'games' => $games,
-            'printTitle' => 'Spieleliste: ' . $category['name'],
+            'printTitle' => __('print.game_list') . ': ' . $category['name'],
         ]);
     }
 
@@ -211,97 +212,29 @@ class CategoryController extends Controller
         $this->requireCsrf();
 
         require_once SRC_PATH . '/models/Category.php';
+        require_once SRC_PATH . '/services/ChangelogService.php';
+        require_once SRC_PATH . '/services/ImageProcessor.php';
 
         $category = Category::find((int)$id);
 
         if (!$category) {
-            Session::setFlash('error', 'Altersgruppe nicht gefunden.');
+            Session::setFlash('error', __('category.not_found'));
             $this->redirect('/categories');
             return;
         }
 
         // Log change before deletion
-        $this->logChange('category', (int)$id, $category['name'], 'delete', $category);
+        ChangelogService::getInstance()->logDelete('category', (int)$id, $category['name'], $category);
 
         // Delete category (game_categories entries will be deleted due to foreign key)
         Category::delete((int)$id);
 
         // Delete image if exists
         if ($category['image_path']) {
-            $this->deleteImage($category['image_path']);
+            (new ImageProcessor())->delete($category['image_path']);
         }
 
         Session::setFlash('success', __('flash.deleted', ['item' => __('category.title')]));
         $this->redirect('/categories');
-    }
-
-    /**
-     * Log a change to the changelog
-     */
-    private function logChange(string $entityType, int $entityId, string $entityName, string $action, array $data): void
-    {
-        try {
-            $db = Database::getInstance();
-            $userId = Auth::id();
-
-            $stmt = $db->prepare("
-                INSERT INTO changelog (user_id, entity_type, entity_id, entity_name, action, changes)
-                VALUES (:user_id, :entity_type, :entity_id, :entity_name, :action, :changes)
-            ");
-
-            $stmt->execute([
-                'user_id' => $userId,
-                'entity_type' => $entityType,
-                'entity_id' => $entityId,
-                'entity_name' => $entityName,
-                'action' => $action,
-                'changes' => json_encode($data, JSON_UNESCAPED_UNICODE),
-            ]);
-        } catch (Exception $e) {
-            Logger::error('Failed to log change', [
-                'error' => $e->getMessage(),
-                'entity_type' => $entityType,
-                'entity_id' => $entityId
-            ]);
-        }
-    }
-
-    /**
-     * Get changes between old and new data
-     */
-    private function getChanges(array $old, array $new): array
-    {
-        $changes = [];
-        $trackFields = ['name', 'description', 'sort_order', 'image_path'];
-
-        foreach ($trackFields as $field) {
-            $oldValue = $old[$field] ?? '';
-            $newValue = $new[$field] ?? '';
-
-            if ((string)$oldValue !== (string)$newValue) {
-                $changes[$field] = [
-                    'old' => $oldValue,
-                    'new' => $newValue,
-                ];
-            }
-        }
-
-        return $changes;
-    }
-
-    /**
-     * Delete an image file
-     */
-    private function deleteImage(string $path): void
-    {
-        $fullPath = UPLOADS_PATH . '/' . $path;
-        if (file_exists($fullPath)) {
-            unlink($fullPath);
-        }
-
-        $thumbPath = str_replace('/full/', '/thumbs/', $fullPath);
-        if (file_exists($thumbPath)) {
-            unlink($thumbPath);
-        }
     }
 }

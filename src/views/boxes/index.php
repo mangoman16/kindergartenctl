@@ -15,13 +15,13 @@
 <div class="card mb-6">
     <div class="card-body" style="padding: var(--spacing-3) var(--spacing-5);">
         <div class="flex items-center gap-4">
-            <span class="text-sm text-muted">Sortieren nach:</span>
+            <span class="text-sm text-muted"><?= __('box.sort_by') ?></span>
             <?php
             $sortOptions = [
-                'name' => 'Name',
-                'number' => 'Nummer',
-                'location' => 'Standort',
-                'created_at' => 'Datum',
+                'name' => __('box.sort_name'),
+                'number' => __('box.sort_number'),
+                'location' => __('box.sort_location'),
+                'created_at' => __('box.sort_date'),
             ];
             foreach ($sortOptions as $key => $label):
                 $isActive = $currentSort === $key;
@@ -57,8 +57,8 @@
                     <path d="M12 22V12"></path>
                 </svg>
             </div>
-            <h3 class="empty-state-title">Noch keine Boxen vorhanden</h3>
-            <p class="empty-state-text">Erstellen Sie Ihre erste Box, um Materialien zu organisieren.</p>
+            <h3 class="empty-state-title"><?= __('box.empty_title') ?></h3>
+            <p class="empty-state-text"><?= __('box.empty_text') ?></p>
             <a href="<?= url('/boxes/create') ?>" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>

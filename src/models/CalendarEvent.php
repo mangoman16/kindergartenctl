@@ -25,6 +25,8 @@ class CalendarEvent extends Model
         'color',
         'game_id',
         'group_id',
+        'event_type',
+        'notes',
     ];
 
     /**

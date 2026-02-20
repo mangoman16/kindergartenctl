@@ -418,9 +418,9 @@ class ChangelogService
     public static function getActionLabel(string $action): string
     {
         return match($action) {
-            'create' => 'Erstellt',
-            'update' => 'Aktualisiert',
-            'delete' => 'Gelöscht',
+            'create' => __('changelog.action.create'),
+            'update' => __('changelog.action.update'),
+            'delete' => __('changelog.action.delete'),
             default => ucfirst($action),
         };
     }
@@ -437,14 +437,14 @@ class ChangelogService
     public static function getEntityTypeLabel(string $entityType): string
     {
         return match($entityType) {
-            'game' => 'Spiel',
-            'box' => 'Box',
-            'category' => 'Altersgruppe',
-            'tag' => 'Thema',
-            'material' => 'Material',
-            'group' => 'Gruppe',
-            'event' => 'Termin',
-            'user' => 'Benutzer',
+            'game' => __('changelog.entity.game'),
+            'box' => __('changelog.entity.box'),
+            'category' => __('changelog.entity.category'),
+            'tag' => __('changelog.entity.tag'),
+            'material' => __('changelog.entity.material'),
+            'group' => __('changelog.entity.group'),
+            'event' => __('changelog.entity.event'),
+            'user' => __('changelog.entity.user'),
             default => ucfirst($entityType),
         };
     }
@@ -507,21 +507,21 @@ class ChangelogService
     private static function getFieldLabel(string $field): string
     {
         return match($field) {
-            'name' => 'Name',
-            'description' => 'Beschreibung',
-            'color' => 'Farbe',
-            'image_path' => 'Bild',
-            'location' => 'Standort',
-            'label' => 'Etikett',
-            'sort_order' => 'Sortierung',
-            'min_players' => 'Min. Spieler',
-            'max_players' => 'Max. Spieler',
-            'duration_minutes' => 'Dauer',
-            'instructions' => 'Anleitung',
-            'is_outdoor' => 'Outdoor',
-            'is_active' => 'Aktiv',
-            'box_id' => 'Box',
-            'category_id' => 'Altersgruppe',
+            'name' => __('changelog.field.name'),
+            'description' => __('changelog.field.description'),
+            'color' => __('changelog.field.color'),
+            'image_path' => __('changelog.field.image'),
+            'location' => __('changelog.field.location'),
+            'label' => __('changelog.field.label'),
+            'sort_order' => __('changelog.field.sort_order'),
+            'min_players' => __('changelog.field.min_players'),
+            'max_players' => __('changelog.field.max_players'),
+            'duration_minutes' => __('changelog.field.duration'),
+            'instructions' => __('changelog.field.instructions'),
+            'is_outdoor' => __('changelog.field.is_outdoor'),
+            'is_active' => __('changelog.field.is_active'),
+            'box_id' => __('changelog.field.box'),
+            'category_id' => __('changelog.field.category'),
             default => ucfirst(str_replace('_', ' ', $field)),
         };
     }

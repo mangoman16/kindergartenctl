@@ -10,7 +10,12 @@
             <h2 class="settings-section-title"><?= __('settings.theme_color') ?></h2>
 
             <?php
-            $colors = ['#4F46E5', '#EC4899', '#F59E0B', '#22C55E', '#3B82F6', '#8B5CF6', '#EF4444', '#14B8A6'];
+            $colors = [
+                '#4F46E5', '#6366F1', '#8B5CF6', '#A855F7',
+                '#EC4899', '#F43F5E', '#EF4444', '#F97316',
+                '#F59E0B', '#EAB308', '#22C55E', '#10B981',
+                '#14B8A6', '#06B6D4', '#3B82F6', '#6B7280',
+            ];
             $currentColor = userPreference('theme_color', '#4F46E5');
             ?>
 
@@ -43,7 +48,7 @@
 
             <div class="pattern-picker">
                 <?php
-                $patterns = ['none', 'dots', 'stars', 'hearts', 'clouds'];
+                $patterns = ['none', 'dots', 'stars', 'hearts', 'clouds', 'grid', 'waves'];
                 $currentPattern = userPreference('theme_pattern', 'none');
                 ?>
                 <?php foreach ($patterns as $pattern): ?>
@@ -54,6 +59,53 @@
                     </label>
                 <?php endforeach; ?>
             </div>
+        </div>
+
+        <div class="settings-section">
+            <h2 class="settings-section-title"><?= __('settings.font_size') ?></h2>
+            <p class="settings-hint"><?= __('settings.font_size_hint') ?></p>
+
+            <?php $currentFontSize = userPreference('font_size', 'medium'); ?>
+            <div class="font-size-picker">
+                <?php foreach (['small', 'medium', 'large'] as $size): ?>
+                    <label class="font-size-option <?= $currentFontSize === $size ? 'active' : '' ?>">
+                        <input type="radio" name="font_size" value="<?= $size ?>" <?= $currentFontSize === $size ? 'checked' : '' ?>>
+                        <span class="font-size-preview font-size-<?= $size ?>"><?= __('settings.font_' . $size) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2 class="settings-section-title"><?= __('settings.sidebar_mode') ?></h2>
+            <p class="settings-hint"><?= __('settings.sidebar_mode_hint') ?></p>
+
+            <?php $compactSidebar = userPreference('compact_sidebar', 'no'); ?>
+            <div class="toggle-group">
+                <label class="toggle-option <?= $compactSidebar === 'no' ? 'active' : '' ?>">
+                    <input type="radio" name="compact_sidebar" value="no" <?= $compactSidebar === 'no' ? 'checked' : '' ?>>
+                    <span><?= __('settings.sidebar_normal') ?></span>
+                </label>
+                <label class="toggle-option <?= $compactSidebar === 'yes' ? 'active' : '' ?>">
+                    <input type="radio" name="compact_sidebar" value="yes" <?= $compactSidebar === 'yes' ? 'checked' : '' ?>>
+                    <span><?= __('settings.sidebar_compact') ?></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2 class="settings-section-title"><?= __('settings.default_page') ?></h2>
+            <p class="settings-hint"><?= __('settings.default_page_hint') ?></p>
+
+            <?php $defaultPage = userPreference('default_page', '/'); ?>
+            <select name="default_page" class="form-control" style="max-width: 300px;">
+                <option value="/" <?= $defaultPage === '/' ? 'selected' : '' ?>><?= __('nav.dashboard') ?></option>
+                <option value="/games" <?= $defaultPage === '/games' ? 'selected' : '' ?>><?= __('nav.games') ?></option>
+                <option value="/materials" <?= $defaultPage === '/materials' ? 'selected' : '' ?>><?= __('nav.materials') ?></option>
+                <option value="/boxes" <?= $defaultPage === '/boxes' ? 'selected' : '' ?>><?= __('nav.boxes') ?></option>
+                <option value="/calendar" <?= $defaultPage === '/calendar' ? 'selected' : '' ?>><?= __('nav.calendar') ?></option>
+                <option value="/groups" <?= $defaultPage === '/groups' ? 'selected' : '' ?>><?= __('nav.groups') ?></option>
+            </select>
         </div>
 
         <div class="settings-actions">
@@ -93,31 +145,92 @@
         });
     });
 
-    // On form submit, always ensure a theme_color value is submitted
+    // On form submit, apply changes immediately via AJAX and update CSS live
     document.querySelector('.settings-page form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
         var checked = document.querySelector('input[name="theme_color"]:checked');
-        if (!checked) {
-            // No preset selected - use the current picker/text value
-            var val = textInput.value.trim();
-            if (!(/^#[0-9A-Fa-f]{6}$/.test(val))) {
-                val = picker.value; // Fallback to native picker value
+        var colorVal;
+        if (checked) {
+            colorVal = checked.value;
+        } else {
+            colorVal = textInput.value.trim();
+            if (!(/^#[0-9A-Fa-f]{6}$/.test(colorVal))) {
+                colorVal = picker.value;
             }
-            // Remove any previously appended hidden input
+        }
+
+        var patternChecked = document.querySelector('input[name="theme_pattern"]:checked');
+        var patternVal = patternChecked ? patternChecked.value : 'none';
+
+        // Apply changes immediately in browser
+        document.documentElement.style.setProperty('--color-primary', colorVal);
+        document.documentElement.style.setProperty('--color-primary-dark', colorVal + 'cc');
+        document.documentElement.style.setProperty('--color-primary-light', colorVal + '88');
+        document.documentElement.style.setProperty('--color-primary-bg', colorVal + '11');
+        document.body.setAttribute('data-pattern', patternVal);
+
+        // Apply font size
+        var fontChecked = document.querySelector('input[name="font_size"]:checked');
+        if (fontChecked) {
+            document.documentElement.setAttribute('data-font-size', fontChecked.value);
+        }
+
+        // Submit form normally (server-side save)
+        if (!checked) {
             var existing = this.querySelector('input[type="hidden"][name="theme_color"]');
             if (existing) existing.remove();
-
             var hidden = document.createElement('input');
             hidden.type = 'hidden';
             hidden.name = 'theme_color';
-            hidden.value = val;
+            hidden.value = colorVal;
             this.appendChild(hidden);
         }
+
+        // Submit via fetch so we can control the redirect
+        var formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        }).then(function() {
+            // Show success feedback without full reload
+            var btn = document.querySelector('.settings-actions .btn-primary');
+            var originalText = btn.textContent;
+            btn.textContent = '<?= __('settings.saved') ?>';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            setTimeout(function() {
+                btn.textContent = originalText;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-primary');
+            }, 2000);
+        }).catch(function() {
+            // Fallback: submit normally
+            e.target.submit();
+        });
     });
 
     document.querySelectorAll('.pattern-option input').forEach(function(input) {
         input.addEventListener('change', function() {
             document.querySelectorAll('.pattern-option').forEach(function(o) { o.classList.remove('active'); });
             if (this.checked) this.closest('.pattern-option').classList.add('active');
+        });
+    });
+
+    // Font size picker
+    document.querySelectorAll('.font-size-option input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            document.querySelectorAll('.font-size-option').forEach(function(o) { o.classList.remove('active'); });
+            if (this.checked) this.closest('.font-size-option').classList.add('active');
+        });
+    });
+
+    // Toggle group
+    document.querySelectorAll('.toggle-group input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            var group = this.closest('.toggle-group');
+            group.querySelectorAll('.toggle-option').forEach(function(o) { o.classList.remove('active'); });
+            if (this.checked) this.closest('.toggle-option').classList.add('active');
         });
     });
 })();

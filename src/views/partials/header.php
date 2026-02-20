@@ -1,17 +1,5 @@
 <?php
-$searchPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-$searchContext = 'all';
-$searchPlaceholder = __('search.placeholder');
-if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') === 0 || strpos($searchPath, '/tags') === 0 || strpos($searchPath, '/groups') === 0) {
-    $searchContext = 'game';
-    $searchPlaceholder = __('search.placeholder') . ' (' . __('nav.games') . ')';
-} elseif (strpos($searchPath, '/materials') === 0) {
-    $searchContext = 'material';
-    $searchPlaceholder = __('search.placeholder') . ' (' . __('nav.materials') . ')';
-} elseif (strpos($searchPath, '/boxes') === 0 || strpos($searchPath, '/locations') === 0) {
-    $searchContext = 'box';
-    $searchPlaceholder = __('search.placeholder') . ' (' . __('nav.boxes') . ')';
-}
+$searchPlaceholder = __('search.global_placeholder');
 ?>
 <header class="top-header">
     <button class="search-trigger" id="searchTrigger">
@@ -89,8 +77,16 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="text" id="searchPaletteInput" placeholder="<?= e($searchPlaceholder) ?>" autocomplete="off" data-context="<?= $searchContext ?>">
+            <input type="text" id="searchPaletteInput" placeholder="<?= e($searchPlaceholder) ?>" autocomplete="off">
             <kbd class="search-palette-esc">Esc</kbd>
+        </div>
+        <div class="search-palette-filters" id="searchFilters">
+            <button type="button" class="search-filter-chip active" data-type="all"><?= __('search.all') ?></button>
+            <button type="button" class="search-filter-chip" data-type="game"><?= __('nav.games') ?></button>
+            <button type="button" class="search-filter-chip" data-type="material"><?= __('nav.materials') ?></button>
+            <button type="button" class="search-filter-chip" data-type="box"><?= __('nav.boxes') ?></button>
+            <button type="button" class="search-filter-chip" data-type="tag"><?= __('nav.tags') ?></button>
+            <button type="button" class="search-filter-chip" data-type="group"><?= __('nav.groups') ?></button>
         </div>
         <div class="search-palette-body" id="searchPaletteBody">
             <div class="search-palette-hint">
@@ -173,23 +169,23 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
         document.body.classList.add('sidebar-collapsed');
     }
 
-    // Restore sidebar section on pages without a context sidebar (e.g. home)
+    // Restore sidebar section on pages without their own context section
     if (contextSidebar && !sidebarCollapsed) {
-        if (!contextSidebar.classList.contains('open')) {
+        var activeSection = contextSidebar.dataset.active;
+        var hasVisibleSection = contextSidebar.querySelector('.ctx-section.visible');
+
+        if (!hasVisibleSection) {
+            // No section visible (e.g. home page) - restore last saved section
             var savedSection = localStorage.getItem('ctxSidebarSection');
             if (savedSection) {
                 var savedTarget = contextSidebar.querySelector('.ctx-section[data-for="' + savedSection + '"]');
                 if (savedTarget) {
                     savedTarget.classList.add('visible');
                     contextSidebar.classList.add('open');
-                    contextSidebar.dataset.active = savedSection;
-                    document.querySelectorAll('.rail-btn[data-section]').forEach(function(b) { b.classList.remove('active'); });
-                    var matchBtn = document.querySelector('.rail-btn[data-section="' + savedSection + '"]');
-                    if (matchBtn) matchBtn.classList.add('active');
                 }
             }
-        } else if (contextSidebar.dataset.active) {
-            localStorage.setItem('ctxSidebarSection', contextSidebar.dataset.active);
+        } else if (activeSection && activeSection !== 'home') {
+            localStorage.setItem('ctxSidebarSection', activeSection);
         }
     }
 
@@ -250,21 +246,26 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
 </script>
 
 <script<?= cspNonce() ?>>
-/* Search Command Palette */
+/* Global Search Command Palette */
 (function() {
     var trigger = document.getElementById('searchTrigger');
     var overlay = document.getElementById('searchPaletteOverlay');
     var palette = document.getElementById('searchPalette');
     var input = document.getElementById('searchPaletteInput');
     var body = document.getElementById('searchPaletteBody');
+    var filtersEl = document.getElementById('searchFilters');
     if (!trigger || !overlay || !input || !body) return;
 
     var debounceTimer = null;
     var currentQuery = '';
-    var searchContext = input.getAttribute('data-context') || 'all';
+    var activeFilter = 'all';
+    var HISTORY_KEY = 'searchHistory';
+    var RECENT_KEY = 'searchRecent';
+    var MAX_HISTORY = 8;
+    var MAX_RECENT = 6;
 
     var typeIcons = {
-        game: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>',
+        game: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>',
         material: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>',
         box: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>',
         tag: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>',
@@ -272,13 +273,85 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
     };
     var typeLabels = { game: '<?= __('game.title') ?>', material: '<?= __('material.title') ?>', box: '<?= __('box.title') ?>', tag: '<?= __('tag.title') ?>', group: '<?= __('group.title') ?>' };
 
+    function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
     function highlightMatch(text, query) {
-        if (!query) return text;
-        return text.replace(new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>');
+        if (!query) return escHtml(text);
+        var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return escHtml(text).replace(new RegExp('(' + escaped + ')', 'gi'), '<mark>$1</mark>');
+    }
+
+    /* --- History & Recent management --- */
+    function getHistory() {
+        try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) { return []; }
+    }
+    function saveHistory(query) {
+        var h = getHistory().filter(function(q) { return q !== query; });
+        h.unshift(query);
+        if (h.length > MAX_HISTORY) h = h.slice(0, MAX_HISTORY);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+    }
+    function getRecent() {
+        try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch(e) { return []; }
+    }
+    function saveRecent(item) {
+        var r = getRecent().filter(function(i) { return i.url !== item.url; });
+        r.unshift({ name: item.name, type: item.type, url: item.url });
+        if (r.length > MAX_RECENT) r = r.slice(0, MAX_RECENT);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(r));
+    }
+    function clearHistory() {
+        localStorage.removeItem(HISTORY_KEY);
+        localStorage.removeItem(RECENT_KEY);
+        showStartScreen();
+    }
+
+    /* --- Render start screen (history + recent) --- */
+    function showStartScreen() {
+        var history = getHistory();
+        var recent = getRecent();
+        if (history.length === 0 && recent.length === 0) {
+            body.innerHTML = '<div class="search-palette-hint"><p><?= __('search.hint') ?></p></div>';
+            return;
+        }
+        var html = '';
+        if (history.length > 0) {
+            html += '<div class="search-palette-section"><div class="search-palette-section-header"><span><?= __('search.recent_searches') ?></span><button type="button" class="search-palette-clear-btn" id="clearSearchHistory"><?= __('action.clear') ?></button></div>';
+            history.forEach(function(q) {
+                html += '<a href="#" class="search-palette-item search-history-item" data-query="' + escHtml(q) + '"><span class="search-palette-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><span class="search-palette-item-content"><span class="search-palette-item-name">' + escHtml(q) + '</span></span></a>';
+            });
+            html += '</div>';
+        }
+        if (recent.length > 0) {
+            html += '<div class="search-palette-section"><div class="search-palette-section-header"><span><?= __('search.recently_found') ?></span></div>';
+            recent.forEach(function(item) {
+                var icon = typeIcons[item.type] || '';
+                var label = typeLabels[item.type] || item.type;
+                html += '<a href="' + escHtml(item.url) + '" class="search-palette-item"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + escHtml(item.name) + '</span><span class="search-palette-item-type">' + label + '</span></span></a>';
+            });
+            html += '</div>';
+        }
+        body.innerHTML = html;
+
+        // Bind clear history button
+        var clearBtn = document.getElementById('clearSearchHistory');
+        if (clearBtn) clearBtn.addEventListener('click', function(e) { e.stopPropagation(); clearHistory(); });
+
+        // Bind history items to re-run search
+        body.querySelectorAll('.search-history-item').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                var q = this.dataset.query;
+                input.value = q;
+                currentQuery = q;
+                performSearch(q);
+            });
+        });
     }
 
     function openPalette() {
         overlay.classList.add('active');
+        showStartScreen();
         setTimeout(function() { input.focus(); }, 50);
     }
 
@@ -286,37 +359,102 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
         overlay.classList.remove('active');
         input.value = '';
         currentQuery = '';
-        body.innerHTML = '<div class="search-palette-hint"><p><?= __('search.hint') ?></p></div>';
+        activeFilter = 'all';
+        filtersEl.querySelectorAll('.search-filter-chip').forEach(function(c) { c.classList.remove('active'); });
+        filtersEl.querySelector('[data-type="all"]').classList.add('active');
     }
 
     function showResults(results, query, moreUrl) {
-        if (results.length === 0) {
+        // Filter by active type filter
+        var filtered = activeFilter === 'all' ? results : results.filter(function(r) { return r.type === activeFilter; });
+
+        if (filtered.length === 0) {
             body.innerHTML = '<div class="search-palette-empty"><?= __('search.no_results') ?></div>';
             return;
         }
-        var html = '<div class="search-palette-results">';
-        results.forEach(function(item, idx) {
-            var icon = typeIcons[item.type] || '';
-            var label = typeLabels[item.type] || item.type;
-            var colorDot = item.color ? '<span class="color-dot" style="background:' + item.color + '"></span>' : '';
-            html += '<a href="' + item.url + '" class="search-palette-item' + (idx === 0 ? ' active' : '') + '"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + colorDot + highlightMatch(item.name, query) + '</span><span class="search-palette-item-type">' + label + '</span></span></a>';
+
+        // Group by type
+        var grouped = {};
+        filtered.forEach(function(item) {
+            if (!grouped[item.type]) grouped[item.type] = [];
+            grouped[item.type].push(item);
         });
-        html += '</div>';
-        html += '<a href="' + moreUrl + '" class="search-palette-more"><?= __('search.show_all') ?></a>';
+
+        var html = '';
+        var firstItem = true;
+        Object.keys(grouped).forEach(function(type) {
+            var label = typeLabels[type] || type;
+            html += '<div class="search-palette-section"><div class="search-palette-section-header"><span>' + label + '</span></div>';
+            grouped[type].forEach(function(item) {
+                var icon = typeIcons[item.type] || '';
+                var colorDot = item.color ? '<span class="color-dot" style="background:' + escHtml(item.color) + '"></span>' : '';
+                html += '<a href="' + escHtml(item.url) + '" class="search-palette-item' + (firstItem ? ' active' : '') + '" data-result-name="' + escHtml(item.name) + '" data-result-type="' + escHtml(item.type) + '" data-result-url="' + escHtml(item.url) + '"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + colorDot + highlightMatch(item.name, query) + '</span><span class="search-palette-item-type">' + label + '</span></span></a>';
+                firstItem = false;
+            });
+            html += '</div>';
+        });
+
+        // Update filter chip counts
+        var allTypes = ['game', 'material', 'box', 'tag', 'group'];
+        allTypes.forEach(function(t) {
+            var chip = filtersEl.querySelector('[data-type="' + t + '"]');
+            var count = results.filter(function(r) { return r.type === t; }).length;
+            if (chip) {
+                var countSpan = chip.querySelector('.filter-count');
+                if (count > 0) {
+                    if (!countSpan) { countSpan = document.createElement('span'); countSpan.className = 'filter-count'; chip.appendChild(countSpan); }
+                    countSpan.textContent = count;
+                } else if (countSpan) {
+                    countSpan.remove();
+                }
+            }
+        });
+
         body.innerHTML = html;
+
+        // Track clicked items as recent
+        body.querySelectorAll('.search-palette-item').forEach(function(el) {
+            el.addEventListener('click', function() {
+                saveRecent({ name: this.dataset.resultName, type: this.dataset.resultType, url: this.dataset.resultUrl });
+                saveHistory(query);
+            });
+        });
     }
+
+    var lastResults = [];
+    var lastQuery = '';
+    var lastMoreUrl = '';
 
     function performSearch(query) {
         if (query.length < 2) {
-            body.innerHTML = '<div class="search-palette-hint"><p><?= __('search.hint') ?></p></div>';
+            showStartScreen();
             return;
         }
+        body.innerHTML = '<div class="search-palette-hint"><p><?= __('misc.loading') ?></p></div>';
         var url = '/api/search?q=' + encodeURIComponent(query);
-        if (searchContext !== 'all') url += '&context=' + encodeURIComponent(searchContext);
         fetch(url).then(function(r) { return r.json(); }).then(function(data) {
-            if (query === currentQuery) showResults(data.results, data.query, data.more_url);
+            if (query === currentQuery) {
+                lastResults = data.results;
+                lastQuery = data.query;
+                lastMoreUrl = data.more_url;
+                showResults(data.results, data.query, data.more_url);
+                saveHistory(query);
+            }
         }).catch(function() {});
     }
+
+    /* --- Filter chips --- */
+    filtersEl.querySelectorAll('.search-filter-chip').forEach(function(chip) {
+        chip.addEventListener('click', function() {
+            filtersEl.querySelectorAll('.search-filter-chip').forEach(function(c) { c.classList.remove('active'); });
+            this.classList.add('active');
+            activeFilter = this.dataset.type;
+            // Re-render results with current filter
+            if (lastResults.length > 0 && currentQuery.length >= 2) {
+                showResults(lastResults, lastQuery, lastMoreUrl);
+            }
+        });
+    });
 
     // Trigger button opens palette
     trigger.addEventListener('click', openPalette);
@@ -340,7 +478,8 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
         currentQuery = q;
         clearTimeout(debounceTimer);
         if (q.length < 2) {
-            body.innerHTML = '<div class="search-palette-hint"><p><?= __('search.hint') ?></p></div>';
+            lastResults = [];
+            showStartScreen();
             return;
         }
         debounceTimer = setTimeout(function() { performSearch(q); }, 200);
@@ -349,22 +488,30 @@ if (strpos($searchPath, '/games') === 0 || strpos($searchPath, '/categories') ==
     // Keyboard navigation
     input.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') { closePalette(); return; }
-        var items = body.querySelectorAll('.search-palette-item, .search-palette-more');
+        var items = body.querySelectorAll('.search-palette-item');
         var activeItem = body.querySelector('.search-palette-item.active');
         var ci = Array.from(items).indexOf(activeItem);
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             if (activeItem) activeItem.classList.remove('active');
             ci = (ci + 1) % items.length;
-            if (items[ci]) items[ci].classList.add('active');
+            if (items[ci]) { items[ci].classList.add('active'); items[ci].scrollIntoView({ block: 'nearest' }); }
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             if (activeItem) activeItem.classList.remove('active');
             ci = ci <= 0 ? items.length - 1 : ci - 1;
-            if (items[ci]) items[ci].classList.add('active');
+            if (items[ci]) { items[ci].classList.add('active'); items[ci].scrollIntoView({ block: 'nearest' }); }
         } else if (e.key === 'Enter' && activeItem) {
             e.preventDefault();
-            window.location.href = activeItem.href;
+            if (activeItem.classList.contains('search-history-item')) {
+                var q = activeItem.dataset.query;
+                input.value = q;
+                currentQuery = q;
+                performSearch(q);
+            } else {
+                saveRecent({ name: activeItem.dataset.resultName, type: activeItem.dataset.resultType, url: activeItem.dataset.resultUrl });
+                window.location.href = activeItem.href;
+            }
         }
     });
 })();

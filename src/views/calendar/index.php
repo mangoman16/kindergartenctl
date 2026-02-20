@@ -32,7 +32,7 @@
             </div>
             <?php if (empty($upcoming)): ?>
                 <div class="card-body">
-                    <p class="text-muted text-sm">Keine kommenden Termine.</p>
+                    <p class="text-muted text-sm"><?= __('calendar.no_upcoming') ?></p>
                 </div>
             <?php else: ?>
                 <div class="card-body p-0">
@@ -47,12 +47,12 @@
                                     <div class="event-title"><?= e($event['title']) ?></div>
                                     <?php if ($event['game_name']): ?>
                                         <div class="event-meta text-muted text-sm">
-                                            Spiel: <?= e($event['game_name']) ?>
+                                            <?= __('calendar.game_label') ?> <?= e($event['game_name']) ?>
                                         </div>
                                     <?php endif; ?>
                                     <?php if ($event['group_name']): ?>
                                         <div class="event-meta text-muted text-sm">
-                                            Gruppe: <?= e($event['group_name']) ?>
+                                            <?= __('calendar.group_label') ?> <?= e($event['group_name']) ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -66,25 +66,25 @@
         <!-- Legend -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Farben</h2>
+                <h2 class="card-title"><?= __('calendar.colors') ?></h2>
             </div>
             <div class="card-body">
                 <div class="legend-items">
                     <div class="legend-item">
                         <span class="legend-color" style="background: #3788d8;"></span>
-                        Standard
+                        <?= __('calendar.color_default') ?>
                     </div>
                     <div class="legend-item">
                         <span class="legend-color" style="background: #22c55e;"></span>
-                        Outdoor
+                        <?= __('calendar.color_outdoor') ?>
                     </div>
                     <div class="legend-item">
                         <span class="legend-color" style="background: #f59e0b;"></span>
-                        Fest/Feier
+                        <?= __('calendar.color_party') ?>
                     </div>
                     <div class="legend-item">
                         <span class="legend-color" style="background: #ef4444;"></span>
-                        Wichtig
+                        <?= __('calendar.color_important') ?>
                     </div>
                 </div>
             </div>
@@ -105,22 +105,22 @@
                 <input type="hidden" name="id" id="event-id">
 
                 <div class="form-group">
-                    <label for="event-title" class="form-label">Titel <span class="required">*</span></label>
+                    <label for="event-title" class="form-label"><?= __('calendar.event_title') ?> <span class="required">*</span></label>
                     <input type="text" id="event-title" name="title" class="form-control" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="event-description" class="form-label">Beschreibung</label>
+                    <label for="event-description" class="form-label"><?= __('calendar.description') ?></label>
                     <textarea id="event-description" name="description" class="form-control" rows="2"></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="form-group">
-                        <label for="event-start" class="form-label">Start <span class="required">*</span></label>
+                        <label for="event-start" class="form-label"><?= __('calendar.start') ?> <span class="required">*</span></label>
                         <input type="datetime-local" id="event-start" name="start_date" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="event-end" class="form-label">Ende</label>
+                        <label for="event-end" class="form-label"><?= __('calendar.end') ?></label>
                         <input type="datetime-local" id="event-end" name="end_date" class="form-control">
                     </div>
                 </div>
@@ -128,24 +128,24 @@
                 <div class="form-group">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" id="event-allday" name="all_day">
-                        <span>Ganztägig</span>
+                        <span><?= __('calendar.all_day') ?></span>
                     </label>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="form-group">
-                        <label for="event-game" class="form-label">Spiel verknüpfen</label>
+                        <label for="event-game" class="form-label"><?= __('calendar.link_game') ?></label>
                         <select id="event-game" name="game_id" class="form-control">
-                            <option value="">-- Kein Spiel --</option>
+                            <option value=""><?= __('calendar.no_game') ?></option>
                             <?php foreach ($games as $game): ?>
                                 <option value="<?= $game['id'] ?>"><?= e($game['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="event-group" class="form-label">Gruppe verknüpfen</label>
+                        <label for="event-group" class="form-label"><?= __('calendar.link_group') ?></label>
                         <select id="event-group" name="group_id" class="form-control">
-                            <option value="">-- Keine Gruppe --</option>
+                            <option value=""><?= __('calendar.no_group') ?></option>
                             <?php foreach ($groups as $group): ?>
                                 <option value="<?= $group['id'] ?>"><?= e($group['name']) ?></option>
                             <?php endforeach; ?>
@@ -154,7 +154,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="event-color" class="form-label">Farbe</label>
+                    <label for="event-color" class="form-label"><?= __('calendar.color') ?></label>
                     <div class="color-options">
                         <label class="color-option">
                             <input type="radio" name="color" value="#3788d8" checked>
@@ -185,11 +185,11 @@
 
                 <div class="form-actions">
                     <button type="button" class="btn btn-danger" id="delete-event-btn" style="display: none;">
-                        Löschen
+                        <?= __('action.delete') ?>
                     </button>
                     <div class="flex-1"></div>
-                    <button type="button" class="btn btn-secondary modal-cancel">Abbrechen</button>
-                    <button type="submit" class="btn btn-primary">Speichern</button>
+                    <button type="button" class="btn btn-secondary modal-cancel"><?= __('action.cancel') ?></button>
+                    <button type="submit" class="btn btn-primary"><?= __('action.save') ?></button>
                 </div>
             </form>
         </div>
@@ -353,7 +353,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('event-modal');
     const form = document.getElementById('event-form');
-    const csrfToken = '<?= e(Session::getCsrfToken()) ?>';
+    const csrfToken = '<?= e($csrfToken) ?>';
     let calendar;
     let currentEvent = null;
 
@@ -503,10 +503,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeModal();
                 location.reload(); // Refresh to update sidebar
             } else {
-                alert(result.error || 'Fehler beim Speichern.');
+                alert(result.error || '<?= __('calendar.save_error') ?>');
             }
         } catch (err) {
-            alert('Fehler beim Speichern.');
+            alert('<?= __('calendar.save_error') ?>');
         }
     });
 
@@ -527,10 +527,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeModal();
                 location.reload();
             } else {
-                alert(result.error || 'Fehler beim Löschen.');
+                alert(result.error || '<?= __('calendar.delete_error') ?>');
             }
         } catch (err) {
-            alert('Fehler beim Löschen.');
+            alert('<?= __('calendar.delete_error') ?>');
         }
     });
 
@@ -555,6 +555,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const d = new Date(date);
         const pad = n => n.toString().padStart(2, '0');
         return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    // Auto-open create modal when ?create=1 is in URL
+    if (new URLSearchParams(window.location.search).get('create') === '1') {
+        const today = new Date();
+        const pad = n => n.toString().padStart(2, '0');
+        const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+        openModal(null, todayStr);
+        // Clean up URL
+        history.replaceState(null, '', window.location.pathname);
     }
 });
 </script>

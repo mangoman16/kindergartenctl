@@ -23,6 +23,7 @@ class Group extends Model
         'name',
         'description',
         'image_path',
+        'notes',
     ];
 
     /**

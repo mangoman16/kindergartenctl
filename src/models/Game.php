@@ -45,6 +45,7 @@ class Game extends Model
         'image_path',
         'box_id',
         'category_id',
+        'notes',
     ];
 
     /**
@@ -135,10 +136,12 @@ class Game extends Model
 
         $stmt = $db->prepare("
             SELECT g.*,
-                   b.name as box_name, b.label as box_label, b.location as box_location,
+                   b.name as box_name, b.label as box_label,
+                   COALESCE(l.name, b.location) as box_location,
                    c.name as category_name
             FROM games g
             LEFT JOIN boxes b ON b.id = g.box_id
+            LEFT JOIN locations l ON l.id = b.location_id
             LEFT JOIN categories c ON c.id = g.category_id
             WHERE g.id = :id
         ");

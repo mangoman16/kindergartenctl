@@ -216,6 +216,114 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Header rewritten: partials/header.php now includes help toggle, dark mode toggle, search
 - [x] Translation keys added for all new features (de + en)
 
+### February 2026 - Bug Fixes & Search Overhaul
+- [x] Fixed image upload/cropping stuck on "Bild zuschneiden" (WebP→JPEG fallback, error handling)
+- [x] Fixed calendar quick-create 404 (/calendar/create → /calendar?create=1 with auto-open modal)
+- [x] Fixed customization settings cache issue (AJAX save + live CSS variable update)
+- [x] Fixed game detail view: location query (JOIN locations table), modal backdrop (position:fixed), dark mode (var(--color-white))
+- [x] Added missing `notes` to $fillable in 6 models (Game, CalendarEvent, Category, Tag, Group, Location)
+- [x] Added `event_type` to CalendarEvent $fillable
+- [x] Moved changelog from icon rail to settings menu page
+- [x] Made game index filters collapsible behind toggle button with active filter count badge
+- [x] Fixed undefined CSS variable --color-yellow-100 (search highlight)
+- [x] Added dark mode overrides for: detail-list, mini-cal-popover, dash-picker-select, form-error, empty-state, page-footer, tag-badge
+- [x] Overhauled search to fully global: removed context detection, equalized result limits, added filter chips, search history (localStorage), recently found items
+- [x] Replaced hardcoded German strings with __() translation keys in dashboard, games index, game show, game form
+- [x] Added new translation keys to de.php and en.php (dashboard.no_*, misc.from/to/not_specified, game.minutes/inactive/outdoor, group.add_to/select, search.global_placeholder/recent_searches/recently_found, misc.favorites_only)
+
+### February 2026 - Frontend Polish & i18n Completion
+- [x] Fixed broken duplicate-check API route (POST to GET-only route, silently failed on all forms)
+- [x] Added dark mode overrides for: icon rail, context sidebar, top header, user dropdown, help panel, card footer, form labels, breadcrumbs, pagination, modals, badges, filter toggles, changelog tables
+- [x] Removed duplicate dark mode CSS rule for search palette mark highlight
+- [x] Added `@media (max-width: 480px)` mobile breakpoint (reduced padding, single-column grids, smaller min-widths)
+- [x] Added `response.ok` checks to all fetch calls in games/show.php and materials/show.php
+- [x] Added Escape key handler to close modals in games/show.php and materials/show.php
+- [x] Replaced hardcoded German strings in changelog/index.php (filters, table headers, pagination, purge section, details modal)
+- [x] Replaced hardcoded German strings in calendar/index.php (legend, modal form labels, buttons, error messages)
+- [x] Replaced hardcoded German strings in materials/index.php (bulk actions, badges, modal, tooltips, JS alerts)
+- [x] Replaced hardcoded German strings in games/index.php (bulk actions, modal, count text, JS alerts)
+- [x] Replaced hardcoded German strings in boxes/index.php (sort labels, empty state)
+- [x] Replaced hardcoded German strings in materials/show.php (modal, favorite text, JS alerts)
+- [x] Replaced hardcoded German strings in categories/index.php, tags/index.php, groups/index.php (empty states)
+- [x] Replaced hardcoded "Keine Box" and "Keine Termine" in dashboard/index.php
+- [x] Added 80+ new translation keys to de.php and en.php (bulk.*, calendar.*, changelog.*, pagination.*, material.empty_*, box.sort_*, game.basic_info/details/found, flash.added_to_group/error_generic, misc.no_box/no_description)
+
+### February 2026 - Debugging & Comprehensive Audit
+- [x] Refactored CategoryController, TagController, LocationController to use ChangelogService + ImageProcessor
+- [x] Complete i18n: translated all hardcoded German strings across 9 controllers (GameController, MaterialController, GroupController, CalendarController, SettingsController, ApiController, ChangelogController, BoxController, LocationController)
+- [x] Complete i18n for form views and show pages (games, materials, boxes, categories, tags, groups)
+- [x] Added JS translation system (window.AppTranslations from layout, t() helper in app.js)
+- [x] Fixed favorite toggle URL bug (missing ID in URL path)
+- [x] Fixed all hardcoded German strings in app.js (14 strings → i18n via AppTranslations)
+- [x] Fixed hardcoded `lang="de"` in main.php layout (now uses user language preference)
+- [x] Fixed Controller.php: requireAuth() and requireCsrf() now use __() translations
+- [x] Fixed Router.php: 404 handler now uses __() translations
+- [x] Fixed 4 XSS vulnerabilities (innerHTML with unescaped API data in games/index, materials/index, groups/form, changelog/index)
+- [x] Fixed ImageProcessor::isValidCropData() - now validates x/y >= 0 and width/height > 0
+- [x] Fixed SQL direction parameter injection in LocationController and BoxController (whitelist validation)
+- [x] Fixed Box.php GROUP BY clause (added l.id for SQL strict mode compliance)
+- [x] Added 6 missing indexes on FK columns (games.box_id, games.category_id, materials.box_id, calendar_events.game_id/group_id, changelog.user_id)
+- [x] Added 30+ new translation keys to de.php and en.php (js.*, auth.*, error.404_*, changelog.entries_deleted)
+
+### February 2026 - Frontend Security Audit & Fixes
+- [x] Fixed 4 XSS vulnerabilities: innerHTML with unescaped group.name (games/index, materials/index), materialName (games/form), gameName/materialName (groups/form), changelog fields (changelog/index)
+- [x] Added error handling to bulk group loading fetch calls (games/index, materials/index) with try/catch, response.ok checks, and data validation
+- [x] Added null checks for add-material select and materials-list elements (games/form)
+- [x] Added 10-second timeout to canvas.toBlob() callback to prevent frozen crop modal UI
+- [x] Fixed z-index conflict: cropper modal now renders above search palette overlay (z-index 10000)
+- [x] Added dark mode styles for .btn-secondary buttons
+- [x] Added keyboard focus state for .search-trigger button (WCAG accessibility)
+- [x] Added font size preference (small/medium/large) with CSS scaling
+- [x] Added compact sidebar mode preference
+- [x] Added extended color palette (16 presets + custom picker) and 2 new background patterns (grid, waves)
+- [x] Updated BUG_AUDIT.md with 7 new bug entries (BUG-32 through BUG-38)
+- [x] Updated SECURITY_AUDIT.md with frontend XSS finding (SEC-033)
+
+---
+
+## Development Roadmap
+
+### Phase 8: Customization & Personalization (Current)
+- [x] Font size preference (small/medium/large) with CSS scaling
+- [x] Configurable default landing page after login
+- [x] Compact sidebar mode preference
+- [x] Extended color palette (16 preset colors + custom picker)
+- [x] More background patterns (6 total)
+- [ ] Dashboard widget visibility toggles
+- [ ] Per-section default view preference (grid/list)
+
+### Phase 9: Productivity Features (Next)
+- [ ] Keyboard shortcuts overlay (? key)
+- [ ] Quick-add from anywhere (Ctrl+N)
+- [ ] Drag-and-drop group reordering
+- [ ] Batch edit for games/materials
+- [ ] Recent items quick-access in sidebar
+- [ ] Pinned/starred games on dashboard
+- [ ] Notes/annotations on games (per-user)
+
+### Phase 10: Advanced Features
+- [ ] Export to PDF (games, groups, preparation lists)
+- [ ] Import/export data (CSV/JSON)
+- [ ] Calendar recurring events
+- [ ] Calendar week view
+- [ ] Game usage statistics/analytics
+- [ ] Material inventory alerts (low stock)
+- [ ] Activity planner (week/day planning view)
+
+### Phase 11: Mobile & Offline
+- [ ] Progressive Web App (PWA) support
+- [ ] Offline mode with service worker
+- [ ] Touch-optimized mobile UI
+- [ ] Native share/print on mobile
+- [ ] Camera integration for quick image capture
+
+### Phase 12: Collaboration
+- [ ] Multi-user roles (admin, teacher, viewer)
+- [ ] Shared game collections
+- [ ] User activity feed
+- [ ] Comments on games
+- [ ] Notification system
+
 ---
 
 ## Technical Debt / Improvements
@@ -226,6 +334,9 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Add rate limiting for API endpoints (rateLimit method in ApiController)
 - [x] Optimize database queries for large datasets (migration adds composite indexes)
 - [x] Add database migration system (database/Migration.php + migrate.php CLI)
+- [ ] Remove redundant `location` VARCHAR column from boxes table (use only location_id FK)
+- [ ] Refactor DashboardController to use model methods instead of raw queries
+- [ ] Add error logging to Dashboard catch block
 
 ---
 
@@ -289,12 +400,12 @@ All tables from specification are present:
 
 ## Related Documents
 
-- **`SECURITY_AUDIT.md`** - Full security audit with 48 tracked issues, all resolved (0 open)
-- **`BUG_AUDIT.md`** - Complete bug tracking with 34 issues found and fixed
+- **`SECURITY_AUDIT.md`** - Full security audit with 49 tracked issues, all resolved (0 open)
+- **`BUG_AUDIT.md`** - Complete bug tracking with 38 issues found and fixed
 - **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
 - **`project.md`** - Full project specification and database schema
 - **`README.md`** - Installation guide and requirements
 
 ---
 
-*Last updated: 2026-02-11*
+*Last updated: 2026-02-20*
