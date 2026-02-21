@@ -12,7 +12,7 @@
                 </svg>
             </div>
             <h3 class="empty-state-title"><?= __('dashboard.no_games_yet') ?></h3>
-            <p class="empty-state-text">Beginnen Sie damit, Ihr erstes Spiel hinzuzufügen.</p>
+            <p class="empty-state-text"><?= __('dashboard.no_games_yet_text') ?></p>
             <a href="<?= url('/games/create') ?>" class="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -167,7 +167,7 @@
                 <div id="mini-cal-popover" class="mini-cal-popover" style="display:none;">
                     <div class="mini-cal-popover-header">
                         <span id="mini-cal-popover-date"></span>
-                        <button type="button" id="mini-cal-popover-close" class="mini-cal-popover-close" aria-label="Close">&times;</button>
+                        <button type="button" id="mini-cal-popover-close" class="mini-cal-popover-close" aria-label="<?= __('action.close') ?>"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                     </div>
                     <div id="mini-cal-popover-body" class="mini-cal-popover-body"></div>
                 </div>
@@ -246,7 +246,7 @@
     </div>
 
     <!-- Toggle Button for Left Column -->
-    <button type="button" class="dash-col-toggle" id="dashColToggle" title="Seitenleiste ein-/ausblenden">
+    <button type="button" class="dash-col-toggle" id="dashColToggle" title="<?= __('action.toggle_sidebar') ?>">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
 
@@ -366,20 +366,20 @@
 .dash-stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    gap: var(--spacing-4);
+    margin-bottom: 0;
 }
 .dash-stat-card {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: var(--spacing-4);
     background: var(--color-white);
     border-radius: var(--radius-2xl);
-    padding: 1.25rem 1.5rem;
+    padding: var(--spacing-5) var(--spacing-6);
     box-shadow: var(--shadow-sm);
     text-decoration: none;
     color: inherit;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 .dash-stat-card:hover {
     transform: translateY(-2px);
@@ -414,21 +414,21 @@
 .quick-action-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 0.75rem;
-    margin-top: 1.25rem;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-5);
 }
 .quick-action-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.625rem;
-    padding: 1.25rem 0.75rem;
+    gap: var(--spacing-2);
+    padding: var(--spacing-5) var(--spacing-3);
     background: var(--color-white);
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-sm);
     text-decoration: none;
     color: var(--color-gray-700);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 .quick-action-card:hover {
     transform: translateY(-2px);
@@ -455,14 +455,14 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     gap: 0;
-    margin-top: 1.5rem;
+    margin-top: var(--spacing-6);
     align-items: start;
 }
 .dash-col-left {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding-right: 0.5rem;
+    gap: var(--spacing-4);
+    padding-right: var(--spacing-3);
     transition: width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
     overflow: hidden;
 }
@@ -478,8 +478,8 @@
 .dash-col-right {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding-left: 0.5rem;
+    gap: var(--spacing-4);
+    padding-left: var(--spacing-3);
 }
 .dash-col-toggle {
     display: flex;
@@ -492,8 +492,8 @@
     border-radius: var(--radius-lg);
     color: var(--color-gray-400);
     cursor: pointer;
-    margin-top: 1rem;
-    transition: color 0.15s ease, background 0.15s ease;
+    margin-top: var(--spacing-4);
+    transition: color var(--transition-fast), background var(--transition-fast);
     flex-shrink: 0;
     align-self: start;
 }
@@ -527,7 +527,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 1.5rem 0 1.5rem;
+    padding: var(--spacing-5) var(--spacing-6) var(--spacing-3) var(--spacing-6);
 }
 .dash-card-title {
     font-size: var(--font-size-base);
@@ -546,24 +546,24 @@
     opacity: 0.8;
 }
 .dash-card-body {
-    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    padding: var(--spacing-4) var(--spacing-6) var(--spacing-6) var(--spacing-6);
 }
 
 /* === Item Lists (no borders) === */
 .dash-item-list {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: var(--spacing-1);
 }
 .dash-item {
     display: flex;
     align-items: center;
-    gap: 0.875rem;
-    padding: 0.625rem 0.75rem;
+    gap: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-3);
     border-radius: var(--radius-xl);
     text-decoration: none;
     color: inherit;
-    transition: background 0.15s ease;
+    transition: background var(--transition-fast);
 }
 .dash-item:hover {
     background: var(--color-gray-50);
@@ -610,15 +610,15 @@
 .dash-change-list {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: var(--spacing-1);
 }
 .dash-change-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.625rem 0.75rem;
+    gap: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-3);
     border-radius: var(--radius-xl);
-    transition: background 0.15s ease;
+    transition: background var(--transition-fast);
 }
 .dash-change-item:hover {
     background: var(--color-gray-50);
@@ -626,7 +626,7 @@
 .dash-change-badge {
     display: inline-flex;
     align-items: center;
-    padding: 0.2rem 0.6rem;
+    padding: 2px var(--spacing-2);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
     border-radius: var(--radius-full);
@@ -650,7 +650,7 @@
     min-width: 0;
     display: flex;
     align-items: baseline;
-    gap: 0.375rem;
+    gap: var(--spacing-1);
 }
 .dash-change-name {
     font-weight: var(--font-weight-medium);
@@ -679,7 +679,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--spacing-3);
 }
 .mini-cal-arrow {
     display: flex;
@@ -707,7 +707,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    margin-bottom: 0.375rem;
+    margin-bottom: var(--spacing-1);
 }
 .mini-cal-weekdays span {
     font-size: var(--font-size-xs);
@@ -794,12 +794,15 @@
     color: var(--color-gray-800);
 }
 .mini-cal-popover-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
-    font-size: 1.25rem;
     color: var(--color-gray-400);
     cursor: pointer;
-    padding: 0;
+    padding: var(--spacing-1);
+    border-radius: var(--radius-md);
     line-height: 1;
 }
 .mini-cal-popover-close:hover {
@@ -836,7 +839,7 @@
 /* === Random Picker === */
 .dash-picker-filters {
     display: flex;
-    gap: 0.75rem;
+    gap: var(--spacing-3);
 }
 .dash-picker-select {
     flex: 1;
@@ -863,12 +866,12 @@
     box-shadow: 0 0 0 2px var(--color-primary-bg);
 }
 .dash-picker-result {
-    margin-top: 1rem;
+    margin-top: var(--spacing-4);
 }
 .dash-picker-result .dash-item {
     background: var(--color-gray-50);
     border-radius: var(--radius-xl);
-    padding: 0.75rem;
+    padding: var(--spacing-3);
 }
 .dash-picker-result .dash-item:hover {
     background: var(--color-gray-100);
@@ -891,7 +894,7 @@
     }
     .dash-layout {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: var(--spacing-4);
     }
     .dash-col-left {
         padding-right: 0;
@@ -909,13 +912,21 @@
 }
 @media (max-width: 768px) {
     .dash-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .quick-action-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .dash-picker-filters {
+        flex-direction: column;
+    }
+}
+@media (max-width: 480px) {
+    .dash-stats-row {
         grid-template-columns: 1fr;
     }
     .quick-action-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-    .dash-picker-filters {
-        flex-direction: column;
     }
 }
 </style>
@@ -965,10 +976,11 @@ document.addEventListener('DOMContentLoaded', function() {
             eventsCache[ev.date].push(ev);
         });
 
-        var monthNames = [
-            'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-            'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
-        ];
+        var monthNames = <?= json_encode([
+            __('month.1'), __('month.2'), __('month.3'), __('month.4'),
+            __('month.5'), __('month.6'), __('month.7'), __('month.8'),
+            __('month.9'), __('month.10'), __('month.11'), __('month.12'),
+        ], JSON_UNESCAPED_UNICODE) ?>;
 
         function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
@@ -1166,14 +1178,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tagSelect && tagSelect.value) params.append('tag_id', tagSelect.value);
 
             randomBtn.disabled = true;
-            randomBtn.innerHTML = '<span class="spinner-sm"></span> Suche...';
+            randomBtn.innerHTML = '<span class="spinner-sm"></span> <?= e(__('dashboard.searching')) ?>';
 
             fetch('<?= url('/api/games/random') ?>?' + params.toString())
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
                     if (data.success && data.game) {
                         document.getElementById('random-game-name').textContent = data.game.name;
-                        document.getElementById('random-game-box').textContent = data.game.box_name ? 'Box: ' + data.game.box_name : '';
+                        document.getElementById('random-game-box').textContent = data.game.box_name ? '<?= e(__('box.title')) ?>: ' + data.game.box_name : '';
                         document.getElementById('random-game-link').href = '<?= url('/games/') ?>' + data.game.id;
 
                         var img = document.getElementById('random-game-image');

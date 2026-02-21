@@ -44,6 +44,8 @@ return [
     'action.deselect_all' => 'Deselect All',
     'action.duplicate' => 'Duplicate',
     'action.view' => 'View',
+    'action.select' => 'Select',
+    'action.toggle_sidebar' => 'Toggle sidebar',
 
     // Forms
     'form.name' => 'Name',
@@ -196,6 +198,21 @@ return [
     'dashboard.no_random_game' => 'No matching game found.',
     'dashboard.no_played_yet' => 'No games played yet.',
     'dashboard.no_favorites_yet' => 'No favorites yet.',
+    'dashboard.searching' => 'Searching...',
+
+    // Months
+    'month.1' => 'January',
+    'month.2' => 'February',
+    'month.3' => 'March',
+    'month.4' => 'April',
+    'month.5' => 'May',
+    'month.6' => 'June',
+    'month.7' => 'July',
+    'month.8' => 'August',
+    'month.9' => 'September',
+    'month.10' => 'October',
+    'month.11' => 'November',
+    'month.12' => 'December',
 
     // Changelog
     'changelog.title' => 'Changelog',

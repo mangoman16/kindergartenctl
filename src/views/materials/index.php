@@ -6,7 +6,7 @@
                 <polyline points="9 11 12 14 22 4"></polyline>
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
             </svg>
-            <?= __('action.select') ?? 'Auswählen' ?>
+            <?= __('action.select') ?>
         </button>
         <a href="<?= url('/materials/create') ?>" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -28,7 +28,7 @@
         <span><?= __('misc.favorites_only') ?></span>
     </label>
     <?php if (!empty($filters['search']) || !empty($filters['is_favorite'])): ?>
-        <a href="<?= url('/materials') ?>" class="inline-filter-reset"><?= __('misc.reset') ?? 'Zurücksetzen' ?></a>
+        <a href="<?= url('/materials') ?>" class="inline-filter-reset"><?= __('action.reset') ?></a>
     <?php endif; ?>
     <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
 </form>
