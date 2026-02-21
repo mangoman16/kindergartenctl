@@ -165,9 +165,13 @@ class SettingsController extends Controller
             return;
         }
 
-        // Validate new password
-        if (strlen($newPassword) < 8) {
-            Session::setFlash('error', __('validation.password_min_length'));
+        // Validate new password — same complexity rules as the install wizard
+        $passwordValidator = Validator::make(
+            ['new_password' => $newPassword],
+            ['new_password' => 'required|password']
+        );
+        if ($passwordValidator->fails()) {
+            Session::setFlash('error', $passwordValidator->getError('new_password'));
             $this->redirect('/user/settings');
             return;
         }
@@ -578,8 +582,12 @@ class SettingsController extends Controller
             return;
         }
 
-        if (strlen($password) < 8) {
-            Session::setFlash('error', __('validation.password_min_length'));
+        $passwordValidator = Validator::make(
+            ['password' => $password],
+            ['password' => 'required|password']
+        );
+        if ($passwordValidator->fails()) {
+            Session::setFlash('error', $passwordValidator->getError('password'));
             $this->redirect('/user/settings');
             return;
         }
