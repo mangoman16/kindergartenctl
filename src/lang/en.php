@@ -272,6 +272,7 @@ return [
     'misc.or' => 'or',
     'misc.and' => 'and',
     'misc.actions' => 'Actions',
+    'misc.statistics' => 'Statistics',
     'misc.search_placeholder' => 'Search by name...',
     'misc.from' => 'from',
     'misc.to' => 'up to',
@@ -556,6 +557,8 @@ return [
     'calendar.color' => 'Color',
     'calendar.save_error' => 'Error saving.',
     'calendar.delete_error' => 'Error deleting.',
+    'calendar.confirm_delete' => 'Really delete this event?',
+    'calendar.list' => 'List',
     'calendar.no_events' => 'No events',
 
     // Changelog extended

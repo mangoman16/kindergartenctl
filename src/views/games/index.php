@@ -158,7 +158,7 @@
                 </div>
             <?php endif; ?>
             <?php if ($game['is_outdoor']): ?>
-                <span class="game-card-badge" title="Outdoor-Spiel">
+                <span class="game-card-badge" title="<?= __('game.is_outdoor') ?>">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -215,20 +215,20 @@
 
             <div class="flex gap-2 mt-2">
                 <?php if ($game['min_players'] || $game['max_players']): ?>
-                    <span class="badge badge-sm" title="Spieleranzahl">
+                    <span class="badge badge-sm" title="<?= __('game.players') ?>">
                         <?php if ($game['min_players'] && $game['max_players']): ?>
-                            <?= $game['min_players'] ?>-<?= $game['max_players'] ?>
+                            <?= $game['min_players'] ?>–<?= $game['max_players'] ?>
                         <?php elseif ($game['min_players']): ?>
-                            ab <?= $game['min_players'] ?>
+                            <?= __('misc.from') ?> <?= $game['min_players'] ?>
                         <?php else: ?>
-                            bis <?= $game['max_players'] ?>
+                            <?= __('misc.to') ?> <?= $game['max_players'] ?>
                         <?php endif; ?>
-                        Spieler
+                        <?= __('game.players') ?>
                     </span>
                 <?php endif; ?>
                 <?php if ($game['duration_minutes']): ?>
-                    <span class="badge badge-sm" title="Dauer">
-                        <?= $game['duration_minutes'] ?> Min.
+                    <span class="badge badge-sm" title="<?= __('game.duration') ?>">
+                        <?= $game['duration_minutes'] ?> <?= __('form.minutes_short') ?>
                     </span>
                 <?php endif; ?>
             </div>
@@ -286,7 +286,12 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><?= __('group.add_to') ?></h3>
-            <button type="button" class="modal-close" onclick="closeGroupModal()">&times;</button>
+            <button type="button" class="modal-close" onclick="closeGroupModal()" aria-label="<?= __('action.close') ?>">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
         </div>
         <div class="modal-body">
             <div class="form-group">

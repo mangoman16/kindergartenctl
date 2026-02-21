@@ -98,7 +98,9 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" id="modal-title"><?= __('calendar.add_event') ?></h3>
-            <button type="button" class="modal-close">&times;</button>
+            <button type="button" class="modal-close" aria-label="<?= __('action.close') ?>">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
         </div>
         <div class="modal-body">
             <form id="event-form">
@@ -368,10 +370,10 @@ document.addEventListener('DOMContentLoaded', function() {
             right: 'dayGridMonth,timeGridWeek,listWeek'
         },
         buttonText: {
-            today: 'Heute',
-            month: 'Monat',
-            week: 'Woche',
-            list: 'Liste'
+            today: '<?= __('calendar.today') ?>',
+            month: '<?= __('calendar.month') ?>',
+            week: '<?= __('calendar.week') ?>',
+            list: '<?= __('calendar.list') ?>'
         },
         events: <?= json_encode($events) ?>,
         editable: true,
@@ -427,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (event) {
             // Edit mode
-            document.getElementById('modal-title').textContent = 'Termin bearbeiten';
+            document.getElementById('modal-title').textContent = '<?= __('calendar.edit_event') ?>';
             document.getElementById('event-id').value = event.id;
             document.getElementById('event-title').value = event.title;
             document.getElementById('event-description').value = event.extendedProps.description || '';
@@ -512,7 +514,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Delete event
     document.getElementById('delete-event-btn').addEventListener('click', async function() {
-        if (!currentEvent || !confirm('Termin wirklich löschen?')) return;
+        if (!currentEvent || !confirm('<?= __('calendar.confirm_delete') ?>')) return;
 
         try {
             const response = await fetch(`/api/calendar/events/${currentEvent.id}`, {
