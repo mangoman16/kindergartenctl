@@ -134,3 +134,6 @@ $hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calen
     </div>
 
 </aside>
+
+<!-- Mobile sidebar overlay backdrop -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>

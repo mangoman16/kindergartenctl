@@ -185,8 +185,8 @@ class CalendarController extends Controller
         $data = $this->getJsonInput();
 
         $eventData = [
-            'title' => trim($data['title'] ?? $event['title']),
-            'description' => trim($data['description'] ?? ''),
+            'title' => trim((string)($data['title'] ?? $event['title'])),
+            'description' => trim((string)($data['description'] ?? $event['description'] ?? '')),
             'start_date' => $data['start_date'] ?? $event['start_date'],
             'end_date' => $data['end_date'] ?? null,
             'all_day' => isset($data['all_day']) ? (!empty($data['all_day']) ? 1 : 0) : $event['all_day'],

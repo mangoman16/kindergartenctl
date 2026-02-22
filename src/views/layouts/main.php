@@ -83,6 +83,7 @@ $compactSidebar = userPreference('compact_sidebar', 'no');
         'invalid_image_format' => __('js.invalid_image_format'),
         'image_too_large' => __('js.image_too_large'),
         'upload_error' => __('js.upload_error'),
+        'action_close' => __('action.close'),
         'crop_title' => __('js.crop_title'),
         'crop_cancel' => __('js.crop_cancel'),
         'crop_apply' => __('js.crop_apply'),

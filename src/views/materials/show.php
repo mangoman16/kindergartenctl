@@ -45,19 +45,19 @@
                         <?php endif; ?>
 
                         <dt><?= __('material.quantity') ?></dt>
-                        <dd><?= $material['quantity'] ?: 'Nicht angegeben' ?></dd>
+                        <dd><?= $material['quantity'] ?: __('misc.not_specified') ?></dd>
 
                         <dt><?= __('material.type') ?></dt>
                         <dd>
                             <?php if ($material['is_consumable']): ?>
-                                <span class="badge badge-warning">Verbrauchsmaterial</span>
+                                <span class="badge badge-warning"><?= __('material.is_consumable') ?></span>
                             <?php else: ?>
-                                <span class="badge badge-info">Ausrüstung</span>
+                                <span class="badge badge-info"><?= __('material.equipment_badge') ?></span>
                             <?php endif; ?>
                         </dd>
 
                         <dt><?= __('nav.games') ?></dt>
-                        <dd><?= $material['game_count'] ?> <?= pluralize($material['game_count'], 'Spiel', 'Spiele') ?></dd>
+                        <dd><?= $material['game_count'] ?> <?= pluralize($material['game_count'], __('game.title'), __('game.title_plural')) ?></dd>
                     </dl>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                     <svg id="favorite-icon-outline" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="<?= !empty($material['is_favorite']) ? 'display:none;' : '' ?>">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
-                    <span id="favorite-text"><?= !empty($material['is_favorite']) ? 'Favorit entfernen' : 'Als Favorit markieren' ?></span>
+                    <span id="favorite-text"><?= !empty($material['is_favorite']) ? __('misc.remove_from_favorites') : __('misc.add_to_favorites') ?></span>
                 </button>
             </div>
         </div>
@@ -293,7 +293,9 @@ function closeAddToGroupModal() {
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><?= __('group.add_to') ?></h3>
-            <button type="button" class="modal-close" onclick="closeAddToGroupModal()">&times;</button>
+            <button type="button" class="modal-close" onclick="closeAddToGroupModal()" aria-label="<?= __('action.close') ?>">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
         </div>
         <form id="add-to-group-form">
             <div class="modal-body">

@@ -366,7 +366,9 @@ abstract class Controller
         }
 
         // Must match: word_chars/full/word_chars.webp (e.g., "games/full/20260115_abc123.webp")
-        if (!preg_match('#^[a-zA-Z0-9_-]+/(full)/[a-zA-Z0-9_.-]+\.webp$#', $path)) {
+        // Note: dots are NOT allowed in the filename portion to prevent double-extension attacks
+        // (e.g., "image.php.webp" would be rejected)
+        if (!preg_match('#^[a-zA-Z0-9_-]+/(full)/[a-zA-Z0-9_-]+\.webp$#', $path)) {
             Logger::security('Invalid image_path rejected', ['path' => $path]);
             return '';
         }

@@ -44,6 +44,8 @@ return [
     'action.deselect_all' => 'Alle abwählen',
     'action.duplicate' => 'Duplizieren',
     'action.view' => 'Anzeigen',
+    'action.select' => 'Auswählen',
+    'action.toggle_sidebar' => 'Seitenleiste ein-/ausblenden',
 
     // Forms
     'form.name' => 'Name',
@@ -196,6 +198,21 @@ return [
     'dashboard.no_random_game' => 'Kein passendes Spiel gefunden.',
     'dashboard.no_played_yet' => 'Noch keine Spiele gespielt.',
     'dashboard.no_favorites_yet' => 'Noch keine Favoriten.',
+    'dashboard.searching' => 'Suche...',
+
+    // Months
+    'month.1' => 'Januar',
+    'month.2' => 'Februar',
+    'month.3' => 'März',
+    'month.4' => 'April',
+    'month.5' => 'Mai',
+    'month.6' => 'Juni',
+    'month.7' => 'Juli',
+    'month.8' => 'August',
+    'month.9' => 'September',
+    'month.10' => 'Oktober',
+    'month.11' => 'November',
+    'month.12' => 'Dezember',
 
     // Changelog
     'changelog.title' => 'Änderungsprotokoll',
@@ -272,6 +289,7 @@ return [
     'misc.or' => 'oder',
     'misc.and' => 'und',
     'misc.actions' => 'Aktionen',
+    'misc.statistics' => 'Statistik',
     'misc.search_placeholder' => 'Name suchen...',
     'misc.from' => 'ab',
     'misc.to' => 'bis',
@@ -442,6 +460,8 @@ return [
     'install.db_connection_failed' => 'Verbindung fehlgeschlagen. Bitte überprüfen Sie die Eingaben.',
     'install.db_creating' => 'Erstelle Datenbank und Tabellen...',
     'install.db_created' => 'Datenbank erfolgreich eingerichtet!',
+    'install.db_create_failed' => 'Datenbank konnte nicht erstellt werden.',
+    'install.schema_failed' => 'Tabellen konnten nicht erstellt werden.',
 
     // Admin user
     'install.admin_username' => 'Benutzername',
@@ -449,6 +469,7 @@ return [
     'install.admin_password' => 'Passwort',
     'install.admin_password_confirm' => 'Passwort bestätigen',
     'install.admin_created' => 'Administrator erfolgreich erstellt!',
+    'install.admin_create_failed' => 'Administrator konnte nicht erstellt werden.',
 
     // Email setup
     'install.email_optional' => 'Die E-Mail-Einrichtung ist optional. Sie können sie später in den Einstellungen vornehmen.',
@@ -553,6 +574,8 @@ return [
     'calendar.color' => 'Farbe',
     'calendar.save_error' => 'Fehler beim Speichern.',
     'calendar.delete_error' => 'Fehler beim Löschen.',
+    'calendar.confirm_delete' => 'Termin wirklich löschen?',
+    'calendar.list' => 'Liste',
     'calendar.no_events' => 'Keine Termine',
 
     // Changelog extended

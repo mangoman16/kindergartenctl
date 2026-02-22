@@ -140,7 +140,7 @@
                                 </td>
                                 <td class="text-right">
                                     <a href="<?= url('/materials/' . $material['id']) ?>" class="btn btn-sm btn-outline">
-                                        Ansehen
+                                        <?= __('action.view') ?>
                                     </a>
                                 </td>
                             </tr>
@@ -157,7 +157,7 @@
     <div>
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Statistik</h3>
+                <h3 class="card-title"><?= __('misc.statistics') ?></h3>
             </div>
             <div class="card-body">
                 <div class="flex items-center gap-3 mb-4">
@@ -168,7 +168,7 @@
                     </div>
                     <div>
                         <div class="font-semibold"><?= $box['material_count'] ?></div>
-                        <div class="text-sm text-muted"><?= pluralize($box['material_count'], 'Material', 'Materialien') ?></div>
+                        <div class="text-sm text-muted"><?= pluralize($box['material_count'], __('material.title'), __('material.title_plural')) ?></div>
                     </div>
                 </div>
 

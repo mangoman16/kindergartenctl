@@ -1,6 +1,13 @@
 <div class="page-header">
     <h1 class="page-title"><?= __('game.title_plural') ?></h1>
     <div class="page-actions">
+        <button type="button" id="toggle-selection-mode" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+            <?= __('bulk.multi_select') ?>
+        </button>
         <a href="<?= url('/games/create') ?>" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -129,24 +136,16 @@
 </div>
 
 <!-- Games Grid -->
-<div class="flex items-center justify-between mb-3">
-    <div class="text-muted"><?= count($games) ?> <?= pluralize(count($games), __('game.title'), __('game.title_plural')) ?> <?= __('game.found') ?></div>
-    <button type="button" class="btn btn-sm btn-secondary" id="toggle-selection-mode">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 11 12 14 22 4"></polyline>
-            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-        </svg>
-        <?= __('bulk.multi_select') ?>
-    </button>
-</div>
+<div class="text-sm text-muted mb-3"><?= count($games) ?> <?= pluralize(count($games), __('game.title'), __('game.title_plural')) ?> <?= __('game.found') ?></div>
 
 <div class="grid grid-cols-4 gap-4" id="games-grid">
     <?php foreach ($games as $game): ?>
-    <div class="card game-card <?= !$game['is_active'] ? 'opacity-60' : '' ?>" data-game-id="<?= $game['id'] ?>">
-        <label class="game-card-checkbox" style="display: none;">
-            <input type="checkbox" class="game-select-checkbox" value="<?= $game['id'] ?>">
-            <span class="checkmark"></span>
-        </label>
+    <div class="item-card game-card <?= !$game['is_active'] ? 'opacity-60' : '' ?>" data-game-id="<?= $game['id'] ?>">
+        <!-- Checkbox for selection mode -->
+        <div class="item-card-checkbox-wrap">
+            <input type="checkbox" class="item-card-checkbox game-select-checkbox" value="<?= $game['id'] ?>">
+        </div>
+        <!-- Image area -->
         <a href="<?= url('/games/' . $game['id']) ?>" class="game-card-image">
             <?php if ($game['image_path']): ?>
                 <img src="<?= upload($game['image_path']) ?>" alt="<?= e($game['name']) ?>">
@@ -159,7 +158,7 @@
                 </div>
             <?php endif; ?>
             <?php if ($game['is_outdoor']): ?>
-                <span class="game-card-badge" title="Outdoor-Spiel">
+                <span class="game-card-badge" title="<?= __('game.is_outdoor') ?>">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -173,7 +172,18 @@
                     </svg>
                 </span>
             <?php endif; ?>
+            <!-- Hover action buttons -->
+            <div class="item-card-actions">
+                <a href="<?= url('/games/' . $game['id'] . '/edit') ?>" class="btn btn-sm" title="<?= __('action.edit') ?>"
+                   onclick="event.stopPropagation()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </a>
+            </div>
         </a>
+        <!-- Card content -->
         <div class="card-body">
             <h3 class="game-card-title">
                 <a href="<?= url('/games/' . $game['id']) ?>"><?= e($game['name']) ?></a>
@@ -205,21 +215,20 @@
 
             <div class="flex gap-2 mt-2">
                 <?php if ($game['min_players'] || $game['max_players']): ?>
-                    <span class="badge badge-sm" title="Spieleranzahl">
+                    <span class="badge badge-sm" title="<?= __('game.players') ?>">
                         <?php if ($game['min_players'] && $game['max_players']): ?>
-                            <?= $game['min_players'] ?>-<?= $game['max_players'] ?>
+                            <?= $game['min_players'] ?>–<?= $game['max_players'] ?>
                         <?php elseif ($game['min_players']): ?>
-                            ab <?= $game['min_players'] ?>
+                            <?= __('misc.from') ?> <?= $game['min_players'] ?>
                         <?php else: ?>
-                            bis <?= $game['max_players'] ?>
+                            <?= __('misc.to') ?> <?= $game['max_players'] ?>
                         <?php endif; ?>
-                        Spieler
+                        <?= __('game.players') ?>
                     </span>
                 <?php endif; ?>
-
                 <?php if ($game['duration_minutes']): ?>
-                    <span class="badge badge-sm" title="Dauer">
-                        <?= $game['duration_minutes'] ?> Min.
+                    <span class="badge badge-sm" title="<?= __('game.duration') ?>">
+                        <?= $game['duration_minutes'] ?> <?= __('form.minutes_short') ?>
                     </span>
                 <?php endif; ?>
             </div>
@@ -237,6 +246,7 @@
     overflow: hidden;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     background: var(--color-gray-100);
+    position: relative;
 }
 .game-card-image img {
     width: 100%;
@@ -244,9 +254,7 @@
     object-fit: cover;
     transition: transform 0.2s;
 }
-.game-card:hover .game-card-image img {
-    transform: scale(1.05);
-}
+.game-card:hover .game-card-image img { transform: scale(1.04); }
 .game-card-placeholder {
     width: 100%;
     height: 100%;
@@ -263,122 +271,13 @@
     color: white;
     padding: 4px;
     border-radius: var(--radius-md);
+    z-index: 2;
 }
-.game-card-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0 0 0.5rem;
-}
-.game-card-title a {
-    color: inherit;
-    text-decoration: none;
-}
-.game-card-title a:hover {
-    color: var(--color-primary);
-}
+.game-card-title { font-size: 1rem; font-weight: 600; margin: 0 0 0.5rem; }
+.game-card-title a { color: inherit; text-decoration: none; }
+.game-card-title a:hover { color: var(--color-primary); }
 .opacity-60 { opacity: 0.6; }
-
-/* Bulk Actions */
-.bulk-actions-bar {
-    background: var(--color-primary);
-    color: white;
-    padding: 12px 16px;
-    border-radius: var(--radius-lg);
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    animation: slideDown 0.2s ease;
-}
-.bulk-actions-bar .form-check-label { color: white; }
-.bulk-actions-bar .text-muted { color: rgba(255,255,255,0.8); }
-.bulk-actions-bar .btn-secondary {
-    background: rgba(255,255,255,0.2);
-    border-color: transparent;
-    color: white;
-}
-.bulk-actions-bar .btn-secondary:hover {
-    background: rgba(255,255,255,0.3);
-}
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Game Card Checkbox */
-.game-card-checkbox {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    z-index: 10;
-    cursor: pointer;
-}
-.game-card-checkbox input {
-    display: none;
-}
-.game-card-checkbox .checkmark {
-    display: block;
-    width: 24px;
-    height: 24px;
-    background: white;
-    border: 2px solid var(--color-gray-300);
-    border-radius: var(--radius-md);
-    transition: all 0.2s;
-}
-.game-card-checkbox input:checked + .checkmark {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-}
-.game-card-checkbox input:checked + .checkmark::after {
-    content: '';
-    display: block;
-    width: 6px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    margin: 3px auto;
-}
-.game-card.selected {
-    outline: 3px solid var(--color-primary);
-    outline-offset: -3px;
-}
-.selection-mode .game-card-checkbox { display: block !important; }
 .selection-mode .game-card { cursor: pointer; }
-
-/* Filter Toggle */
-.filter-toggle-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.filter-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 5px;
-    background: var(--color-primary);
-    color: white;
-    border-radius: 9px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    margin-left: 4px;
-}
-.btn-ghost {
-    background: none;
-    border: none;
-    color: var(--color-gray-500);
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 0.8rem;
-    padding: 4px 8px;
-}
-.btn-ghost:hover {
-    color: var(--color-danger);
-}
 </style>
 
 <!-- Add to Group Modal -->
@@ -387,7 +286,12 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><?= __('group.add_to') ?></h3>
-            <button type="button" class="modal-close" onclick="closeGroupModal()">&times;</button>
+            <button type="button" class="modal-close" onclick="closeGroupModal()" aria-label="<?= __('action.close') ?>">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
         </div>
         <div class="modal-body">
             <div class="form-group">
@@ -420,19 +324,17 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleBtn?.addEventListener('click', function() {
         selectionMode = !selectionMode;
         gamesGrid.classList.toggle('selection-mode', selectionMode);
+        toggleBtn.classList.toggle('active', selectionMode);
         bulkBar.style.display = selectionMode ? 'flex' : 'none';
-        toggleBtn.style.display = selectionMode ? 'none' : 'inline-flex';
-        if (!selectionMode) {
-            clearSelection();
-        }
+        if (!selectionMode) clearSelection();
     });
 
     // Cancel selection mode
     cancelBtn?.addEventListener('click', function() {
         selectionMode = false;
         gamesGrid.classList.remove('selection-mode');
+        toggleBtn.classList.remove('active');
         bulkBar.style.display = 'none';
-        toggleBtn.style.display = 'inline-flex';
         clearSelection();
     });
 
@@ -448,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
         }
 
-        const checkbox = card.querySelector('.game-select-checkbox');
+        const checkbox = card.querySelector('.item-card-checkbox');
         const gameId = card.dataset.gameId;
 
         checkbox.checked = !checkbox.checked;
@@ -465,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Select all checkbox
     selectAllCheckbox?.addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.game-select-checkbox');
+        const checkboxes = document.querySelectorAll('.item-card-checkbox');
         checkboxes.forEach(cb => {
             cb.checked = this.checked;
             const card = cb.closest('.game-card');
@@ -481,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function clearSelection() {
         selectedIds.clear();
-        document.querySelectorAll('.game-select-checkbox').forEach(cb => {
+        document.querySelectorAll('.item-card-checkbox').forEach(cb => {
             cb.checked = false;
             cb.closest('.game-card').classList.remove('selected');
         });

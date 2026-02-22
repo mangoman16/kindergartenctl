@@ -45,26 +45,36 @@
     }
 
     /**
-     * Initialize mobile sidebar toggle
+     * Initialize sidebar + mobile overlay
      */
     function initSidebar() {
-        const sidebar = document.querySelector('.sidebar');
-        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        const overlay = document.getElementById('sidebarOverlay');
+        const contextSidebar = document.querySelector('.context-sidebar');
 
-        if (mobileToggle && sidebar) {
-            mobileToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
+        if (!overlay || !contextSidebar) return;
 
-            // Close sidebar when clicking outside
-            document.addEventListener('click', (e) => {
-                if (sidebar.classList.contains('open') &&
-                    !sidebar.contains(e.target) &&
-                    !mobileToggle.contains(e.target)) {
-                    sidebar.classList.remove('open');
-                }
-            });
-        }
+        function isMobile() { return window.innerWidth <= 768; }
+
+        // Observe sidebar open state to toggle overlay on mobile
+        const observer = new MutationObserver(() => {
+            if (isMobile()) {
+                overlay.classList.toggle('active', contextSidebar.classList.contains('open'));
+            }
+        });
+        observer.observe(contextSidebar, { attributes: true, attributeFilter: ['class'] });
+
+        // Close sidebar when overlay is clicked
+        overlay.addEventListener('click', () => {
+            contextSidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            // Persist collapsed state
+            try { localStorage.setItem('sidebarCollapsed', 'true'); } catch(e) {}
+        });
+
+        // Hide overlay on resize to desktop
+        window.addEventListener('resize', () => {
+            if (!isMobile()) overlay.classList.remove('active');
+        });
     }
 
     /**
@@ -201,7 +211,7 @@
             <div class="cropper-dialog" style="background:var(--color-white, #fff);border-radius:0.75rem;width:90%;max-width:600px;max-height:90vh;overflow:hidden;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);transform:scale(1) !important;">
                 <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--color-gray-200, #E5E7EB);display:flex;justify-content:space-between;align-items:center;">
                     <h3 style="font-size:1.125rem;font-weight:600;margin:0;">${t('crop_title')}</h3>
-                    <button type="button" class="cropper-modal-close" style="background:none;border:none;cursor:pointer;color:var(--color-gray-400, #9CA3AF);padding:0.25rem;font-size:1.5rem;line-height:1;">&times;</button>
+                    <button type="button" class="cropper-modal-close" style="background:none;border:none;cursor:pointer;color:var(--color-gray-400,#9CA3AF);padding:0.25rem;display:flex;align-items:center;border-radius:0.375rem;" aria-label="${t('action_close')}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 </div>
                 <div style="padding:1.25rem;overflow-y:auto;max-height:calc(90vh - 140px);">
                     <div style="max-height: 400px; overflow: hidden;">

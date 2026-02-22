@@ -1,6 +1,13 @@
 <div class="page-header">
     <h1 class="page-title"><?= __('material.title_plural') ?></h1>
     <div class="page-actions">
+        <button type="button" id="toggle-select-mode" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+            <?= __('action.select') ?>
+        </button>
         <a href="<?= url('/materials/create') ?>" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -21,7 +28,7 @@
         <span><?= __('misc.favorites_only') ?></span>
     </label>
     <?php if (!empty($filters['search']) || !empty($filters['is_favorite'])): ?>
-        <a href="<?= url('/materials') ?>" class="inline-filter-reset"><?= __('misc.reset') ?? 'Zurücksetzen' ?></a>
+        <a href="<?= url('/materials') ?>" class="inline-filter-reset"><?= __('action.reset') ?></a>
     <?php endif; ?>
     <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
 </form>
@@ -87,7 +94,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 40px;" class="bulk-select-col" style="display: none;">
+                    <th style="width: 40px; display: none;" class="bulk-select-col">
                         <input type="checkbox" id="select-all-checkbox" class="form-check-input">
                     </th>
                     <th style="width: 50px;"></th>
@@ -178,7 +185,9 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><?= __('group.add_to') ?></h3>
-            <button type="button" class="modal-close" onclick="closeGroupModal()">&times;</button>
+            <button type="button" class="modal-close" onclick="closeGroupModal()" aria-label="<?= __('action.close') ?>">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
         </div>
         <div class="modal-body">
             <div class="form-group">
@@ -195,92 +204,60 @@
     </div>
 </div>
 
-<style<?= cspNonce() ?>>
-/* Bulk Actions */
-.bulk-actions-bar {
-    background: var(--color-primary);
-    color: white;
-    padding: 12px 16px;
-    border-radius: var(--radius-lg);
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    animation: slideDown 0.2s ease;
-}
-.bulk-actions-bar .text-muted { color: rgba(255,255,255,0.8); }
-.bulk-actions-bar .btn-secondary {
-    background: rgba(255,255,255,0.2);
-    border-color: transparent;
-    color: white;
-}
-.bulk-actions-bar .btn-secondary:hover {
-    background: rgba(255,255,255,0.3);
-}
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.selection-mode .bulk-select-col { display: table-cell !important; }
-tr.selected { background: var(--color-primary-bg) !important; }
-</style>
-
 <script<?= cspNonce() ?>>
 document.addEventListener('DOMContentLoaded', function() {
     const bulkBar = document.getElementById('bulk-actions-bar');
     const selectAllCheckbox = document.getElementById('select-all-checkbox');
     const selectedCountEl = document.getElementById('selected-count');
     const cancelBtn = document.getElementById('bulk-cancel');
-    const table = document.querySelector('.table');
+    const toggleBtn = document.getElementById('toggle-select-mode');
 
     let selectionMode = false;
     let selectedIds = new Set();
 
-    // Enable selection mode when any checkbox is clicked
+    // Toggle selection mode from the header button
+    toggleBtn?.addEventListener('click', function() {
+        if (selectionMode) {
+            disableSelectionMode();
+        } else {
+            enableSelectionMode();
+        }
+    });
+
+    // Checkbox change handlers
     document.querySelectorAll('.material-select-checkbox, #select-all-checkbox').forEach(cb => {
         cb.addEventListener('change', function() {
-            if (!selectionMode) {
-                enableSelectionMode();
-            }
-
             if (this.id === 'select-all-checkbox') {
                 document.querySelectorAll('.material-select-checkbox').forEach(mcb => {
                     mcb.checked = this.checked;
                     const row = mcb.closest('tr');
                     row.classList.toggle('selected', this.checked);
-                    if (this.checked) {
-                        selectedIds.add(mcb.value);
-                    } else {
-                        selectedIds.delete(mcb.value);
-                    }
+                    if (this.checked) selectedIds.add(mcb.value);
+                    else selectedIds.delete(mcb.value);
                 });
             } else {
                 const row = this.closest('tr');
                 row.classList.toggle('selected', this.checked);
-                if (this.checked) {
-                    selectedIds.add(this.value);
-                } else {
-                    selectedIds.delete(this.value);
-                }
+                if (this.checked) selectedIds.add(this.value);
+                else selectedIds.delete(this.value);
             }
-
             updateSelectedCount();
         });
     });
 
     function enableSelectionMode() {
         selectionMode = true;
-        document.querySelectorAll('.bulk-select-col').forEach(col => {
-            col.style.display = 'table-cell';
-        });
+        toggleBtn?.classList.add('active');
+        document.querySelector('.table')?.classList.add('selection-mode');
+        document.querySelectorAll('.bulk-select-col').forEach(col => col.style.display = 'table-cell');
         bulkBar.style.display = 'flex';
     }
 
     function disableSelectionMode() {
         selectionMode = false;
-        document.querySelectorAll('.bulk-select-col').forEach(col => {
-            col.style.display = 'none';
-        });
+        toggleBtn?.classList.remove('active');
+        document.querySelector('.table')?.classList.remove('selection-mode');
+        document.querySelectorAll('.bulk-select-col').forEach(col => col.style.display = 'none');
         bulkBar.style.display = 'none';
         clearSelection();
     }

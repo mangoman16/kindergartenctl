@@ -161,11 +161,15 @@ class ApiController extends Controller
             return;
         }
 
-        // Get crop data if provided
+        // Get crop data if provided — validate it decoded to an array
         $cropData = null;
         $cropJson = $this->getPost('crop_data', '');
         if ($cropJson) {
-            $cropData = json_decode($cropJson, true);
+            $decoded = json_decode($cropJson, true);
+            if (is_array($decoded)) {
+                $cropData = $decoded;
+            }
+            // Silently ignore malformed JSON (ImageProcessor receives null crop data)
         }
 
         require_once SRC_PATH . '/services/ImageProcessor.php';

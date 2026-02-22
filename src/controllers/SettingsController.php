@@ -165,9 +165,13 @@ class SettingsController extends Controller
             return;
         }
 
-        // Validate new password
-        if (strlen($newPassword) < 8) {
-            Session::setFlash('error', __('validation.password_min_length'));
+        // Validate new password — same complexity rules as the install wizard
+        $passwordValidator = Validator::make(
+            ['new_password' => $newPassword],
+            ['new_password' => 'required|password']
+        );
+        if ($passwordValidator->fails()) {
+            Session::setFlash('error', $passwordValidator->getError('new_password'));
             $this->redirect('/user/settings');
             return;
         }
@@ -273,6 +277,9 @@ class SettingsController extends Controller
         if (empty($smtpPass) && !empty($existingConfig['smtp_pass'])) {
             // Keep existing (already encrypted) password
             $encryptedPass = $existingConfig['smtp_pass'];
+        } elseif (empty($smtpPass)) {
+            // No password provided and none stored — store empty string
+            $encryptedPass = '';
         } else {
             // Encrypt new password before storage
             $encryptedPass = encryptValue($smtpPass);
@@ -299,8 +306,10 @@ class SettingsController extends Controller
             return;
         }
 
-        // Restrict file permissions
-        chmod($configPath, 0640);
+        // Restrict file permissions (non-fatal if it fails on some hosting setups)
+        if (!chmod($configPath, 0640)) {
+            Logger::warning('Failed to chmod SMTP config file', ['path' => $configPath]);
+        }
 
         Session::setFlash('success', __('settings.smtp_saved'));
         $this->redirect('/settings/email');
@@ -573,8 +582,12 @@ class SettingsController extends Controller
             return;
         }
 
-        if (strlen($password) < 8) {
-            Session::setFlash('error', __('validation.password_min_length'));
+        $passwordValidator = Validator::make(
+            ['password' => $password],
+            ['password' => 'required|password']
+        );
+        if ($passwordValidator->fails()) {
+            Session::setFlash('error', $passwordValidator->getError('password'));
             $this->redirect('/user/settings');
             return;
         }
@@ -746,9 +759,7 @@ class SettingsController extends Controller
         $this->savePreferences($preferences);
 
         // Return JSON for AJAX requests
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'preference' => $darkModePref]);
-        exit;
+        $this->json(['success' => true, 'preference' => $darkModePref]);
     }
 
     /**

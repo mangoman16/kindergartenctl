@@ -44,6 +44,8 @@ return [
     'action.deselect_all' => 'Deselect All',
     'action.duplicate' => 'Duplicate',
     'action.view' => 'View',
+    'action.select' => 'Select',
+    'action.toggle_sidebar' => 'Toggle sidebar',
 
     // Forms
     'form.name' => 'Name',
@@ -196,6 +198,21 @@ return [
     'dashboard.no_random_game' => 'No matching game found.',
     'dashboard.no_played_yet' => 'No games played yet.',
     'dashboard.no_favorites_yet' => 'No favorites yet.',
+    'dashboard.searching' => 'Searching...',
+
+    // Months
+    'month.1' => 'January',
+    'month.2' => 'February',
+    'month.3' => 'March',
+    'month.4' => 'April',
+    'month.5' => 'May',
+    'month.6' => 'June',
+    'month.7' => 'July',
+    'month.8' => 'August',
+    'month.9' => 'September',
+    'month.10' => 'October',
+    'month.11' => 'November',
+    'month.12' => 'December',
 
     // Changelog
     'changelog.title' => 'Changelog',
@@ -272,6 +289,7 @@ return [
     'misc.or' => 'or',
     'misc.and' => 'and',
     'misc.actions' => 'Actions',
+    'misc.statistics' => 'Statistics',
     'misc.search_placeholder' => 'Search by name...',
     'misc.from' => 'from',
     'misc.to' => 'up to',
@@ -442,6 +460,8 @@ return [
     'install.db_connection_failed' => 'Connection failed. Please check your input.',
     'install.db_creating' => 'Creating database and tables...',
     'install.db_created' => 'Database set up successfully!',
+    'install.db_create_failed' => 'Could not create database.',
+    'install.schema_failed' => 'Could not create tables.',
 
     // Admin user
     'install.admin_username' => 'Username',
@@ -449,6 +469,7 @@ return [
     'install.admin_password' => 'Password',
     'install.admin_password_confirm' => 'Confirm Password',
     'install.admin_created' => 'Administrator created successfully!',
+    'install.admin_create_failed' => 'Could not create administrator.',
 
     // Email setup
     'install.email_optional' => 'Email setup is optional. You can configure it later in the settings.',
@@ -553,6 +574,8 @@ return [
     'calendar.color' => 'Color',
     'calendar.save_error' => 'Error saving.',
     'calendar.delete_error' => 'Error deleting.',
+    'calendar.confirm_delete' => 'Really delete this event?',
+    'calendar.list' => 'List',
     'calendar.no_events' => 'No events',
 
     // Changelog extended
