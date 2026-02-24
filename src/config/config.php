@@ -13,6 +13,11 @@ return [
         'charset' => 'UTF-8',
         'debug' => false, // Set to true only for development
         'language' => 'de',
+        // Set this to your canonical application URL (e.g. 'https://yourapp.example.com').
+        // Prevents Host-header poisoning in password-reset links.  If left empty the URL
+        // is derived from the incoming Host header (safe only for single-machine installs
+        // behind trusted infrastructure).
+        'url' => '',
     ],
 
     // Session settings

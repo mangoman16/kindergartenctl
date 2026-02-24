@@ -401,7 +401,11 @@ class ApiController extends Controller
 
         $results = [];
         $db = Database::getInstance();
-        $searchTerm = '%' . $query . '%';
+
+        // Escape MySQL LIKE wildcards so a search for "%" or "_" matches those
+        // literal characters rather than "any sequence" / "any single character".
+        $likeQuery = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $query);
+        $searchTerm = '%' . $likeQuery . '%';
 
         // Equal limits for all types (global search)
         $gameLim = 6;

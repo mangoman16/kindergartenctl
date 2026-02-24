@@ -40,6 +40,13 @@ class ImageProcessor
      */
     public function process(array $file, string $type, ?array $cropData = null): array
     {
+        // Validate $type against whitelist to prevent path traversal even when this
+        // method is called from outside ApiController (defense-in-depth).
+        $allowedTypes = ['games', 'boxes', 'categories', 'tags', 'materials'];
+        if (!in_array($type, $allowedTypes, true)) {
+            return ['success' => false, 'error' => 'Ungültiger Bildtyp.'];
+        }
+
         // Validate file
         $validation = $this->validate($file);
         if (!$validation['success']) {
@@ -109,6 +116,12 @@ class ImageProcessor
      */
     public function processBase64(string $base64Data, string $type): array
     {
+        // Validate $type against whitelist (same defense-in-depth as process()).
+        $allowedTypes = ['games', 'boxes', 'categories', 'tags', 'materials'];
+        if (!in_array($type, $allowedTypes, true)) {
+            return ['success' => false, 'error' => 'Ungültiger Bildtyp.'];
+        }
+
         // Extract image data from base64 string
         if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $matches)) {
             $imageType = $matches[1];

@@ -367,22 +367,43 @@ class Mailer
 
     /**
      * Connect to SMTP server
+     *
+     * SECURITY: TLS peer verification is enabled by default.  This prevents
+     * man-in-the-middle attacks on both implicit-SSL (port 465) and STARTTLS
+     * (port 587) connections.  The context is passed to stream_socket_client()
+     * so that stream_socket_enable_crypto() (called later for STARTTLS) inherits
+     * the same verification settings.
      */
     private function connect()
     {
         $protocol = ($this->port === 465) ? 'ssl://' : '';
+
+        // SSL context with peer verification.  Set peer_name so the certificate CN
+        // is checked against the configured SMTP host.
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer'      => true,
+                'verify_peer_name' => true,
+                'peer_name'        => $this->host,
+            ],
+        ]);
+
         $socket = @stream_socket_client(
             $protocol . $this->host . ':' . $this->port,
             $errno,
             $errstr,
             30,
-            STREAM_CLIENT_CONNECT
+            STREAM_CLIENT_CONNECT,
+            $context
         );
 
         if (!$socket) {
             $this->errors[] = "Verbindung zu {$this->host}:{$this->port} fehlgeschlagen: {$errstr}";
             return false;
         }
+
+        // Set a read timeout so fgets() never blocks indefinitely.
+        stream_set_timeout($socket, 10);
 
         // Get greeting
         $this->getResponse($socket);
