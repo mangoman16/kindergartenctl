@@ -209,9 +209,21 @@ class App
 
     /**
      * Get the base URL
+     *
+     * SECURITY: Prefers the configured 'app.url' value to prevent Host-header
+     * injection attacks (password-reset poisoning).  Set 'app.url' in config.php
+     * or config.local.php for any production deployment.
      */
     public static function baseUrl(): string
     {
+        $configured = trim(self::$config['app']['url'] ?? '');
+        if ($configured !== '') {
+            return rtrim($configured, '/');
+        }
+
+        // Fallback: derive from the incoming Host header.
+        // Only safe when the web server validates the Host header itself
+        // (e.g. a named VirtualHost with no catch-all).
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
         return $protocol . '://' . $host;

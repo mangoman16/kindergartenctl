@@ -61,6 +61,13 @@ function __(?string $key, array $replace = []): string
 
     $language = userPreference('language', 'de');
 
+    // Whitelist: only load known, safe language codes to prevent path traversal
+    // via a tampered preferences file.
+    $allowedLanguages = ['de', 'en'];
+    if (!in_array($language, $allowedLanguages, true)) {
+        $language = 'de';
+    }
+
     if (!isset($langs[$language])) {
         $langFile = SRC_PATH . '/lang/' . $language . '.php';
         if (file_exists($langFile)) {

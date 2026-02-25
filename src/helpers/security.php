@@ -462,7 +462,9 @@ function getEncryptionKey(): string
 
     if (file_exists($keyFile)) {
         $key = file_get_contents($keyFile);
-        if ($key !== false && strlen($key) >= 32) {
+        // Key is stored as a hex string: bin2hex(random_bytes(32)) = 64 hex chars = 32 bytes.
+        // AES-256-GCM requires exactly 32 bytes, so the hex string must be >= 64 chars.
+        if ($key !== false && strlen($key) >= 64) {
             return $key;
         }
     }

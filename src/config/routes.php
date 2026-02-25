@@ -20,7 +20,6 @@ return [
     // Authentication routes (no auth required)
     'GET /login' => ['AuthController', 'showLogin'],
     'POST /login' => ['AuthController', 'login'],
-    'GET /logout' => ['AuthController', 'logout'],
     'POST /logout' => ['AuthController', 'logout'],
     'GET /forgot-password' => ['AuthController', 'showForgotPassword'],
     'POST /forgot-password' => ['AuthController', 'sendResetLink'],
