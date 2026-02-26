@@ -185,7 +185,11 @@
                                     hiddenInput.value = imagePath;
                                 }
                                 if (preview) {
-                                    preview.innerHTML = `<img src="/uploads/${imagePath}" alt="Preview">`;
+                                    preview.textContent = '';
+                                    const img = document.createElement('img');
+                                    img.src = '/uploads/' + imagePath;
+                                    img.alt = 'Preview';
+                                    preview.appendChild(img);
                                 }
                             })
                             .catch(error => {

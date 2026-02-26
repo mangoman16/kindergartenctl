@@ -431,6 +431,14 @@ class Mailer
                 break;
             }
         }
+        // Detect socket timeout (fgets returns false on timeout)
+        if ($line === false) {
+            $meta = stream_get_meta_data($socket);
+            if (!empty($meta['timed_out'])) {
+                $this->errors[] = 'SMTP read timeout after 10 seconds';
+                Logger::warning('SMTP socket read timeout', ['partial_response' => $response]);
+            }
+        }
         return trim($response);
     }
 
