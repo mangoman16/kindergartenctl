@@ -5,16 +5,16 @@
 
 class DashboardController extends Controller
 {
+    public function __construct()
+    {
+        $this->requireAuth();
+    }
+
     /**
-     * Show dashboard - requires authentication
+     * Show dashboard
      */
     public function index(): void
     {
-        // Redirect to login for unauthenticated users (internal software - no landing page)
-        if (!Auth::check()) {
-            $this->redirect('/login');
-            return;
-        }
 
         $this->setTitle(__('dashboard.title'));
 

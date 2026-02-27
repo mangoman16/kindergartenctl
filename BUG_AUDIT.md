@@ -13,9 +13,9 @@
 |----------|-------|-------|
 | Critical | 10 | 10 |
 | High | 6 | 6 |
-| Medium | 21 | 21 |
-| Low | 4 | 4 |
-| **Total** | **41** | **41** |
+| Medium | 23 | 23 |
+| Low | 5 | 5 |
+| **Total** | **44** | **44** |
 
 ---
 
@@ -225,6 +225,21 @@
 - **Files:** `src/views/materials/show.php:197,233`, `src/views/games/show.php:308,345`
 - **Problem:** Views called `csrf()` which does not exist as a function. The available helpers are `csrfField()` (returns full HTML input) and `Session::csrfToken()` (returns token string). The `$csrfToken` variable is also available in views. This caused fatal errors when toggling favorites or adding to groups.
 - **Fix:** Replaced `csrf()` with `e($csrfToken)` which outputs the escaped CSRF token value.
+
+### BUG-42 (Medium): DashboardController Missing `requireAuth()` in Constructor
+- **File:** `src/controllers/DashboardController.php:6-17`
+- **Problem:** Unlike all other protected controllers, `DashboardController` did not call `$this->requireAuth()` in its constructor. Instead, it performed a manual `Auth::check()` inside `index()` with a redundant `return` after `$this->redirect()` (which calls `exit`). This violated the established pattern and created a maintenance risk if methods were added later.
+- **Fix:** Added proper `__construct()` method calling `$this->requireAuth()`, removed the manual auth check and dead `return` statement from `index()`.
+
+### BUG-43 (Medium): Search Fetch Missing `response.ok` Check
+- **File:** `src/views/partials/header.php:435`
+- **Problem:** The search palette's `fetch()` call went straight to `.json()` without checking HTTP status. A 4xx/5xx response (e.g., rate-limited, server error) would cause a JSON parse exception silently swallowed by the empty `.catch()`.
+- **Fix:** Added `if (!r.ok) throw new Error('HTTP ' + r.status)` before `.json()`.
+
+### BUG-44 (Low): SMTP `getResponse()` Does Not Detect Read Timeout
+- **File:** `src/services/Mailer.php:425-435`
+- **Problem:** `fgets()` returns `false` on both EOF and socket timeout. The loop exited silently without distinguishing between the two, potentially returning a truncated SMTP response that could cause protocol violations.
+- **Fix:** Added `stream_get_meta_data()` check after the loop to detect and log timeout conditions.
 
 ---
 

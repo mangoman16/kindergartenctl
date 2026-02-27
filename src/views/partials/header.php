@@ -271,7 +271,7 @@ $searchPlaceholder = __('search.global_placeholder');
         tag: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>',
         group: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>'
     };
-    var typeLabels = { game: '<?= __('game.title') ?>', material: '<?= __('material.title') ?>', box: '<?= __('box.title') ?>', tag: '<?= __('tag.title') ?>', group: '<?= __('group.title') ?>' };
+    var typeLabels = <?= json_encode(['game' => __('game.title'), 'material' => __('material.title'), 'box' => __('box.title'), 'tag' => __('tag.title'), 'group' => __('group.title')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS) ?>;
 
     function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
@@ -327,7 +327,7 @@ $searchPlaceholder = __('search.global_placeholder');
             recent.forEach(function(item) {
                 var icon = typeIcons[item.type] || '';
                 var label = typeLabels[item.type] || item.type;
-                html += '<a href="' + escHtml(item.url) + '" class="search-palette-item"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + escHtml(item.name) + '</span><span class="search-palette-item-type">' + label + '</span></span></a>';
+                html += '<a href="' + escHtml(item.url) + '" class="search-palette-item"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + escHtml(item.name) + '</span><span class="search-palette-item-type">' + escHtml(label) + '</span></span></a>';
             });
             html += '</div>';
         }
@@ -384,11 +384,11 @@ $searchPlaceholder = __('search.global_placeholder');
         var firstItem = true;
         Object.keys(grouped).forEach(function(type) {
             var label = typeLabels[type] || type;
-            html += '<div class="search-palette-section"><div class="search-palette-section-header"><span>' + label + '</span></div>';
+            html += '<div class="search-palette-section"><div class="search-palette-section-header"><span>' + escHtml(label) + '</span></div>';
             grouped[type].forEach(function(item) {
                 var icon = typeIcons[item.type] || '';
                 var colorDot = item.color ? '<span class="color-dot" style="background:' + escHtml(item.color) + '"></span>' : '';
-                html += '<a href="' + escHtml(item.url) + '" class="search-palette-item' + (firstItem ? ' active' : '') + '" data-result-name="' + escHtml(item.name) + '" data-result-type="' + escHtml(item.type) + '" data-result-url="' + escHtml(item.url) + '"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + colorDot + highlightMatch(item.name, query) + '</span><span class="search-palette-item-type">' + label + '</span></span></a>';
+                html += '<a href="' + escHtml(item.url) + '" class="search-palette-item' + (firstItem ? ' active' : '') + '" data-result-name="' + escHtml(item.name) + '" data-result-type="' + escHtml(item.type) + '" data-result-url="' + escHtml(item.url) + '"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + colorDot + highlightMatch(item.name, query) + '</span><span class="search-palette-item-type">' + escHtml(label) + '</span></span></a>';
                 firstItem = false;
             });
             html += '</div>';
@@ -432,7 +432,7 @@ $searchPlaceholder = __('search.global_placeholder');
         }
         body.innerHTML = '<div class="search-palette-hint"><p><?= __('misc.loading') ?></p></div>';
         var url = '/api/search?q=' + encodeURIComponent(query);
-        fetch(url).then(function(r) { return r.json(); }).then(function(data) {
+        fetch(url).then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then(function(data) {
             if (query === currentQuery) {
                 lastResults = data.results;
                 lastQuery = data.query;
