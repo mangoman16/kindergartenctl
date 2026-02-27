@@ -279,7 +279,7 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Updated BUG_AUDIT.md with 7 new bug entries (BUG-32 through BUG-38)
 - [x] Updated SECURITY_AUDIT.md with frontend XSS finding (SEC-033)
 
-### February 2026 - Design System Documentation (2026-02-27)
+### February 2026 - Design System Documentation & CSS Alignment (2026-02-27)
 - [x] Created DESIGN_SYSTEM.md with Apple-polish-inspired guidelines
   - [x] Core design principles (calm, typography-first, subtle motion, consistency, accessibility, device-agnostic)
   - [x] Typography guidelines mapped to existing CSS font tokens
@@ -295,6 +295,16 @@ The project has a comprehensive foundation with most core features implemented. 
   - [x] Component consistency checklist for new additions
   - [x] Design governance rules for tokens and components
 - [x] Updated CLAUDE.md to reference DESIGN_SYSTEM.md in MD file tables
+- [x] CSS audit and alignment with design system guidelines
+  - [x] Added `prefers-reduced-motion` support (BUG-47)
+  - [x] Fixed missing focus states on search inputs (BUG-45, WCAG violation)
+  - [x] Increased touch targets to 44px: `.rail-btn` (40→44px), `.header-icon-btn` (36→44px) (BUG-46)
+  - [x] Replaced 6 hardcoded box-shadow values with `--shadow-*` tokens
+  - [x] Replaced 7 hardcoded border-radius values with `--radius-*` tokens
+  - [x] Replaced 8 hardcoded transition durations with `--transition-*` tokens
+  - [x] Replaced 8 hardcoded font-size values with `--font-size-*` tokens
+  - [x] Replaced 18+ hardcoded spacing values with `--spacing-*` tokens
+- [x] Updated BUG_AUDIT.md with 4 new entries (BUG-45 through BUG-48)
 
 ### February 2026 - Comprehensive Code Audit (2026-02-26)
 - [x] Full audit of all 9 core classes, 15 controllers, 10 models, 4 services, 3 helpers, views, and JavaScript
@@ -429,7 +439,7 @@ All tables from specification are present:
 ## Related Documents
 
 - **`SECURITY_AUDIT.md`** - Full security audit with 60 tracked issues, all resolved (0 open)
-- **`BUG_AUDIT.md`** - Complete bug tracking with 44 issues found and fixed
+- **`BUG_AUDIT.md`** - Complete bug tracking with 48 issues found and fixed
 - **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
 - **`DESIGN_SYSTEM.md`** - Apple-polish-inspired design system guidelines (typography, color, spacing, components, accessibility)
 - **`project.md`** - Full project specification and database schema

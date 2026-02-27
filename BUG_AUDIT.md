@@ -13,9 +13,9 @@
 |----------|-------|-------|
 | Critical | 10 | 10 |
 | High | 6 | 6 |
-| Medium | 23 | 23 |
-| Low | 5 | 5 |
-| **Total** | **44** | **44** |
+| Medium | 24 | 24 |
+| Low | 8 | 8 |
+| **Total** | **48** | **48** |
 
 ---
 
@@ -240,6 +240,26 @@
 - **File:** `src/services/Mailer.php:425-435`
 - **Problem:** `fgets()` returns `false` on both EOF and socket timeout. The loop exited silently without distinguishing between the two, potentially returning a truncated SMTP response that could cause protocol violations.
 - **Fix:** Added `stream_get_meta_data()` check after the loop to detect and log timeout conditions.
+
+### BUG-45 (Medium): Search Input Focus States Missing (WCAG Violation)
+- **File:** `public/assets/css/style.css:928,1319`
+- **Problem:** `.search-palette-header input:focus` and `.search-form input:focus` had `outline: none` with no replacement focus indicator, making keyboard navigation inaccessible.
+- **Fix:** Added `:focus-visible` rules with `outline: 2px solid var(--color-primary-light)` and `outline-offset: 2px`.
+
+### BUG-46 (Low): Touch Targets Below 44px Minimum
+- **File:** `public/assets/css/style.css:632-634,821-822`
+- **Problem:** `.rail-btn` (40px) and `.header-icon-btn` (36px) were below the 44px WCAG minimum touch target size.
+- **Fix:** Increased both to 44px width and height.
+
+### BUG-47 (Low): Missing `prefers-reduced-motion` Support
+- **File:** `public/assets/css/style.css`
+- **Problem:** No `@media (prefers-reduced-motion: reduce)` block existed. Users with vestibular disorders or motion sensitivity had no way to disable animations.
+- **Fix:** Added global reduced-motion media query that sets all animation/transition durations to 0.01ms.
+
+### BUG-48 (Low): Hardcoded Values Instead of Design Tokens
+- **File:** `public/assets/css/style.css` (multiple locations)
+- **Problem:** ~40 instances of hardcoded px/rem values for spacing, shadows, border-radius, font-sizes, and transitions instead of using CSS custom property tokens. Creates maintenance burden and inconsistency.
+- **Fix:** Replaced all hardcoded values with corresponding `--spacing-*`, `--shadow-*`, `--radius-*`, `--font-size-*`, and `--transition-*` tokens.
 
 ---
 
