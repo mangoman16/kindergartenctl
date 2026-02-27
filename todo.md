@@ -279,6 +279,23 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Updated BUG_AUDIT.md with 7 new bug entries (BUG-32 through BUG-38)
 - [x] Updated SECURITY_AUDIT.md with frontend XSS finding (SEC-033)
 
+### February 2026 - Design System Documentation (2026-02-27)
+- [x] Created DESIGN_SYSTEM.md with Apple-polish-inspired guidelines
+  - [x] Core design principles (calm, typography-first, subtle motion, consistency, accessibility, device-agnostic)
+  - [x] Typography guidelines mapped to existing CSS font tokens
+  - [x] Color & contrast rules with WCAG AA requirements
+  - [x] Spacing & layout documentation with all spacing tokens
+  - [x] Component patterns (buttons, forms, cards, navigation, modals, feedback)
+  - [x] Border radius and shadow/elevation guidelines
+  - [x] Motion & transition rules with token references
+  - [x] Accessibility & usability checklist (touch targets, focus, ARIA, keyboard nav)
+  - [x] Responsive & cross-device guidelines with breakpoint table
+  - [x] Dark mode implementation guide and new-component checklist
+  - [x] Customization system documentation
+  - [x] Component consistency checklist for new additions
+  - [x] Design governance rules for tokens and components
+- [x] Updated CLAUDE.md to reference DESIGN_SYSTEM.md in MD file tables
+
 ### February 2026 - Comprehensive Code Audit (2026-02-26)
 - [x] Full audit of all 9 core classes, 15 controllers, 10 models, 4 services, 3 helpers, views, and JavaScript
 - [x] Fixed DashboardController missing `requireAuth()` in constructor (BUG-42)
@@ -414,9 +431,10 @@ All tables from specification are present:
 - **`SECURITY_AUDIT.md`** - Full security audit with 60 tracked issues, all resolved (0 open)
 - **`BUG_AUDIT.md`** - Complete bug tracking with 44 issues found and fixed
 - **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
+- **`DESIGN_SYSTEM.md`** - Apple-polish-inspired design system guidelines (typography, color, spacing, components, accessibility)
 - **`project.md`** - Full project specification and database schema
 - **`README.md`** - Installation guide and requirements
 
 ---
 
-*Last updated: 2026-02-26*
+*Last updated: 2026-02-27*

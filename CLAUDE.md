@@ -11,6 +11,7 @@ When making changes to the codebase, **always** update the relevant MD files:
 - **BUG_AUDIT.md**: Add entries when bugs are found/fixed (include file:line references)
 - **SECURITY_AUDIT.md**: Update when security-related code is modified
 - **CODE_QUALITY.md**: Update when code quality patterns change
+- **DESIGN_SYSTEM.md**: Reference when adding/modifying UI components, colors, spacing, or layout
 - **todo.md**: Mark tasks complete, add new tasks discovered during implementation
 - **README.md**: Update when install steps, dependencies, or config changes occur
 
@@ -22,6 +23,7 @@ When making changes to the codebase, **always** update the relevant MD files:
 | `BUG_AUDIT.md` | All bugs found and fixed, with file:line references | Before fixing bugs, to avoid regressions |
 | `SECURITY_AUDIT.md` | Security findings (XSS, CSRF, SQLi, auth) | When modifying auth, input handling, or DB queries |
 | `CODE_QUALITY.md` | Code quality patterns, inconsistencies | When refactoring or adding new features |
+| `DESIGN_SYSTEM.md` | Design tokens, component guidelines, accessibility rules | When adding/modifying UI components, CSS, or layout |
 | `README.md` | Installation, setup, requirements | When changing config, dependencies, or install flow |
 | `project.md` | Full specification (features, DB schema, routes) | When adding features or understanding business logic |
 | `todo.md` | Development task tracking | When checking what's done vs pending |
@@ -75,6 +77,7 @@ src/lang/en.php           -> English translation strings (flat key=>value)
 - Theme color: CSS custom property `--color-primary` overridden in layout
 - Background patterns: `body[data-pattern="dots|stars|hearts|clouds"]` CSS patterns
 - 8 preset colors available in settings
+- **Full design system guidelines**: See `DESIGN_SYSTEM.md` for typography, color, spacing, component, motion, accessibility, and responsive rules
 
 ### 4. Date Formatting
 - `formatDate()` replaces `F` before `M` to prevent cascading corruption
