@@ -136,7 +136,7 @@
     <div class="card-header">
         <h2 class="card-title"><?= __('material.used_in_games') ?></h2>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body card-body-flush">
         <table class="table">
             <thead>
                 <tr>

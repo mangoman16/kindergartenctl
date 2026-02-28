@@ -35,7 +35,7 @@
                     <span class="help-tooltip" data-help="<?= e(__('help.field_sort_order')) ?>">?</span>
                 </label>
                 <input type="number" id="sort_order" name="sort_order"
-                       class="form-control" style="width: 100px;"
+                       class="form-control form-control-narrow"
                        value="<?= old('sort_order', $category['sort_order'] ?? $nextSortOrder ?? 0) ?>"
                        min="0">
                 <div class="form-hint"><?= __('form.sort_order_hint') ?></div>

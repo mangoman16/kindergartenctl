@@ -49,7 +49,7 @@
                             <?php endif; ?>
                             <?php if ($game['is_outdoor']): ?>
                                 <span class="badge badge-warning">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-inline">
                                         <circle cx="12" cy="12" r="5"></circle>
                                         <line x1="12" y1="1" x2="12" y2="3"></line>
                                         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -230,7 +230,7 @@
             <div class="card-header">
                 <h2 class="card-title"><?= __('nav.materials') ?></h2>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body card-body-flush">
                 <ul class="material-list">
                     <?php foreach ($game['materials'] as $material): ?>
                         <li>

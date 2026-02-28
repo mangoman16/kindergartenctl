@@ -13,9 +13,9 @@
 |----------|-------|-------|
 | Critical | 10 | 10 |
 | High | 6 | 6 |
-| Medium | 24 | 24 |
-| Low | 8 | 8 |
-| **Total** | **48** | **48** |
+| Medium | 30 | 30 |
+| Low | 12 | 12 |
+| **Total** | **58** | **58** |
 
 ---
 
@@ -260,6 +260,56 @@
 - **File:** `public/assets/css/style.css` (multiple locations)
 - **Problem:** ~40 instances of hardcoded px/rem values for spacing, shadows, border-radius, font-sizes, and transitions instead of using CSS custom property tokens. Creates maintenance burden and inconsistency.
 - **Fix:** Replaced all hardcoded values with corresponding `--spacing-*`, `--shadow-*`, `--radius-*`, `--font-size-*`, and `--transition-*` tokens.
+
+### BUG-49 (Medium): All buttons lack `:focus-visible` states
+- **File:** `public/assets/css/style.css:1893-1896`
+- **Problem:** No `.btn:focus-visible` rule existed. Keyboard-only users had no visual focus indicator when tabbing through buttons. WCAG 2.4.7 violation.
+- **Fix:** Added `.btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }` cascading to all button variants.
+
+### BUG-50 (Medium): Buttons lack `:active` state feedback
+- **File:** `public/assets/css/style.css:1893-1896`
+- **Problem:** No tactile feedback when clicking buttons — no visual change between hover and mousedown.
+- **Fix:** Added `.btn:active:not(:disabled) { transform: scale(0.97); }` for subtle press feedback.
+
+### BUG-51 (Medium): `.form-select.is-invalid` styling missing
+- **File:** `public/assets/css/style.css:2055-2069`
+- **Problem:** `.form-control.is-invalid` had red border styling but `.form-select.is-invalid` did not. Invalid select dropdowns showed no visual error indicator.
+- **Fix:** Added matching `.form-select.is-invalid` and `:focus` rules with danger border and box-shadow.
+
+### BUG-52 (Medium): Missing `:disabled` styling for form inputs
+- **File:** `public/assets/css/style.css`
+- **Problem:** No visual distinction for disabled form controls. Users couldn't tell which fields were interactive vs read-only.
+- **Fix:** Added `.form-control:disabled, .form-select:disabled` with gray background, muted text color, and not-allowed cursor. Added dark mode variant.
+
+### BUG-53 (Medium): Pagination and table-sort links lack focus indicators
+- **File:** `public/assets/css/style.css:2319,3039`
+- **Problem:** `.pagination-link` and `.table-sort` had no `:focus-visible` rules, invisible to keyboard navigation.
+- **Fix:** Added `:focus-visible` with consistent outline pattern matching buttons.
+
+### BUG-54 (Medium): Z-index conflicts between dropdowns, user menu, and modals
+- **File:** `public/assets/css/style.css:1350,1531,2523,2541`
+- **Problem:** `.search-dropdown`, `.user-dropdown`, `.modal-overlay`, and `.modal` all shared `z-index: 1000`. Overlapping elements could appear behind each other.
+- **Fix:** Staggered z-indices: search-dropdown: 1000, user-dropdown: 1010, modals: 1020. Removed duplicate cropper z-index override.
+
+### BUG-55 (Low): Inconsistent card-body padding removal across views
+- **Files:** 11 view files across categories, groups, materials, search, games, changelog, calendar
+- **Problem:** Three different patterns for zero-padding card bodies: `style="padding: 0;"`, `class="p-0"`, inline spacing tokens. No canonical CSS class.
+- **Fix:** Added `.card-body-flush` utility class. Updated all 11 occurrences across 8 view files.
+
+### BUG-56 (Low): Inconsistent toggle selection button ID and translation key
+- **File:** `src/views/materials/index.php:4,9,213`
+- **Problem:** Materials used `toggle-select-mode` + `action.select` while Games used `toggle-selection-mode` + `bulk.multi_select`. Same feature, different identifiers.
+- **Fix:** Standardized Materials to match Games: ID `toggle-selection-mode`, key `bulk.multi_select`.
+
+### BUG-57 (Low): Hardcoded German text in views
+- **Files:** `src/views/locations/index.php:18`, `src/views/categories/index.php:50`
+- **Problem:** "Sortieren nach:" and "Spiele" were hardcoded German strings instead of translation function calls.
+- **Fix:** Replaced with `__('action.sort_by')` and `__('nav.games')`. Added `action.sort_by` key to both language files.
+
+### BUG-58 (Low): Modal backdrop opacity inconsistency
+- **File:** `public/assets/css/style.css:2548`
+- **Problem:** `.modal-backdrop` used `rgba(0,0,0,0.45)` while `.modal-overlay` used `rgba(0,0,0,0.5)`. Different backdrop darkness for the same purpose.
+- **Fix:** Standardized to `rgba(0,0,0,0.5)`.
 
 ---
 

@@ -39,7 +39,7 @@
 <?php else: ?>
 <!-- Categories Table -->
 <div class="card">
-    <div class="card-body" style="padding: 0;">
+    <div class="card-body card-body-flush">
         <table class="table">
             <thead>
                 <tr>
@@ -47,7 +47,7 @@
                     <th><?= __('form.name') ?></th>
                     <th><?= __('form.description') ?></th>
                     <th style="width: 100px;"><?= __('category.sort_order') ?></th>
-                    <th style="width: 120px;">Spiele</th>
+                    <th style="width: 120px;"><?= __('nav.games') ?></th>
                     <th style="width: 150px;"></th>
                 </tr>
             </thead>

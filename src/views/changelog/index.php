@@ -63,7 +63,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
     <div class="card-header">
         <h2 class="card-title"><?= $total ?> <?= pluralize($total, 'Eintrag', 'Einträge') ?></h2>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body card-body-flush">
         <table class="table">
             <thead>
                 <tr>

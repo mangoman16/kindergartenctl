@@ -15,7 +15,7 @@
 <div class="card mb-6">
     <div class="card-body" style="padding: var(--spacing-3) var(--spacing-5);">
         <div class="flex items-center gap-4">
-            <span class="text-sm text-muted">Sortieren nach:</span>
+            <span class="text-sm text-muted"><?= __('action.sort_by') ?>:</span>
             <?php
             $sortOptions = [
                 'name' => 'Name',

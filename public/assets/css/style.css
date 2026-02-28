@@ -169,6 +169,12 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239090a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
 
+[data-theme="dark"] .form-control:disabled,
+[data-theme="dark"] .form-select:disabled {
+    background: var(--color-gray-200);
+    color: var(--color-gray-500);
+}
+
 [data-theme="dark"] .modal-overlay {
     background: rgba(0, 0, 0, 0.7);
 }
@@ -405,6 +411,7 @@
 }
 
 [data-theme="dark"] .quick-create-popup {
+    background: var(--color-gray-800);
     border: 1px solid var(--color-gray-300);
 }
 
@@ -1528,7 +1535,7 @@ small {
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-xl);
     min-width: 260px;
-    z-index: 1000;
+    z-index: 1010;
     opacity: 0;
     transform: translateY(-8px);
     pointer-events: none;
@@ -1777,6 +1784,10 @@ small {
     padding: var(--spacing-5);
 }
 
+.card-body-flush {
+    padding: 0;
+}
+
 .card-footer {
     padding: var(--spacing-4) var(--spacing-5);
     background: var(--color-gray-50);
@@ -1893,6 +1904,15 @@ small {
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.btn:active:not(:disabled) {
+    transform: scale(0.97);
 }
 
 .btn-primary {
@@ -2034,6 +2054,21 @@ small {
     box-shadow: 0 0 0 3px var(--color-danger-bg);
 }
 
+.form-select.is-invalid {
+    border-color: var(--color-danger);
+}
+
+.form-select.is-invalid:focus {
+    box-shadow: 0 0 0 3px var(--color-danger-bg);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+    background: var(--color-gray-100);
+    color: var(--color-gray-400);
+    cursor: not-allowed;
+}
+
 textarea.form-control {
     resize: vertical;
     min-height: 100px;
@@ -2161,6 +2196,17 @@ select.form-control,
 .badge-gray {
     background: var(--color-gray-100);
     color: var(--color-gray-600);
+}
+
+.tag-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-1) var(--spacing-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-full);
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
 }
 
 /* Tags/Chips */
@@ -2320,8 +2366,8 @@ select.form-control,
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 36px;
-    height: 36px;
+    min-width: 44px;
+    height: 44px;
     padding: var(--spacing-1) var(--spacing-2);
     font-size: var(--font-size-sm);
     color: var(--color-gray-600);
@@ -2340,6 +2386,11 @@ select.form-control,
     background: var(--color-primary);
     border-color: var(--color-primary);
     color: var(--color-white);
+}
+
+.pagination-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 .pagination-ellipsis {
@@ -2470,7 +2521,7 @@ select.form-control,
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1020;
     opacity: 0;
     visibility: hidden;
     transition: all var(--transition-normal);
@@ -2488,14 +2539,14 @@ select.form-control,
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1020;
     padding: var(--spacing-4);
 }
 
 .modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
@@ -2691,6 +2742,14 @@ select.form-control,
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+.form-control-narrow {
+    max-width: 120px;
+}
+
+.icon-inline {
+    vertical-align: -0.125em;
 }
 
 /* ============================================
@@ -3049,6 +3108,10 @@ body[data-pattern="clouds"] .page-content {
 .table-sort.active { color: var(--color-primary); }
 .table-sort.active.asc::after { content: ' ↑'; font-size: 0.7em; }
 .table-sort.active.desc::after { content: ' ↓'; font-size: 0.7em; }
+.table-sort:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
 
 /* ============================================
    Bulk Actions Bar (shared across list pages)
@@ -4129,11 +4192,6 @@ body[data-pattern="waves"]::before {
 .search-trigger:focus {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
-}
-
-/* Ensure cropper modal appears above search palette */
-.cropper-modal-overlay {
-    z-index: 10000 !important;
 }
 
 /* ============================================

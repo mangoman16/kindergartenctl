@@ -102,7 +102,7 @@ class MaterialController extends Controller
         ChangelogService::getInstance()->logCreate('material', $materialId, $data['name'], $data);
 
         Session::setFlash('success', __('flash.created', ['item' => __('material.title')]));
-        $this->redirect('/materials');
+        $this->redirect('/materials/' . $materialId);
     }
 
     /**
@@ -216,7 +216,7 @@ class MaterialController extends Controller
         }
 
         Session::setFlash('success', __('flash.updated', ['item' => __('material.title')]));
-        $this->redirect('/materials');
+        $this->redirect('/materials/' . $id);
     }
 
     /**

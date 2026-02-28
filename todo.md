@@ -306,6 +306,43 @@ The project has a comprehensive foundation with most core features implemented. 
   - [x] Replaced 18+ hardcoded spacing values with `--spacing-*` tokens
 - [x] Updated BUG_AUDIT.md with 4 new entries (BUG-45 through BUG-48)
 
+### February 2026 - Full UI Consistency Audit & Refactor (2026-02-28)
+- [x] Comprehensive audit of all 59 views, 15 controllers, JS, and full CSS
+- [x] Phase 1: CSS accessibility fixes
+  - [x] Added `.btn:focus-visible` for all button variants (BUG-49)
+  - [x] Added `.btn:active` tactile press feedback (BUG-50)
+  - [x] Added `.form-select.is-invalid` validation styling (BUG-51)
+  - [x] Added `.form-control:disabled, .form-select:disabled` styling + dark mode (BUG-52)
+  - [x] Increased `.pagination-link` touch targets 36→44px
+  - [x] Added `:focus-visible` to `.pagination-link` and `.table-sort` (BUG-53)
+- [x] Phase 2: CSS consistency & utility classes
+  - [x] Added `.card-body-flush` utility class (BUG-55)
+  - [x] Added `.form-control-narrow` utility class (replaces inline width styles)
+  - [x] Added `.icon-inline` utility class (replaces inline vertical-align styles)
+  - [x] Added `.tag-badge` base style (orphaned dark-mode-only definition)
+  - [x] Fixed z-index conflicts: search-dropdown 1000, user-dropdown 1010, modals 1020 (BUG-54)
+  - [x] Fixed modal backdrop opacity inconsistency 0.45→0.5 (BUG-58)
+  - [x] Added `.quick-create-popup` dark mode background
+  - [x] Removed duplicate cropper z-index `!important` override
+- [x] Phase 3: View template standardization (8 view files)
+  - [x] Replaced all `card-body p-0` / `style="padding:0"` with `card-body card-body-flush` (BUG-55)
+  - [x] Standardized box image preview 150→120px (matches other forms)
+  - [x] Standardized print button to `btn-secondary` in boxes/show (was `btn-outline`)
+  - [x] Standardized toggle selection ID and translation key in materials/index (BUG-56)
+  - [x] Replaced hardcoded German text with translation calls (BUG-57)
+  - [x] Replaced inline `style="width:100px"` with `.form-control-narrow` in 3 form views
+  - [x] Replaced inline `style="vertical-align:-1px"` with `.icon-inline` in 2 views
+- [x] Phase 4: Controller redirect & flash message consistency
+  - [x] MaterialController: redirect to show page after create/update (was list)
+  - [x] Standardized duplicate flash key `settings.language_changed_msg` → `settings.language_changed`
+- [x] Phase 5: JavaScript error handling
+  - [x] Added `showFlashError()` helper for consistent AJAX error display
+  - [x] Updated favorite toggle to show flash error instead of silent console.error
+  - [x] Added `error_generic` translation to JS AppTranslations
+- [x] Phase 6: Translation file updates
+  - [x] Added `action.sort_by` key to German and English language files
+- [x] Updated BUG_AUDIT.md with 10 new entries (BUG-49 through BUG-58)
+
 ### February 2026 - Comprehensive Code Audit (2026-02-26)
 - [x] Full audit of all 9 core classes, 15 controllers, 10 models, 4 services, 3 helpers, views, and JavaScript
 - [x] Fixed DashboardController missing `requireAuth()` in constructor (BUG-42)
@@ -439,7 +476,7 @@ All tables from specification are present:
 ## Related Documents
 
 - **`SECURITY_AUDIT.md`** - Full security audit with 60 tracked issues, all resolved (0 open)
-- **`BUG_AUDIT.md`** - Complete bug tracking with 48 issues found and fixed
+- **`BUG_AUDIT.md`** - Complete bug tracking with 58 issues found and fixed
 - **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
 - **`DESIGN_SYSTEM.md`** - Apple-polish-inspired design system guidelines (typography, color, spacing, components, accessibility)
 - **`project.md`** - Full project specification and database schema

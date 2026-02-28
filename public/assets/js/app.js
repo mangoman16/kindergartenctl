@@ -25,6 +25,29 @@
     }
 
     /**
+     * Show a flash error message (consistent AJAX error feedback)
+     */
+    function showFlashError(message) {
+        const container = document.querySelector('.main-content') || document.body;
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger';
+        alert.style.margin = 'var(--spacing-4) var(--spacing-6)';
+        alert.innerHTML =
+            '<span class="alert-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span>' +
+            '<span class="alert-message">' + message + '</span>' +
+            '<button class="alert-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+        alert.querySelector('.alert-close').addEventListener('click', function() {
+            alert.remove();
+        });
+        container.prepend(alert);
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.3s ease';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        }, 5000);
+    }
+
+    /**
      * Initialize alert close buttons
      */
     function initAlerts() {
@@ -120,7 +143,7 @@
                         this.classList.toggle('active', data.is_favorite);
                     }
                 } catch (error) {
-                    console.error('Error toggling favorite:', error);
+                    showFlashError(t('error_generic'));
                 }
             });
         });
@@ -377,6 +400,7 @@
                             this.closest('.form-group').appendChild(warning);
                         }
                     } catch (error) {
+                        // Duplicate check is non-critical, silent fail is acceptable
                         console.error('Error checking duplicate:', error);
                     }
                 }, 500);

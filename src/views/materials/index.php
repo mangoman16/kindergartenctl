@@ -1,12 +1,12 @@
 <div class="page-header">
     <h1 class="page-title"><?= __('material.title_plural') ?></h1>
     <div class="page-actions">
-        <button type="button" id="toggle-select-mode" class="btn btn-ghost">
+        <button type="button" id="toggle-selection-mode" class="btn btn-ghost">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 11 12 14 22 4"></polyline>
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
             </svg>
-            <?= __('action.select') ?>
+            <?= __('bulk.multi_select') ?>
         </button>
         <a href="<?= url('/materials/create') ?>" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectAllCheckbox = document.getElementById('select-all-checkbox');
     const selectedCountEl = document.getElementById('selected-count');
     const cancelBtn = document.getElementById('bulk-cancel');
-    const toggleBtn = document.getElementById('toggle-select-mode');
+    const toggleBtn = document.getElementById('toggle-selection-mode');
 
     let selectionMode = false;
     let selectedIds = new Set();

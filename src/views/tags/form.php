@@ -40,7 +40,7 @@
                     <input type="color" id="color" name="color"
                            value="<?= old('color', $tag['color'] ?? '#4F46E5') ?>"
                            style="width: 50px; height: 40px; border: none; border-radius: var(--radius-md); cursor: pointer;">
-                    <input type="text" id="color_text" class="form-control" style="width: 100px;"
+                    <input type="text" id="color_text" class="form-control form-control-narrow"
                            value="<?= old('color', $tag['color'] ?? '#4F46E5') ?>"
                            pattern="^#[0-9A-Fa-f]{6}$" placeholder="#RRGGBB">
                 </div>
