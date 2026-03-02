@@ -99,6 +99,18 @@
                                     <span class="text-muted"><?= __('misc.not_specified') ?></span>
                                 <?php endif; ?>
                             </dd>
+
+                            <dt><?= __('game.difficulty') ?></dt>
+                            <dd>
+                                <span class="difficulty-stars">
+                                    <?php for ($i = 1; $i <= 3; $i++): ?>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="<?= $i <= ($game['difficulty'] ?? 1) ? 'currentColor' : 'none' ?>" stroke="currentColor" stroke-width="2" class="<?= $i > ($game['difficulty'] ?? 1) ? 'empty' : '' ?>">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    <?php endfor; ?>
+                                </span>
+                                <span class="text-muted text-sm"><?= __('game.difficulty.' . ($game['difficulty'] ?? 1)) ?></span>
+                            </dd>
                         </dl>
                     </div>
                 </div>

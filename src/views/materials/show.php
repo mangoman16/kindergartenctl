@@ -122,7 +122,7 @@
                         <line x1="12" y1="11" x2="12" y2="17"></line>
                         <line x1="9" y1="14" x2="15" y2="14"></line>
                     </svg>
-                    Zur Gruppe hinzufügen
+                    <?= __('group.add_to') ?>
                 </button>
                 <?php endif; ?>
             </div>

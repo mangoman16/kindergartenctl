@@ -60,6 +60,13 @@
                         </div>
                         <?php endif; ?>
 
+                        <?php if (!empty($box['label'])): ?>
+                        <div class="mb-4">
+                            <span class="text-sm text-muted"><?= __('box.label') ?>:</span>
+                            <span class="ml-2"><?= e($box['label']) ?></span>
+                        </div>
+                        <?php endif; ?>
+
                         <?php if (!empty($box['location_name'])): ?>
                         <div class="mb-4">
                             <span class="text-sm text-muted"><?= __('box.location') ?>:</span>

@@ -2732,6 +2732,11 @@ select.form-control,
 .relative { position: relative; }
 
 .hidden { display: none; }
+.d-inline { display: inline; }
+.d-inline-block { display: inline-block; }
+.m-0 { margin: 0; }
+.form-container-sm { max-width: 600px; }
+.form-container-md { max-width: 800px; }
 .sr-only {
     position: absolute;
     width: 1px;
