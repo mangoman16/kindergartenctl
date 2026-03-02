@@ -463,6 +463,87 @@ When building or modifying any component, verify against this checklist:
 
 ---
 
+## 15. UI Consistency Checklist (Derived from Full Audit)
+
+This checklist was derived from a comprehensive audit of all 59 views, 15 controllers, the full CSS, and all JavaScript. Use it when adding or modifying any page.
+
+### Page Structure
+
+- [ ] Uses `.page-header` > `.page-title` + `.page-actions` pattern
+- [ ] Empty state uses `.empty-state` with icon (64x64, stroke-width 1) + title + text + action button
+- [ ] Tables wrapped in `.card` > `.card-body.card-body-flush` > `.table`
+- [ ] Table actions use `.table-actions` wrapper with `.btn.btn-sm.btn-secondary` (edit) + `.btn.btn-sm.btn-danger` (delete)
+
+### Buttons
+
+- [ ] Primary action: `.btn.btn-primary`
+- [ ] Secondary action: `.btn.btn-secondary` (never `.btn-outline` for standard actions)
+- [ ] Destructive action: `.btn.btn-danger`
+- [ ] Tertiary/toggle action: `.btn.btn-ghost`
+- [ ] Button sizing: default for page actions, `.btn-sm` for inline/table actions
+- [ ] All buttons inherit `:focus-visible`, `:active`, and `:disabled` states from `.btn` base
+- [ ] Icon inside button: 16x16 for default, 14x14 for `.btn-sm`
+
+### Forms
+
+- [ ] Shared `form.php` for create and edit (not separate files)
+- [ ] Field order identical between create mode and edit mode
+- [ ] Name field always first with `required maxlength="N"`
+- [ ] All required fields have `<span class="required">*</span>` after label
+- [ ] All name fields have `.help-tooltip` with `data-help` attribute
+- [ ] Validation errors: inline `.form-error` div below each field
+- [ ] Invalid fields: `.is-invalid` class on the `.form-control` / `.form-select`
+- [ ] Number inputs use `.form-control-narrow` (not inline `style="width:..."`)
+- [ ] Image upload preview: 120x120px (consistent across all entities)
+- [ ] Action buttons: Cancel (link, `.btn.btn-secondary`) + Save (submit, `.btn.btn-primary`)
+- [ ] `select` elements with `.form-select` support `.is-invalid` styling
+
+### Translations
+
+- [ ] All visible text uses `__('key')` — no hardcoded strings in any language
+- [ ] Flash messages: `flash.created`, `flash.updated`, `flash.deleted` with `['item' => __('entity.title')]`
+- [ ] Settings-specific messages use `settings.*` keys (intentional divergence from standard pattern)
+- [ ] JS-facing strings listed in `layouts/main.php` AppTranslations object
+
+### Redirects After Operations
+
+- [ ] After create: redirect to show page if entity has a show route, otherwise to list
+- [ ] After update: redirect to show page if entity has a show route, otherwise to list
+- [ ] After delete: always redirect to list page
+- [ ] On validation failure: redirect back to form with `Session::setErrors()` + `Session::setOldInput()`
+
+### Interactive Elements
+
+- [ ] Delete actions use `onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')"` pattern
+- [ ] Selection mode toggle: ID `toggle-selection-mode`, label `__('bulk.multi_select')`
+- [ ] AJAX error handling uses `showFlashError()` for user-visible errors (not silent `console.error`)
+- [ ] Inline icon alignment uses `.icon-inline` class (not `style="vertical-align:..."`)
+
+### Z-Index Layer Order
+
+| Layer | Z-Index | Component |
+|-------|---------|-----------|
+| Base | 50 | Header |
+| Sidebar | 105-115 | Context sidebar, icon rail, mobile overlay |
+| Quick Create | 200 | Quick create popup |
+| Dropdowns | 1000 | Search dropdown |
+| User Menu | 1010 | User dropdown |
+| Modals | 1020 | Modal overlays |
+| Cropper | 2000 | Cropper modal |
+| Search Palette | 9999 | Command palette overlay |
+
+### CSS Utility Classes Reference
+
+| Class | Purpose | Replaces |
+|-------|---------|----------|
+| `.card-body-flush` | Zero padding on card body | `style="padding:0"`, `p-0` |
+| `.form-control-narrow` | Max-width 120px for number inputs | `style="width:100px"` |
+| `.icon-inline` | Vertical alignment for inline SVG icons | `style="vertical-align:-1px"` |
+| `.tag-badge` | Inline badge for tag display | — |
+| `.sr-only` | Screen reader only content | — |
+
+---
+
 ## Summary
 
 The KindergartenOrganizer should feel:
@@ -477,4 +558,4 @@ All visual decisions flow from the CSS custom properties defined in `:root`. Con
 
 ---
 
-*Last updated: 2026-02-27*
+*Last updated: 2026-03-02*

@@ -14,8 +14,8 @@
 | Critical | 10 | 10 |
 | High | 6 | 6 |
 | Medium | 30 | 30 |
-| Low | 12 | 12 |
-| **Total** | **58** | **58** |
+| Low | 14 | 14 |
+| **Total** | **60** | **60** |
 
 ---
 
@@ -310,6 +310,16 @@
 - **File:** `public/assets/css/style.css:2548`
 - **Problem:** `.modal-backdrop` used `rgba(0,0,0,0.45)` while `.modal-overlay` used `rgba(0,0,0,0.5)`. Different backdrop darkness for the same purpose.
 - **Fix:** Standardized to `rgba(0,0,0,0.5)`.
+
+### BUG-59 (Low): Groups form missing help-tooltip on name field
+- **File:** `src/views/groups/form.php:17-19`
+- **Problem:** Every other entity form (games, materials, boxes, categories, tags, locations) has a `.help-tooltip` with `data-help` on the name label. Groups form was missing it.
+- **Fix:** Added `<span class="help-tooltip" data-help="<?= e(__('help.field_name')) ?>">?</span>` to match all other forms.
+
+### BUG-60 (Low): Locations show page uses `btn-outline` for view button
+- **File:** `src/views/locations/show.php:94`
+- **Problem:** Box view button used `btn btn-sm btn-outline` while all other table action buttons use `btn btn-sm btn-secondary`. Inconsistent button variant for same action type.
+- **Fix:** Changed to `btn btn-sm btn-secondary`.
 
 ---
 

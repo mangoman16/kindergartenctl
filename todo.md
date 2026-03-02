@@ -342,6 +342,12 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Phase 6: Translation file updates
   - [x] Added `action.sort_by` key to German and English language files
 - [x] Updated BUG_AUDIT.md with 10 new entries (BUG-49 through BUG-58)
+- [x] Follow-up fixes from secondary audit pass
+  - [x] Added help-tooltip to groups/form.php name field (BUG-59, matched all other forms)
+  - [x] Changed locations/show.php `btn-outline` → `btn-secondary` (BUG-60, matched pattern)
+  - [x] Added comprehensive UI Consistency Checklist (Section 15) to DESIGN_SYSTEM.md
+  - [x] Added utility class reference table and z-index layer order to checklist
+- [x] Updated BUG_AUDIT.md with 2 additional entries (BUG-59, BUG-60), total now 60
 
 ### February 2026 - Comprehensive Code Audit (2026-02-26)
 - [x] Full audit of all 9 core classes, 15 controllers, 10 models, 4 services, 3 helpers, views, and JavaScript
@@ -476,7 +482,7 @@ All tables from specification are present:
 ## Related Documents
 
 - **`SECURITY_AUDIT.md`** - Full security audit with 60 tracked issues, all resolved (0 open)
-- **`BUG_AUDIT.md`** - Complete bug tracking with 58 issues found and fixed
+- **`BUG_AUDIT.md`** - Complete bug tracking with 60 issues found and fixed
 - **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
 - **`DESIGN_SYSTEM.md`** - Apple-polish-inspired design system guidelines (typography, color, spacing, components, accessibility)
 - **`project.md`** - Full project specification and database schema
