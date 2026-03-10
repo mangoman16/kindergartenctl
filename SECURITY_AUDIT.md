@@ -2,7 +2,7 @@
 
 **Application:** Kindergarten Spiele Organizer v1.0.0
 **Technology Stack:** PHP 8.0+, MySQL 8.x, Custom MVC Framework
-**Codebase Size:** ~122 PHP files, ~12,000 lines of code
+**Codebase Size:** ~155 PHP files, ~16,000 lines of code
 
 **Audit History:**
 | Date | Type | Auditor |

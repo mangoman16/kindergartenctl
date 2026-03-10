@@ -450,9 +450,9 @@ The project has a comprehensive foundation with most core features implemented. 
 - Game, Material, Box, Category, Tag, Group, Location
 - CalendarEvent, User, PasswordReset
 
-### Core Classes (9)
-- App, Router, Database, Controller, Model
-- Session, Auth, Validator, Logger
+### Core Classes (11)
+- App, AppBoot, Router, Database, Controller, Model
+- Session, Auth, Validator, Logger, ServiceResult
 
 ### Services (16)
 - ChangelogService (audit logging)
@@ -466,10 +466,6 @@ The project has a comprehensive foundation with most core features implemented. 
 - UserService (user creation/deletion)
 - SettingsService (preferences, debug, dark mode)
 - FavoriteService (toggle favorites)
-
-### Core Classes (11)
-- App, AppBoot, Router, Database, Controller, Model
-- Session, Auth, Validator, Logger, ServiceResult
 
 ### CLI Tool
 - bin/kindergartenctl (entry point)
@@ -524,4 +520,4 @@ All tables from specification are present:
 
 ---
 
-*Last updated: 2026-02-27*
+*Last updated: 2026-03-10*

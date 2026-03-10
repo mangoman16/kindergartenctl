@@ -157,7 +157,7 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 - 10 Models in `src/models/` (includes Location)
 - 16 Services in `src/services/` (4 original + 12 new entity services)
 - 3 Helpers in `src/helpers/`
-- 59 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages, locations/)
+- 58 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages, locations/)
 - 11 Core classes in `src/core/` (includes AppBoot, ServiceResult)
 - 2 Language files in `src/lang/`
 - 14 CLI command files in `src/cli/commands/`
