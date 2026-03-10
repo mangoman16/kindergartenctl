@@ -9,12 +9,15 @@
     "require-dev": {
         "phpunit/phpunit": "^10.0"
     },
+    "bin": ["bin/kindergartenctl"],
     "autoload": {
         "classmap": [
             "src/core/",
             "src/models/",
             "src/controllers/",
-            "src/services/"
+            "src/services/",
+            "src/cli/",
+            "src/cli/commands/"
         ],
         "files": [
             "src/helpers/functions.php",

@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+/**
+ * KindergartenCtl - CLI management tool
+ *
+ * Provides command-line access to all application operations.
+ * Uses the same service layer as the web interface.
+ *
+ * Usage: php bin/kindergartenctl <command> [args] [--options]
+ * Help:  php bin/kindergartenctl help
+ */
+
+declare(strict_types=1);
+
+// Define base paths (mirrors public/index.php minus PUBLIC_PATH / CSP)
+define('ROOT_PATH', dirname(__DIR__));
+define('SRC_PATH', ROOT_PATH . '/src');
+define('STORAGE_PATH', ROOT_PATH . '/storage');
+define('TEMP_PATH', ROOT_PATH . '/temp');
+define('PUBLIC_PATH', ROOT_PATH . '/public');
+define('UPLOADS_PATH', PUBLIC_PATH . '/uploads');
+
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
+// Load composer autoload if exists
+if (file_exists(ROOT_PATH . '/vendor/autoload.php')) {
+    require ROOT_PATH . '/vendor/autoload.php';
+}
+
+// Load helper functions
+require_once SRC_PATH . '/helpers/functions.php';
+require_once SRC_PATH . '/helpers/dates.php';
+require_once SRC_PATH . '/helpers/security.php';
+
+// Shared bootstrap (config, DB, models, services)
+require_once SRC_PATH . '/core/AppBoot.php';
+AppBoot::boot();
+
+// Load CLI classes
+require_once SRC_PATH . '/cli/CliFormatter.php';
+require_once SRC_PATH . '/cli/CliApp.php';
+
+// Check installation
+if (!AppBoot::isInstalled()) {
+    $fmt = new CliFormatter();
+    $fmt->error('Application is not installed yet. Run the web installer first.');
+    exit(1);
+}
+
+// Dispatch
+$cli = new CliApp($argv);
+$cli->run();

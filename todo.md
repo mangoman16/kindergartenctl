@@ -362,6 +362,23 @@ The project has a comprehensive foundation with most core features implemented. 
 
 ---
 
+### March 2026 - Service Layer Extraction & CLI Tool
+
+- [x] Created `ServiceResult` class as unified return type for service methods (ok/fail pattern)
+- [x] Created `AppBoot` class to share bootstrap logic between web and CLI entry points
+- [x] Simplified `App.php` to delegate shared setup to `AppBoot`, keeping only web-specific concerns
+- [x] Extracted business logic from `GameController` into `GameService` (CRUD, validation, transactions, changelog)
+- [x] Extracted business logic from `BoxController` into `BoxService`
+- [x] Extracted business logic from `MaterialController` into `MaterialService`
+- [x] Created additional services: `CalendarService`, `CategoryService`, `TagService`, `GroupService`, `LocationService`, `SearchService`, `UserService`, `SettingsService`, `FavoriteService`
+- [x] Created CLI entry point (`bin/kindergartenctl`) with shared bootstrap via `AppBoot`
+- [x] Created `CliApp` command parser/dispatcher with argument parsing and help system
+- [x] Created `CliFormatter` with colored output, ASCII tables, detail views, confirmations, and ServiceResult display
+- [x] Created 14 CLI command classes: GameCommand, MaterialCommand, BoxCommand, CategoryCommand, TagCommand, GroupCommand, LocationCommand, CalendarCommand, SearchCommand, UserCommand, SettingsCommand, ChangelogCommand, DbCommand, HealthCommand
+- [x] CLI supports: entity CRUD, search, user management, settings, changelog, database migrations, health checks
+- [x] Updated `composer.json` with CLI bin entry and autoload paths
+- [x] Updated `CLAUDE.md` architecture reference and file counts
+
 ## Development Roadmap
 
 ### Phase 8: Customization & Personalization (Current)
@@ -416,7 +433,7 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Optimize database queries for large datasets (migration adds composite indexes)
 - [x] Add database migration system (database/Migration.php + migrate.php CLI)
 - [ ] Remove redundant `location` VARCHAR column from boxes table (use only location_id FK)
-- [ ] Refactor DashboardController to use model methods instead of raw queries
+- [ ] Refactor DashboardController to use service layer instead of raw queries
 - [ ] Add error logging to Dashboard catch block
 
 ---
@@ -437,11 +454,28 @@ The project has a comprehensive foundation with most core features implemented. 
 - App, Router, Database, Controller, Model
 - Session, Auth, Validator, Logger
 
-### Services (4)
+### Services (16)
 - ChangelogService (audit logging)
 - ImageProcessor (WebP conversion, thumbnails)
 - Mailer (SMTP email)
 - TransactionService (data integrity verification)
+- GameService, MaterialService, BoxService (entity CRUD business logic)
+- CategoryService, TagService, GroupService, LocationService (entity CRUD)
+- CalendarService (calendar event management)
+- SearchService (global search, live search)
+- UserService (user creation/deletion)
+- SettingsService (preferences, debug, dark mode)
+- FavoriteService (toggle favorites)
+
+### Core Classes (11)
+- App, AppBoot, Router, Database, Controller, Model
+- Session, Auth, Validator, Logger, ServiceResult
+
+### CLI Tool
+- bin/kindergartenctl (entry point)
+- CliApp (command parser/dispatcher)
+- CliFormatter (terminal output helpers)
+- 14 command classes in src/cli/commands/
 
 ### API Endpoints (20+)
 - Image upload/delete

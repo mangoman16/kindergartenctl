@@ -1,6 +1,8 @@
 <?php
 /**
  * Box Controller
+ *
+ * Thin HTTP adapter — all business logic lives in BoxService.
  */
 
 class BoxController extends Controller
@@ -15,27 +17,16 @@ class BoxController extends Controller
      */
     public function index(): void
     {
-        require_once SRC_PATH . '/models/Box.php';
-
         $orderBy = $this->getQuery('sort', 'name');
         $direction = strtoupper($this->getQuery('dir', 'ASC'));
 
-        // Validate sort column
-        $allowedSort = ['name', 'number', 'location', 'created_at'];
-        if (!in_array($orderBy, $allowedSort)) {
-            $orderBy = 'name';
-        }
-        if (!in_array($direction, ['ASC', 'DESC'])) {
-            $direction = 'ASC';
-        }
-
-        $boxes = Box::allWithMaterialCount($orderBy, $direction);
+        $result = (new BoxService())->list($orderBy, $direction);
 
         $this->setTitle(__('box.title_plural'));
         $this->addBreadcrumb(__('box.title_plural'), url('/boxes'));
 
         $this->render('boxes/index', [
-            'boxes' => $boxes,
+            'boxes' => $result->data['boxes'],
             'currentSort' => $orderBy,
             'currentDir' => $direction,
         ]);
@@ -46,17 +37,16 @@ class BoxController extends Controller
      */
     public function show(string $id): void
     {
-        require_once SRC_PATH . '/models/Box.php';
+        $result = (new BoxService())->get((int)$id);
 
-        $box = Box::findWithMaterialCount((int)$id);
-
-        if (!$box) {
-            Session::setFlash('error', __('box.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/boxes');
             return;
         }
 
-        $materials = Box::getMaterials((int)$id);
+        $box = $result->data['box'];
+        $materials = $result->data['materials'];
 
         $this->setTitle($box['name']);
         $this->addBreadcrumb(__('box.title_plural'), url('/boxes'));
@@ -73,8 +63,6 @@ class BoxController extends Controller
      */
     public function create(): void
     {
-        require_once SRC_PATH . '/models/Location.php';
-
         $this->setTitle(__('box.create'));
         $this->addBreadcrumb(__('box.title_plural'), url('/boxes'));
         $this->addBreadcrumb(__('box.create'));
@@ -93,9 +81,6 @@ class BoxController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Box.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-
         $locationId = $this->getPost('location_id', '');
         $data = [
             'name' => trim($this->getPost('name', '')),
@@ -107,40 +92,20 @@ class BoxController extends Controller
             'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
         ];
 
-        // Validate
-        $validator = Validator::make($data, [
-            'name' => 'required|max:100',
-            'number' => 'max:20',
-            'label' => 'max:50',
-        ]);
+        $result = (new BoxService())->create($data);
 
-        // Check duplicate name
-        if (!empty($data['name']) && Box::nameExists($data['name'])) {
-            $validator->addError('name', __('validation.duplicate'));
-        }
-
-        if ($validator->fails()) {
-            Session::setErrors($validator->errors());
+        if ($result->failed()) {
+            Session::setErrors($result->errors);
             Session::setOldInput($data);
+            if ($result->message) {
+                Session::setFlash('error', $result->message);
+            }
             $this->redirect('/boxes/create');
             return;
         }
 
-        // Create box
-        $boxId = Box::create($data);
-
-        if (!$boxId) {
-            Session::setFlash('error', __('flash.error_generic'));
-            Session::setOldInput($data);
-            $this->redirect('/boxes/create');
-            return;
-        }
-
-        // Log change
-        ChangelogService::getInstance()->logCreate('box', $boxId, $data['name'], $data);
-
-        Session::setFlash('success', __('flash.created', ['item' => __('box.title')]));
-        $this->redirect('/boxes/' . $boxId);
+        Session::setFlash('success', $result->message);
+        $this->redirect('/boxes/' . $result->data['id']);
     }
 
     /**
@@ -148,9 +113,6 @@ class BoxController extends Controller
      */
     public function edit(string $id): void
     {
-        require_once SRC_PATH . '/models/Box.php';
-        require_once SRC_PATH . '/models/Location.php';
-
         $box = Box::find((int)$id);
 
         if (!$box) {
@@ -178,9 +140,6 @@ class BoxController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Box.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-
         $box = Box::find((int)$id);
 
         if (!$box) {
@@ -200,36 +159,19 @@ class BoxController extends Controller
             'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $box['image_path'],
         ];
 
-        // Validate
-        $validator = Validator::make($data, [
-            'name' => 'required|max:100',
-            'number' => 'max:20',
-            'label' => 'max:50',
-        ]);
+        $result = (new BoxService())->update((int)$id, $data);
 
-        // Check duplicate name (excluding current)
-        if (!empty($data['name']) && Box::nameExists($data['name'], (int)$id)) {
-            $validator->addError('name', __('validation.duplicate'));
-        }
-
-        if ($validator->fails()) {
-            Session::setErrors($validator->errors());
+        if ($result->failed()) {
+            Session::setErrors($result->errors);
             Session::setOldInput($data);
+            if ($result->message) {
+                Session::setFlash('error', $result->message);
+            }
             $this->redirect('/boxes/' . $id . '/edit');
             return;
         }
 
-        // Track changes for changelog
-        $changelog = ChangelogService::getInstance();
-        $changes = $changelog->getChanges($box, $data, ['name', 'number', 'label', 'location_id', 'description', 'notes', 'image_path']);
-
-        // Update box
-        Box::update((int)$id, $data);
-
-        // Log change if there were any
-        $changelog->logUpdate('box', (int)$id, $data['name'], $changes);
-
-        Session::setFlash('success', __('flash.updated', ['item' => __('box.title')]));
+        Session::setFlash('success', $result->message);
         $this->redirect('/boxes/' . $id);
     }
 
@@ -240,30 +182,15 @@ class BoxController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Box.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-        require_once SRC_PATH . '/services/ImageProcessor.php';
+        $result = (new BoxService())->delete((int)$id);
 
-        $box = Box::find((int)$id);
-
-        if (!$box) {
-            Session::setFlash('error', __('box.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/boxes');
             return;
         }
 
-        // Log change before deletion
-        ChangelogService::getInstance()->logDelete('box', (int)$id, $box['name'], $box);
-
-        // Delete box (materials will have box_id set to NULL due to foreign key)
-        Box::delete((int)$id);
-
-        // Delete image if exists
-        if ($box['image_path']) {
-            (new ImageProcessor())->delete($box['image_path']);
-        }
-
-        Session::setFlash('success', __('flash.deleted', ['item' => __('box.title')]));
+        Session::setFlash('success', $result->message);
         $this->redirect('/boxes');
     }
 
@@ -272,17 +199,16 @@ class BoxController extends Controller
      */
     public function print(string $id): void
     {
-        require_once SRC_PATH . '/models/Box.php';
+        $result = (new BoxService())->get((int)$id);
 
-        $box = Box::find((int)$id);
-
-        if (!$box) {
-            Session::setFlash('error', __('box.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/boxes');
             return;
         }
 
-        $materials = Box::getMaterials((int)$id);
+        $box = $result->data['box'];
+        $materials = $result->data['materials'];
 
         $this->setLayout('print');
         $this->setTitle($box['name']);
@@ -293,5 +219,4 @@ class BoxController extends Controller
             'printTitle' => 'Box: ' . $box['name'],
         ]);
     }
-
 }
