@@ -8,7 +8,6 @@ $searchPlaceholder = __('search.global_placeholder');
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
         <span class="search-trigger-text"><?= __('search.placeholder') ?></span>
-        <kbd class="search-trigger-kbd">Ctrl+K</kbd>
     </button>
 
     <div class="header-actions">
