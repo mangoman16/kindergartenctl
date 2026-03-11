@@ -98,9 +98,9 @@
     --transition-slow: 500ms ease;
 
     /* Layout */
-    --rail-width: 56px;
+    --rail-width: 68px;
     --ctx-sidebar-width: 200px;
-    --sidebar-width: 56px;
+    --sidebar-width: 68px;
     --header-height: 60px;
     --container-max-width: 1200px;
 }
@@ -633,7 +633,7 @@ small {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-1);
+    gap: var(--spacing-2);
 }
 
 .rail-btn {
@@ -649,6 +649,25 @@ small {
     cursor: pointer;
     transition: all var(--transition-fast);
     text-decoration: none;
+}
+
+.rail-btn-labeled {
+    width: auto;
+    height: auto;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--spacing-2) var(--spacing-1);
+    border-radius: var(--radius-xl);
+}
+
+.rail-label {
+    font-size: 10px;
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60px;
 }
 
 .rail-btn:hover {
@@ -691,16 +710,18 @@ small {
 }
 
 .ctx-home-link {
-    padding: var(--spacing-6) var(--spacing-4) 0;
+    padding: var(--spacing-4) var(--spacing-3) 0;
 }
 
 .ctx-home-link .ctx-link {
     font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 .ctx-section {
     display: none;
-    padding: var(--spacing-4);
+    padding: var(--spacing-2) var(--spacing-3);
 }
 
 .ctx-section.visible {
@@ -714,22 +735,22 @@ small {
     letter-spacing: 0.05em;
     color: var(--color-gray-400);
     padding: var(--spacing-3) var(--spacing-2);
-    margin-top: var(--spacing-3);
+    margin-top: var(--spacing-2);
 }
 
 .ctx-nav {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-1);
+    gap: 2px;
 }
 
 .ctx-link {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
+    gap: var(--spacing-3);
     padding: var(--spacing-2) var(--spacing-3);
     color: var(--color-gray-600);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     border-radius: var(--radius-lg);
     text-decoration: none;
     transition: all var(--transition-fast);
@@ -3889,6 +3910,16 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 @media (max-width: 768px) {
     .icon-rail {
         width: 44px;
+    }
+
+    .rail-label {
+        display: none;
+    }
+
+    .rail-btn-labeled {
+        width: 36px;
+        height: 36px;
+        padding: 0;
     }
 
     .context-sidebar {
