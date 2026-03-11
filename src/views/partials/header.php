@@ -77,7 +77,9 @@ $searchPlaceholder = __('search.global_placeholder');
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
             <input type="text" id="searchPaletteInput" placeholder="<?= e($searchPlaceholder) ?>" autocomplete="off">
-            <kbd class="search-palette-esc">Esc</kbd>
+            <button type="button" class="search-palette-close" id="searchPaletteClose" title="<?= __('action.close') ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
         </div>
         <div class="search-palette-filters" id="searchFilters">
             <button type="button" class="search-filter-chip active" data-type="all"><?= __('search.all') ?></button>
@@ -91,11 +93,6 @@ $searchPlaceholder = __('search.global_placeholder');
             <div class="search-palette-hint">
                 <p><?= __('search.hint') ?></p>
             </div>
-        </div>
-        <div class="search-palette-footer">
-            <span class="search-palette-footer-item"><kbd>&uarr;</kbd><kbd>&darr;</kbd> <?= __('search.navigate') ?></span>
-            <span class="search-palette-footer-item"><kbd>&crarr;</kbd> <?= __('search.open') ?></span>
-            <span class="search-palette-footer-item"><kbd>Esc</kbd> <?= __('search.close') ?></span>
         </div>
     </div>
 </div>
@@ -470,6 +467,10 @@ $searchPlaceholder = __('search.global_placeholder');
     overlay.addEventListener('click', function(e) {
         if (e.target === overlay) closePalette();
     });
+
+    // Close button
+    var closeBtn = document.getElementById('searchPaletteClose');
+    if (closeBtn) closeBtn.addEventListener('click', closePalette);
 
     // Input handling
     input.addEventListener('input', function() {
