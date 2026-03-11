@@ -708,7 +708,9 @@ small {
 
 .ctx-home-link {
     padding: 0 var(--spacing-3);
-    margin-top: calc(var(--spacing-3) + 36px + var(--spacing-2));
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
 }
 
 .ctx-home-link .ctx-link {
