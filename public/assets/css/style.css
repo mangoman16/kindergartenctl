@@ -98,9 +98,9 @@
     --transition-slow: 500ms ease;
 
     /* Layout */
-    --rail-width: 64px;
+    --rail-width: 52px;
     --ctx-sidebar-width: 200px;
-    --sidebar-width: 64px;
+    --sidebar-width: 52px;
     --header-height: 60px;
     --container-max-width: 1200px;
 }
@@ -645,12 +645,6 @@ small {
 }
 
 .rail-btn-labeled {
-    width: var(--rail-width);
-    height: auto;
-    flex-direction: column;
-    gap: 2px;
-    padding: 6px 0;
-    border-radius: 0;
     background: none;
 }
 
@@ -660,13 +654,7 @@ small {
 }
 
 .rail-label {
-    font-size: 10px;
-    font-weight: var(--font-weight-normal);
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none;
     max-width: calc(var(--rail-width) - 4px);
 }
 
@@ -720,7 +708,7 @@ small {
 
 .ctx-home-link {
     padding: var(--spacing-2) var(--spacing-3) 0;
-    margin-top: 52px;
+    margin-top: var(--spacing-3);
 }
 
 .ctx-home-link .ctx-link {
