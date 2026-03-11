@@ -707,8 +707,8 @@ small {
 }
 
 .ctx-home-link {
-    padding: var(--spacing-2) var(--spacing-3) 0;
-    margin-top: var(--spacing-3);
+    padding: 0 var(--spacing-3);
+    margin-top: calc(var(--spacing-3) + 36px + var(--spacing-2));
 }
 
 .ctx-home-link .ctx-link {
