@@ -197,9 +197,9 @@
 - **Fix:** Added a 10-second timeout that re-enables the button and shows an error message if the blob callback never fires.
 
 ### BUG-36 (Medium): Z-index Conflict Between Search Palette and Cropper Modal
-- **File:** `public/assets/css/style.css`
+- **File:** `public/assets/css/style.css:2936`, `public/assets/js/app.js:236`
 - **Problem:** Search palette overlay had `z-index: 9999` while cropper modal had `z-index: 2000`. If search palette was open when triggering image crop, the search overlay would block the cropper.
-- **Fix:** Added `.cropper-modal-overlay { z-index: 10000 !important; }` to ensure cropper always appears above search palette.
+- **Fix:** Updated `.cropper-modal-overlay` z-index from 2000 to 10000 in both the CSS file and the inline JS modal style to ensure cropper always appears above search palette.
 
 ### BUG-37 (Low): Missing Dark Mode Styles for `.btn-secondary`
 - **File:** `public/assets/css/style.css`

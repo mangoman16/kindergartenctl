@@ -233,7 +233,7 @@
         // Create modal with unique class names to avoid conflicts with calendar modal
         const modal = document.createElement('div');
         modal.className = 'cropper-modal-overlay';
-        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex !important;align-items:center;justify-content:center;z-index:2000;opacity:1 !important;visibility:visible !important;';
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex !important;align-items:center;justify-content:center;z-index:10000;opacity:1 !important;visibility:visible !important;';
         modal.innerHTML = `
             <div class="cropper-dialog" style="background:var(--color-white, #fff);border-radius:0.75rem;width:90%;max-width:600px;max-height:90vh;overflow:hidden;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);transform:scale(1) !important;">
                 <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--color-gray-200, #E5E7EB);display:flex;justify-content:space-between;align-items:center;">
