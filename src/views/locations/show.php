@@ -91,7 +91,7 @@
                                 </td>
                                 <td><?= $box['material_count'] ?></td>
                                 <td class="text-right">
-                                    <a href="<?= url('/boxes/' . $box['id']) ?>" class="btn btn-sm btn-outline">
+                                    <a href="<?= url('/boxes/' . $box['id']) ?>" class="btn btn-sm btn-secondary">
                                         <?= __('action.view') ?>
                                     </a>
                                 </td>

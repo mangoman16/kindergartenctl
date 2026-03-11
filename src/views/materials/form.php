@@ -38,7 +38,7 @@
                         <span class="help-tooltip" data-help="<?= e(__('help.field_quantity')) ?>">?</span>
                     </label>
                     <input type="number" id="quantity" name="quantity"
-                           class="form-control" style="width: 100px;"
+                           class="form-control form-control-narrow"
                            value="<?= old('quantity', $material['quantity'] ?? 0) ?>"
                            min="0">
                     <div class="form-hint"><?= __('form.quantity_hint') ?></div>

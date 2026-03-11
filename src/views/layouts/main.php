@@ -90,6 +90,7 @@ $compactSidebar = userPreference('compact_sidebar', 'no');
         'crop_processing' => __('js.crop_processing'),
         'crop_error' => __('js.crop_error'),
         'duplicate_exists' => __('js.duplicate_exists'),
+        'error_generic' => __('flash.error_generic'),
     ], JSON_UNESCAPED_UNICODE) ?>;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js" integrity="sha384-fNwJYJkLg8Rv5cLJMCqvIjVr5lLLrs6GRQj6EZnPh5FrxhYGdBmNK2gE2IYcj7VH" crossorigin="anonymous"></script>

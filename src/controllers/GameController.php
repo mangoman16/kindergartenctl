@@ -1,6 +1,8 @@
 <?php
 /**
  * Game Controller
+ *
+ * Thin HTTP adapter — all business logic lives in GameService.
  */
 
 class GameController extends Controller
@@ -15,11 +17,6 @@ class GameController extends Controller
      */
     public function index(): void
     {
-        require_once SRC_PATH . '/models/Game.php';
-        require_once SRC_PATH . '/models/Box.php';
-        require_once SRC_PATH . '/models/Category.php';
-        require_once SRC_PATH . '/models/Tag.php';
-
         $filters = [
             'box_id' => $this->getQuery('box') ?: null,
             'category_id' => $this->getQuery('category') ?: null,
@@ -33,21 +30,18 @@ class GameController extends Controller
         $sort = $this->getQuery('sort', 'name');
         $order = $this->getQuery('order', 'asc');
 
-        $games = Game::allWithRelations($filters, $sort, $order);
-
-        // Get filter options
-        $boxes = Box::getForSelect();
-        $categories = Category::getForSelect();
-        $tags = Tag::getForSelect();
+        $service = new GameService();
+        $result = $service->list($filters, $sort, $order);
+        $filterOptions = $service->getFilterOptions();
 
         $this->setTitle(__('game.title_plural'));
         $this->addBreadcrumb(__('game.title_plural'), url('/games'));
 
         $this->render('games/index', [
-            'games' => $games,
-            'boxes' => $boxes,
-            'categories' => $categories,
-            'tags' => $tags,
+            'games' => $result->data['games'],
+            'boxes' => $filterOptions['boxes'],
+            'categories' => $filterOptions['categories'],
+            'tags' => $filterOptions['tags'],
             'filters' => $filters,
             'currentSort' => $sort,
             'currentOrder' => $order,
@@ -59,11 +53,6 @@ class GameController extends Controller
      */
     public function create(): void
     {
-        require_once SRC_PATH . '/models/Box.php';
-        require_once SRC_PATH . '/models/Category.php';
-        require_once SRC_PATH . '/models/Tag.php';
-        require_once SRC_PATH . '/models/Material.php';
-
         $this->setTitle(__('game.create'));
         $this->addBreadcrumb(__('game.title_plural'), url('/games'));
         $this->addBreadcrumb(__('game.create'));
@@ -87,10 +76,6 @@ class GameController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Game.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-        require_once SRC_PATH . '/services/TransactionService.php';
-
         $data = [
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
@@ -107,67 +92,22 @@ class GameController extends Controller
         ];
 
         $tagIds = $this->getPost('tags', []);
-        $materials = $this->parseMaterials($this->getPost('materials', []));
+        $materials = GameService::parseMaterials($this->getPost('materials', []));
 
-        // Validate
-        $validator = Validator::make($data, [
-            'name' => 'required|max:255',
-            'description' => 'max:10000',
-            'instructions' => 'max:50000',
-            'min_players' => 'integer|minValue:1|maxValue:999',
-            'max_players' => 'integer|minValue:1|maxValue:999',
-            'duration_minutes' => 'integer|minValue:1|maxValue:9999',
-            'difficulty' => 'integer|minValue:1|maxValue:5',
-        ]);
+        $result = (new GameService())->create($data, $tagIds, $materials);
 
-        // Additional validation: max_players should be >= min_players
-        if ($data['min_players'] !== null && $data['max_players'] !== null) {
-            if ($data['max_players'] < $data['min_players']) {
-                $validator->addError('max_players', __('validation.max_gte_min_players'));
-            }
-        }
-
-        // Check duplicate name
-        if (!empty($data['name']) && Game::nameExists($data['name'])) {
-            $validator->addError('name', __('validation.duplicate'));
-        }
-
-        if ($validator->fails()) {
-            Session::setErrors($validator->errors());
+        if ($result->failed()) {
+            Session::setErrors($result->errors);
             Session::setOldInput(array_merge($data, ['tags' => $tagIds, 'materials' => $materials]));
+            if ($result->message) {
+                Session::setFlash('error', $result->message);
+            }
             $this->redirect('/games/create');
             return;
         }
 
-        // Execute within transaction for data integrity
-        $transaction = TransactionService::getInstance();
-
-        try {
-            $gameId = $transaction->execute('game', 'create', function() use ($data, $tagIds, $materials) {
-                // Create game
-                $gameId = Game::create($data);
-
-                if (!$gameId) {
-                    throw new RuntimeException(__('flash.error_creating'));
-                }
-
-                // Update tags and materials
-                Game::updateTags($gameId, $tagIds);
-                Game::updateMaterials($gameId, $materials);
-
-                return $gameId;
-            }, null);
-
-            // Log change
-            ChangelogService::getInstance()->logCreate('game', $gameId, $data['name'], $data);
-
-            Session::setFlash('success', __('flash.created', ['item' => __('game.title')]));
-            $this->redirect('/games/' . $gameId);
-        } catch (Exception $e) {
-            Session::setFlash('error', $e->getMessage());
-            Session::setOldInput(array_merge($data, ['tags' => $tagIds, 'materials' => $materials]));
-            $this->redirect('/games/create');
-        }
+        Session::setFlash('success', $result->message);
+        $this->redirect('/games/' . $result->data['id']);
     }
 
     /**
@@ -175,17 +115,15 @@ class GameController extends Controller
      */
     public function show(string $id): void
     {
-        require_once SRC_PATH . '/models/Game.php';
-        require_once SRC_PATH . '/models/Group.php';
+        $result = (new GameService())->get((int)$id);
 
-        $game = Game::findWithRelations((int)$id);
-
-        if (!$game) {
-            Session::setFlash('error', __('game.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/games');
             return;
         }
 
+        $game = $result->data['game'];
         $groups = Group::getForSelect();
 
         $this->setTitle($game['name']);
@@ -203,19 +141,15 @@ class GameController extends Controller
      */
     public function edit(string $id): void
     {
-        require_once SRC_PATH . '/models/Game.php';
-        require_once SRC_PATH . '/models/Box.php';
-        require_once SRC_PATH . '/models/Category.php';
-        require_once SRC_PATH . '/models/Tag.php';
-        require_once SRC_PATH . '/models/Material.php';
+        $result = (new GameService())->get((int)$id);
 
-        $game = Game::findWithRelations((int)$id);
-
-        if (!$game) {
-            Session::setFlash('error', __('game.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/games');
             return;
         }
+
+        $game = $result->data['game'];
 
         $this->setTitle(__('game.edit'));
         $this->addBreadcrumb(__('game.title_plural'), url('/games'));
@@ -241,18 +175,6 @@ class GameController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Game.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-        require_once SRC_PATH . '/services/TransactionService.php';
-
-        $game = Game::find((int)$id);
-
-        if (!$game) {
-            Session::setFlash('error', __('game.not_found'));
-            $this->redirect('/games');
-            return;
-        }
-
         $data = [
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
@@ -263,78 +185,34 @@ class GameController extends Controller
             'difficulty' => $this->getPost('difficulty') ? (int)$this->getPost('difficulty') : 1,
             'is_outdoor' => $this->getPost('is_outdoor') ? 1 : 0,
             'is_active' => $this->getPost('is_active') ? 1 : 0,
-            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')) ?: $game['image_path'],
+            'image_path' => $this->sanitizeImagePath($this->getPost('image_path', '')),
             'box_id' => $this->getPost('box_id') ? (int)$this->getPost('box_id') : null,
             'category_id' => $this->getPost('category_id') ? (int)$this->getPost('category_id') : null,
         ];
 
+        // Preserve existing image if no new one provided
+        if (empty($data['image_path'])) {
+            $existing = Game::find((int)$id);
+            $data['image_path'] = $existing ? $existing['image_path'] : '';
+        }
+
         $tagIds = $this->getPost('tags', []);
-        $materials = $this->parseMaterials($this->getPost('materials', []));
+        $materials = GameService::parseMaterials($this->getPost('materials', []));
 
-        // Validate
-        $validator = Validator::make($data, [
-            'name' => 'required|max:255',
-            'description' => 'max:10000',
-            'instructions' => 'max:50000',
-            'min_players' => 'integer|minValue:1|maxValue:999',
-            'max_players' => 'integer|minValue:1|maxValue:999',
-            'duration_minutes' => 'integer|minValue:1|maxValue:9999',
-            'difficulty' => 'integer|minValue:1|maxValue:5',
-        ]);
+        $result = (new GameService())->update((int)$id, $data, $tagIds, $materials);
 
-        // Additional validation: max_players should be >= min_players
-        if ($data['min_players'] !== null && $data['max_players'] !== null) {
-            if ($data['max_players'] < $data['min_players']) {
-                $validator->addError('max_players', __('validation.max_gte_min_players'));
-            }
-        }
-
-        // Check duplicate name (excluding current)
-        if (!empty($data['name']) && Game::nameExists($data['name'], (int)$id)) {
-            $validator->addError('name', __('validation.duplicate'));
-        }
-
-        if ($validator->fails()) {
-            Session::setErrors($validator->errors());
+        if ($result->failed()) {
+            Session::setErrors($result->errors);
             Session::setOldInput(array_merge($data, ['tags' => $tagIds, 'materials' => $materials]));
+            if ($result->message) {
+                Session::setFlash('error', $result->message);
+            }
             $this->redirect('/games/' . $id . '/edit');
             return;
         }
 
-        // Track changes
-        $changelog = ChangelogService::getInstance();
-        $changes = $changelog->getChanges($game, $data, [
-            'name', 'description', 'instructions', 'min_players', 'max_players',
-            'duration_minutes', 'difficulty', 'is_outdoor', 'is_active', 'image_path', 'box_id', 'category_id'
-        ]);
-
-        // Execute within transaction for data integrity
-        $transaction = TransactionService::getInstance();
-
-        try {
-            $transaction->execute('game', 'update', function() use ($id, $data, $tagIds, $materials) {
-                // Update game
-                Game::update((int)$id, $data);
-
-                // Update tags and materials
-                Game::updateTags((int)$id, $tagIds);
-                Game::updateMaterials((int)$id, $materials);
-
-                return ['id' => (int)$id];
-            }, $game);
-
-            // Log change
-            if (!empty($changes)) {
-                $changelog->logUpdate('game', (int)$id, $data['name'], $changes);
-            }
-
-            Session::setFlash('success', __('flash.updated', ['item' => __('game.title')]));
-            $this->redirect('/games/' . $id);
-        } catch (Exception $e) {
-            Session::setFlash('error', __('flash.error_updating', ['error' => $e->getMessage()]));
-            Session::setOldInput(array_merge($data, ['tags' => $tagIds, 'materials' => $materials]));
-            $this->redirect('/games/' . $id . '/edit');
-        }
+        Session::setFlash('success', $result->message);
+        $this->redirect('/games/' . $id);
     }
 
     /**
@@ -344,45 +222,16 @@ class GameController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Game.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-        require_once SRC_PATH . '/services/ImageProcessor.php';
-        require_once SRC_PATH . '/services/TransactionService.php';
+        $result = (new GameService())->delete((int)$id);
 
-        $game = Game::find((int)$id);
-
-        if (!$game) {
-            Session::setFlash('error', __('game.not_found'));
-            $this->redirect('/games');
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
+            $this->redirect('/games/' . $id);
             return;
         }
 
-        // Execute within transaction for data integrity
-        $transaction = TransactionService::getInstance();
-
-        try {
-            $transaction->execute('game', 'delete', function() use ($id, $game) {
-                // Log change before deletion
-                ChangelogService::getInstance()->logDelete('game', (int)$id, $game['name'], $game);
-
-                // Delete game (tags and materials entries will be deleted due to foreign key)
-                Game::delete((int)$id);
-
-                // Delete image if exists
-                if ($game['image_path']) {
-                    $processor = new ImageProcessor();
-                    $processor->delete($game['image_path']);
-                }
-
-                return ['id' => (int)$id, 'deleted' => true];
-            }, $game);
-
-            Session::setFlash('success', __('flash.deleted', ['item' => __('game.title')]));
-            $this->redirect('/games');
-        } catch (Exception $e) {
-            Session::setFlash('error', __('flash.error_deleting', ['error' => $e->getMessage()]));
-            $this->redirect('/games/' . $id);
-        }
+        Session::setFlash('success', $result->message);
+        $this->redirect('/games');
     }
 
     /**
@@ -390,15 +239,15 @@ class GameController extends Controller
      */
     public function print(string $id): void
     {
-        require_once SRC_PATH . '/models/Game.php';
+        $result = (new GameService())->get((int)$id);
 
-        $game = Game::findWithRelations((int)$id);
-
-        if (!$game) {
-            Session::setFlash('error', __('game.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/games');
             return;
         }
+
+        $game = $result->data['game'];
 
         $this->setTitle($game['name'] . ' - ' . __('print.print_view'));
         $this->setLayout('print');
@@ -415,62 +264,15 @@ class GameController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Game.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-        require_once SRC_PATH . '/services/TransactionService.php';
+        $result = (new GameService())->duplicate((int)$id);
 
-        $game = Game::find((int)$id);
-
-        if (!$game) {
-            Session::setFlash('error', __('game.not_found'));
-            $this->redirect('/games');
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
+            $this->redirect('/games/' . $id);
             return;
         }
 
-        // Execute within transaction for data integrity
-        $transaction = TransactionService::getInstance();
-
-        try {
-            $newGameId = $transaction->execute('game', 'create', function() use ($id, $game) {
-                $newGameId = Game::duplicate((int)$id);
-
-                if (!$newGameId) {
-                    throw new RuntimeException(__('flash.error_duplicating'));
-                }
-
-                $newGame = Game::find($newGameId);
-                ChangelogService::getInstance()->logCreate('game', $newGameId, $newGame['name'], ['duplicated_from' => $game['name']]);
-
-                return $newGameId;
-            }, $game);
-
-            Session::setFlash('success', __('flash.duplicated', ['item' => __('game.title')]));
-            $this->redirect('/games/' . $newGameId . '/edit');
-        } catch (Exception $e) {
-            Session::setFlash('error', $e->getMessage());
-            $this->redirect('/games/' . $id);
-        }
+        Session::setFlash('success', $result->message);
+        $this->redirect('/games/' . $result->data['id'] . '/edit');
     }
-
-    /**
-     * Parse materials from form input
-     */
-    private function parseMaterials(array $materialsInput): array
-    {
-        $materials = [];
-        if (is_array($materialsInput)) {
-            foreach ($materialsInput as $item) {
-                if (is_array($item) && isset($item['id'])) {
-                    $materials[] = [
-                        'id' => (int)$item['id'],
-                        'quantity' => isset($item['quantity']) ? (int)$item['quantity'] : 1,
-                    ];
-                } elseif (is_numeric($item)) {
-                    $materials[] = ['id' => (int)$item, 'quantity' => 1];
-                }
-            }
-        }
-        return $materials;
-    }
-
 }

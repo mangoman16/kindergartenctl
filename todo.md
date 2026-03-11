@@ -279,6 +279,76 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Updated BUG_AUDIT.md with 7 new bug entries (BUG-32 through BUG-38)
 - [x] Updated SECURITY_AUDIT.md with frontend XSS finding (SEC-033)
 
+### February 2026 - Design System Documentation & CSS Alignment (2026-02-27)
+- [x] Created DESIGN_SYSTEM.md with Apple-polish-inspired guidelines
+  - [x] Core design principles (calm, typography-first, subtle motion, consistency, accessibility, device-agnostic)
+  - [x] Typography guidelines mapped to existing CSS font tokens
+  - [x] Color & contrast rules with WCAG AA requirements
+  - [x] Spacing & layout documentation with all spacing tokens
+  - [x] Component patterns (buttons, forms, cards, navigation, modals, feedback)
+  - [x] Border radius and shadow/elevation guidelines
+  - [x] Motion & transition rules with token references
+  - [x] Accessibility & usability checklist (touch targets, focus, ARIA, keyboard nav)
+  - [x] Responsive & cross-device guidelines with breakpoint table
+  - [x] Dark mode implementation guide and new-component checklist
+  - [x] Customization system documentation
+  - [x] Component consistency checklist for new additions
+  - [x] Design governance rules for tokens and components
+- [x] Updated CLAUDE.md to reference DESIGN_SYSTEM.md in MD file tables
+- [x] CSS audit and alignment with design system guidelines
+  - [x] Added `prefers-reduced-motion` support (BUG-47)
+  - [x] Fixed missing focus states on search inputs (BUG-45, WCAG violation)
+  - [x] Increased touch targets to 44px: `.rail-btn` (40→44px), `.header-icon-btn` (36→44px) (BUG-46)
+  - [x] Replaced 6 hardcoded box-shadow values with `--shadow-*` tokens
+  - [x] Replaced 7 hardcoded border-radius values with `--radius-*` tokens
+  - [x] Replaced 8 hardcoded transition durations with `--transition-*` tokens
+  - [x] Replaced 8 hardcoded font-size values with `--font-size-*` tokens
+  - [x] Replaced 18+ hardcoded spacing values with `--spacing-*` tokens
+- [x] Updated BUG_AUDIT.md with 4 new entries (BUG-45 through BUG-48)
+
+### February 2026 - Full UI Consistency Audit & Refactor (2026-02-28)
+- [x] Comprehensive audit of all 59 views, 15 controllers, JS, and full CSS
+- [x] Phase 1: CSS accessibility fixes
+  - [x] Added `.btn:focus-visible` for all button variants (BUG-49)
+  - [x] Added `.btn:active` tactile press feedback (BUG-50)
+  - [x] Added `.form-select.is-invalid` validation styling (BUG-51)
+  - [x] Added `.form-control:disabled, .form-select:disabled` styling + dark mode (BUG-52)
+  - [x] Increased `.pagination-link` touch targets 36→44px
+  - [x] Added `:focus-visible` to `.pagination-link` and `.table-sort` (BUG-53)
+- [x] Phase 2: CSS consistency & utility classes
+  - [x] Added `.card-body-flush` utility class (BUG-55)
+  - [x] Added `.form-control-narrow` utility class (replaces inline width styles)
+  - [x] Added `.icon-inline` utility class (replaces inline vertical-align styles)
+  - [x] Added `.tag-badge` base style (orphaned dark-mode-only definition)
+  - [x] Fixed z-index conflicts: search-dropdown 1000, user-dropdown 1010, modals 1020 (BUG-54)
+  - [x] Fixed modal backdrop opacity inconsistency 0.45→0.5 (BUG-58)
+  - [x] Added `.quick-create-popup` dark mode background
+  - [x] Removed duplicate cropper z-index `!important` override
+- [x] Phase 3: View template standardization (8 view files)
+  - [x] Replaced all `card-body p-0` / `style="padding:0"` with `card-body card-body-flush` (BUG-55)
+  - [x] Standardized box image preview 150→120px (matches other forms)
+  - [x] Standardized print button to `btn-secondary` in boxes/show (was `btn-outline`)
+  - [x] Standardized toggle selection ID and translation key in materials/index (BUG-56)
+  - [x] Replaced hardcoded German text with translation calls (BUG-57)
+  - [x] Replaced inline `style="width:100px"` with `.form-control-narrow` in 3 form views
+  - [x] Replaced inline `style="vertical-align:-1px"` with `.icon-inline` in 2 views
+- [x] Phase 4: Controller redirect & flash message consistency
+  - [x] MaterialController: redirect to show page after create/update (was list)
+  - [x] Standardized duplicate flash key `settings.language_changed_msg` → `settings.language_changed`
+- [x] Phase 5: JavaScript error handling
+  - [x] Added `showFlashError()` helper for consistent AJAX error display
+  - [x] Updated favorite toggle to show flash error instead of silent console.error
+  - [x] Added `error_generic` translation to JS AppTranslations
+- [x] Phase 6: Translation file updates
+  - [x] Added `action.sort_by` key to German and English language files
+- [x] Updated BUG_AUDIT.md with 10 new entries (BUG-49 through BUG-58)
+- [x] Follow-up fixes from secondary audit pass
+  - [x] Added help-tooltip to groups/form.php name field (BUG-59, matched all other forms)
+  - [x] Changed locations/show.php `btn-outline` → `btn-secondary` (BUG-60, matched pattern)
+  - [x] Added comprehensive UI Consistency Checklist (Section 15) to DESIGN_SYSTEM.md
+  - [x] Added utility class reference table and z-index layer order to checklist
+- [x] Updated BUG_AUDIT.md with 2 additional entries (BUG-59, BUG-60), total now 60
+
 ### February 2026 - Comprehensive Code Audit (2026-02-26)
 - [x] Full audit of all 9 core classes, 15 controllers, 10 models, 4 services, 3 helpers, views, and JavaScript
 - [x] Fixed DashboardController missing `requireAuth()` in constructor (BUG-42)
@@ -291,6 +361,23 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Updated SECURITY_AUDIT.md with 3 new entries (SEC-042 through SEC-044)
 
 ---
+
+### March 2026 - Service Layer Extraction & CLI Tool
+
+- [x] Created `ServiceResult` class as unified return type for service methods (ok/fail pattern)
+- [x] Created `AppBoot` class to share bootstrap logic between web and CLI entry points
+- [x] Simplified `App.php` to delegate shared setup to `AppBoot`, keeping only web-specific concerns
+- [x] Extracted business logic from `GameController` into `GameService` (CRUD, validation, transactions, changelog)
+- [x] Extracted business logic from `BoxController` into `BoxService`
+- [x] Extracted business logic from `MaterialController` into `MaterialService`
+- [x] Created additional services: `CalendarService`, `CategoryService`, `TagService`, `GroupService`, `LocationService`, `SearchService`, `UserService`, `SettingsService`, `FavoriteService`
+- [x] Created CLI entry point (`bin/kindergartenctl`) with shared bootstrap via `AppBoot`
+- [x] Created `CliApp` command parser/dispatcher with argument parsing and help system
+- [x] Created `CliFormatter` with colored output, ASCII tables, detail views, confirmations, and ServiceResult display
+- [x] Created 14 CLI command classes: GameCommand, MaterialCommand, BoxCommand, CategoryCommand, TagCommand, GroupCommand, LocationCommand, CalendarCommand, SearchCommand, UserCommand, SettingsCommand, ChangelogCommand, DbCommand, HealthCommand
+- [x] CLI supports: entity CRUD, search, user management, settings, changelog, database migrations, health checks
+- [x] Updated `composer.json` with CLI bin entry and autoload paths
+- [x] Updated `CLAUDE.md` architecture reference and file counts
 
 ## Development Roadmap
 
@@ -346,7 +433,7 @@ The project has a comprehensive foundation with most core features implemented. 
 - [x] Optimize database queries for large datasets (migration adds composite indexes)
 - [x] Add database migration system (database/Migration.php + migrate.php CLI)
 - [ ] Remove redundant `location` VARCHAR column from boxes table (use only location_id FK)
-- [ ] Refactor DashboardController to use model methods instead of raw queries
+- [ ] Refactor DashboardController to use service layer instead of raw queries
 - [ ] Add error logging to Dashboard catch block
 
 ---
@@ -363,15 +450,28 @@ The project has a comprehensive foundation with most core features implemented. 
 - Game, Material, Box, Category, Tag, Group, Location
 - CalendarEvent, User, PasswordReset
 
-### Core Classes (9)
-- App, Router, Database, Controller, Model
-- Session, Auth, Validator, Logger
+### Core Classes (11)
+- App, AppBoot, Router, Database, Controller, Model
+- Session, Auth, Validator, Logger, ServiceResult
 
-### Services (4)
+### Services (16)
 - ChangelogService (audit logging)
 - ImageProcessor (WebP conversion, thumbnails)
 - Mailer (SMTP email)
 - TransactionService (data integrity verification)
+- GameService, MaterialService, BoxService (entity CRUD business logic)
+- CategoryService, TagService, GroupService, LocationService (entity CRUD)
+- CalendarService (calendar event management)
+- SearchService (global search, live search)
+- UserService (user creation/deletion)
+- SettingsService (preferences, debug, dark mode)
+- FavoriteService (toggle favorites)
+
+### CLI Tool
+- bin/kindergartenctl (entry point)
+- CliApp (command parser/dispatcher)
+- CliFormatter (terminal output helpers)
+- 14 command classes in src/cli/commands/
 
 ### API Endpoints (20+)
 - Image upload/delete
@@ -412,11 +512,12 @@ All tables from specification are present:
 ## Related Documents
 
 - **`SECURITY_AUDIT.md`** - Full security audit with 60 tracked issues, all resolved (0 open)
-- **`BUG_AUDIT.md`** - Complete bug tracking with 44 issues found and fixed
+- **`BUG_AUDIT.md`** - Complete bug tracking with 60 issues found and fixed
 - **`CODE_QUALITY.md`** - Code quality assessment (8.5/10) with recommendations
+- **`DESIGN_SYSTEM.md`** - Apple-polish-inspired design system guidelines (typography, color, spacing, components, accessibility)
 - **`project.md`** - Full project specification and database schema
 - **`README.md`** - Installation guide and requirements
 
 ---
 
-*Last updated: 2026-02-26*
+*Last updated: 2026-03-10*

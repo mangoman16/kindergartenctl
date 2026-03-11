@@ -49,7 +49,7 @@
                             <?php endif; ?>
                             <?php if ($game['is_outdoor']): ?>
                                 <span class="badge badge-warning">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-inline">
                                         <circle cx="12" cy="12" r="5"></circle>
                                         <line x1="12" y1="1" x2="12" y2="3"></line>
                                         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -98,6 +98,18 @@
                                 <?php else: ?>
                                     <span class="text-muted"><?= __('misc.not_specified') ?></span>
                                 <?php endif; ?>
+                            </dd>
+
+                            <dt><?= __('game.difficulty') ?></dt>
+                            <dd>
+                                <span class="difficulty-stars">
+                                    <?php for ($i = 1; $i <= 3; $i++): ?>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="<?= $i <= ($game['difficulty'] ?? 1) ? 'currentColor' : 'none' ?>" stroke="currentColor" stroke-width="2" class="<?= $i > ($game['difficulty'] ?? 1) ? 'empty' : '' ?>">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    <?php endfor; ?>
+                                </span>
+                                <span class="text-muted text-sm"><?= __('game.difficulty.' . ($game['difficulty'] ?? 1)) ?></span>
                             </dd>
                         </dl>
                     </div>
@@ -230,7 +242,7 @@
             <div class="card-header">
                 <h2 class="card-title"><?= __('nav.materials') ?></h2>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body card-body-flush">
                 <ul class="material-list">
                     <?php foreach ($game['materials'] as $material): ?>
                         <li>

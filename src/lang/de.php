@@ -29,6 +29,7 @@ return [
     'action.remove' => 'Entfernen',
     'action.search' => 'Suchen',
     'action.filter' => 'Filtern',
+    'action.sort_by' => 'Sortieren nach',
     'action.print' => 'Drucken',
     'action.upload' => 'Hochladen',
     'action.crop' => 'Zuschneiden',

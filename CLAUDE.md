@@ -11,6 +11,7 @@ When making changes to the codebase, **always** update the relevant MD files:
 - **BUG_AUDIT.md**: Add entries when bugs are found/fixed (include file:line references)
 - **SECURITY_AUDIT.md**: Update when security-related code is modified
 - **CODE_QUALITY.md**: Update when code quality patterns change
+- **DESIGN_SYSTEM.md**: Reference when adding/modifying UI components, colors, spacing, or layout
 - **todo.md**: Mark tasks complete, add new tasks discovered during implementation
 - **README.md**: Update when install steps, dependencies, or config changes occur
 
@@ -22,6 +23,7 @@ When making changes to the codebase, **always** update the relevant MD files:
 | `BUG_AUDIT.md` | All bugs found and fixed, with file:line references | Before fixing bugs, to avoid regressions |
 | `SECURITY_AUDIT.md` | Security findings (XSS, CSRF, SQLi, auth) | When modifying auth, input handling, or DB queries |
 | `CODE_QUALITY.md` | Code quality patterns, inconsistencies | When refactoring or adding new features |
+| `DESIGN_SYSTEM.md` | Design tokens, component guidelines, accessibility rules | When adding/modifying UI components, CSS, or layout |
 | `README.md` | Installation, setup, requirements | When changing config, dependencies, or install flow |
 | `project.md` | Full specification (features, DB schema, routes) | When adding features or understanding business logic |
 | `todo.md` | Development task tracking | When checking what's done vs pending |
@@ -30,7 +32,9 @@ When making changes to the codebase, **always** update the relevant MD files:
 
 ```
 public/index.php          -> Entry point (bootstraps App)
-src/core/App.php          -> Loads config, starts session, dispatches router
+src/core/App.php          -> Web entry point: delegates to AppBoot, loads web classes, dispatches router
+src/core/AppBoot.php      -> Shared bootstrap: config, environment, models, services (used by web + CLI)
+src/core/ServiceResult.php-> Unified return type for service layer methods (ok/fail pattern)
 src/core/Router.php       -> URL pattern matching, calls controller methods
 src/core/Controller.php   -> Base class: auth, CSRF, views, redirects
 src/core/Model.php        -> Base class: CRUD, query builder, pagination
@@ -40,6 +44,10 @@ src/core/Validator.php    -> Server-side form validation rules
 src/config/routes.php     -> All GET/POST route definitions
 src/lang/de.php           -> German translation strings (flat key=>value)
 src/lang/en.php           -> English translation strings (flat key=>value)
+bin/kindergartenctl        -> CLI entry point (uses AppBoot + CliApp)
+src/cli/CliApp.php        -> CLI command parser and dispatcher
+src/cli/CliFormatter.php  -> Terminal output helpers (tables, colors, prompts)
+src/cli/commands/          -> CLI command handlers (one per entity type)
 ```
 
 ## Critical Patterns to Follow
@@ -75,6 +83,7 @@ src/lang/en.php           -> English translation strings (flat key=>value)
 - Theme color: CSS custom property `--color-primary` overridden in layout
 - Background patterns: `body[data-pattern="dots|stars|hearts|clouds"]` CSS patterns
 - 8 preset colors available in settings
+- **Full design system guidelines**: See `DESIGN_SYSTEM.md` for typography, color, spacing, component, motion, accessibility, and responsive rules
 
 ### 4. Date Formatting
 - `formatDate()` replaces `F` before `M` to prevent cascading corruption
@@ -146,8 +155,11 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 
 - 15 Controllers in `src/controllers/` (includes LocationController)
 - 10 Models in `src/models/` (includes Location)
-- 4 Services in `src/services/`
+- 16 Services in `src/services/` (4 original + 12 new entity services)
 - 3 Helpers in `src/helpers/`
-- 59 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages, locations/)
-- 9 Core classes in `src/core/`
+- 58 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages, locations/)
+- 11 Core classes in `src/core/` (includes AppBoot, ServiceResult)
 - 2 Language files in `src/lang/`
+- 14 CLI command files in `src/cli/commands/`
+- 2 CLI framework files in `src/cli/` (CliApp, CliFormatter)
+- 1 CLI entry point in `bin/kindergartenctl`

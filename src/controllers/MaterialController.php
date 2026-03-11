@@ -1,6 +1,8 @@
 <?php
 /**
  * Material Controller
+ *
+ * Thin HTTP adapter — all business logic lives in MaterialService.
  */
 
 class MaterialController extends Controller
@@ -15,8 +17,6 @@ class MaterialController extends Controller
      */
     public function index(): void
     {
-        require_once SRC_PATH . '/models/Material.php';
-
         $filters = [
             'is_favorite' => $this->getQuery('favorites') !== null ? (int)$this->getQuery('favorites') : null,
             'search' => $this->getQuery('q') ?: null,
@@ -25,13 +25,13 @@ class MaterialController extends Controller
         $sort = $this->getQuery('sort', 'name');
         $order = $this->getQuery('order', 'asc');
 
-        $materials = Material::allWithGameCount($sort, $order, $filters);
+        $result = (new MaterialService())->list($sort, $order, $filters);
 
         $this->setTitle(__('material.title_plural'));
         $this->addBreadcrumb(__('material.title_plural'), url('/materials'));
 
         $this->render('materials/index', [
-            'materials' => $materials,
+            'materials' => $result->data['materials'],
             'filters' => $filters,
             'currentSort' => $sort,
             'currentOrder' => $order,
@@ -60,9 +60,6 @@ class MaterialController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Material.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-
         $data = [
             'name' => trim($this->getPost('name', '')),
             'description' => trim($this->getPost('description', '')),
@@ -71,38 +68,20 @@ class MaterialController extends Controller
             'is_consumable' => $this->getPost('is_consumable') ? 1 : 0,
         ];
 
-        // Validate
-        $validator = Validator::make($data, [
-            'name' => 'required|max:100',
-        ]);
+        $result = (new MaterialService())->create($data);
 
-        // Check duplicate name
-        if (!empty($data['name']) && Material::nameExists($data['name'])) {
-            $validator->addError('name', __('validation.duplicate'));
-        }
-
-        if ($validator->fails()) {
-            Session::setErrors($validator->errors());
+        if ($result->failed()) {
+            Session::setErrors($result->errors);
             Session::setOldInput($data);
+            if ($result->message) {
+                Session::setFlash('error', $result->message);
+            }
             $this->redirect('/materials/create');
             return;
         }
 
-        // Create material
-        $materialId = Material::create($data);
-
-        if (!$materialId) {
-            Session::setFlash('error', __('flash.error_creating'));
-            Session::setOldInput($data);
-            $this->redirect('/materials/create');
-            return;
-        }
-
-        // Log change
-        ChangelogService::getInstance()->logCreate('material', $materialId, $data['name'], $data);
-
-        Session::setFlash('success', __('flash.created', ['item' => __('material.title')]));
-        $this->redirect('/materials');
+        Session::setFlash('success', $result->message);
+        $this->redirect('/materials/' . $result->data['id']);
     }
 
     /**
@@ -110,18 +89,16 @@ class MaterialController extends Controller
      */
     public function show(string $id): void
     {
-        require_once SRC_PATH . '/models/Material.php';
-        require_once SRC_PATH . '/models/Group.php';
+        $result = (new MaterialService())->get((int)$id);
 
-        $material = Material::findWithGameCount((int)$id);
-
-        if (!$material) {
-            Session::setFlash('error', __('material.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/materials');
             return;
         }
 
-        $games = Material::getGames((int)$id);
+        $material = $result->data['material'];
+        $games = $result->data['games'];
         $groups = Group::getForSelect();
 
         $this->setTitle($material['name']);
@@ -140,8 +117,6 @@ class MaterialController extends Controller
      */
     public function edit(string $id): void
     {
-        require_once SRC_PATH . '/models/Material.php';
-
         $material = Material::find((int)$id);
 
         if (!$material) {
@@ -167,9 +142,6 @@ class MaterialController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Material.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-
         $material = Material::find((int)$id);
 
         if (!$material) {
@@ -186,37 +158,20 @@ class MaterialController extends Controller
             'is_consumable' => $this->getPost('is_consumable') ? 1 : 0,
         ];
 
-        // Validate
-        $validator = Validator::make($data, [
-            'name' => 'required|max:100',
-        ]);
+        $result = (new MaterialService())->update((int)$id, $data);
 
-        // Check duplicate name (excluding current)
-        if (!empty($data['name']) && Material::nameExists($data['name'], (int)$id)) {
-            $validator->addError('name', __('validation.duplicate'));
-        }
-
-        if ($validator->fails()) {
-            Session::setErrors($validator->errors());
+        if ($result->failed()) {
+            Session::setErrors($result->errors);
             Session::setOldInput($data);
+            if ($result->message) {
+                Session::setFlash('error', $result->message);
+            }
             $this->redirect('/materials/' . $id . '/edit');
             return;
         }
 
-        // Track changes
-        $changelog = ChangelogService::getInstance();
-        $changes = $changelog->getChanges($material, $data, ['name', 'description', 'image_path', 'quantity', 'is_consumable']);
-
-        // Update material
-        Material::update((int)$id, $data);
-
-        // Log change
-        if (!empty($changes)) {
-            $changelog->logUpdate('material', (int)$id, $data['name'], $changes);
-        }
-
-        Session::setFlash('success', __('flash.updated', ['item' => __('material.title')]));
-        $this->redirect('/materials');
+        Session::setFlash('success', $result->message);
+        $this->redirect('/materials/' . $id);
     }
 
     /**
@@ -226,31 +181,15 @@ class MaterialController extends Controller
     {
         $this->requireCsrf();
 
-        require_once SRC_PATH . '/models/Material.php';
-        require_once SRC_PATH . '/services/ChangelogService.php';
-        require_once SRC_PATH . '/services/ImageProcessor.php';
+        $result = (new MaterialService())->delete((int)$id);
 
-        $material = Material::find((int)$id);
-
-        if (!$material) {
-            Session::setFlash('error', __('material.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/materials');
             return;
         }
 
-        // Log change before deletion
-        ChangelogService::getInstance()->logDelete('material', (int)$id, $material['name'], $material);
-
-        // Delete material (game_materials entries will be deleted due to foreign key)
-        Material::delete((int)$id);
-
-        // Delete image if exists
-        if ($material['image_path']) {
-            $processor = new ImageProcessor();
-            $processor->delete($material['image_path']);
-        }
-
-        Session::setFlash('success', __('flash.deleted', ['item' => __('material.title')]));
+        Session::setFlash('success', $result->message);
         $this->redirect('/materials');
     }
 
@@ -259,17 +198,16 @@ class MaterialController extends Controller
      */
     public function print(string $id): void
     {
-        require_once SRC_PATH . '/models/Material.php';
+        $result = (new MaterialService())->get((int)$id);
 
-        $material = Material::findWithGameCount((int)$id);
-
-        if (!$material) {
-            Session::setFlash('error', __('material.not_found'));
+        if ($result->failed()) {
+            Session::setFlash('error', $result->message);
             $this->redirect('/materials');
             return;
         }
 
-        $games = Material::getGames((int)$id);
+        $material = $result->data['material'];
+        $games = $result->data['games'];
 
         $this->setTitle($material['name'] . ' - ' . __('print.print_view'));
         $this->setLayout('print');

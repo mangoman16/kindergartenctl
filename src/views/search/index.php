@@ -71,7 +71,7 @@
     <div class="card-header">
         <h2 class="card-title"><?= __('nav.games') ?> (<?= count($results['games']) ?>)</h2>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body card-body-flush">
         <table class="table">
             <thead>
                 <tr>
@@ -124,7 +124,7 @@
     <div class="card-header">
         <h2 class="card-title"><?= __('nav.materials') ?> (<?= count($results['materials']) ?>)</h2>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body card-body-flush">
         <table class="table">
             <thead>
                 <tr>
@@ -166,7 +166,7 @@
     <div class="card-header">
         <h2 class="card-title"><?= __('nav.boxes') ?> (<?= count($results['boxes']) ?>)</h2>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body card-body-flush">
         <table class="table">
             <thead>
                 <tr>
@@ -238,7 +238,7 @@
     <div class="card-header">
         <h2 class="card-title"><?= __('nav.groups') ?> (<?= count($results['groups']) ?>)</h2>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body card-body-flush">
         <table class="table">
             <thead>
                 <tr>

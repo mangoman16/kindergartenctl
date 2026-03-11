@@ -56,7 +56,7 @@
                     <p class="text-muted"><?= __('group.no_games') ?></p>
                 </div>
             <?php else: ?>
-                <div class="card-body p-0">
+                <div class="card-body card-body-flush">
                     <table class="table">
                         <thead>
                             <tr>
@@ -120,7 +120,7 @@
                     <p class="text-muted"><?= __('group.no_materials') ?></p>
                 </div>
             <?php else: ?>
-                <div class="card-body p-0">
+                <div class="card-body card-body-flush">
                     <table class="table">
                         <thead>
                             <tr>

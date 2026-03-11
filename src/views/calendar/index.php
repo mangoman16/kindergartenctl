@@ -35,7 +35,7 @@
                     <p class="text-muted text-sm"><?= __('calendar.no_upcoming') ?></p>
                 </div>
             <?php else: ?>
-                <div class="card-body p-0">
+                <div class="card-body card-body-flush">
                     <ul class="event-list">
                         <?php foreach ($upcoming as $event): ?>
                             <li class="event-item" data-event-id="<?= $event['id'] ?>">

@@ -680,7 +680,7 @@ class SettingsController extends Controller
         $preferences['language'] = $language;
         $this->savePreferences($preferences);
 
-        Session::setFlash('success', __('settings.language_changed_msg'));
+        Session::setFlash('success', __('settings.language_changed'));
         $this->redirect('/settings/language');
     }
 

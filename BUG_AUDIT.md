@@ -13,9 +13,9 @@
 |----------|-------|-------|
 | Critical | 10 | 10 |
 | High | 6 | 6 |
-| Medium | 23 | 23 |
-| Low | 5 | 5 |
-| **Total** | **44** | **44** |
+| Medium | 30 | 30 |
+| Low | 14 | 14 |
+| **Total** | **60** | **60** |
 
 ---
 
@@ -197,9 +197,9 @@
 - **Fix:** Added a 10-second timeout that re-enables the button and shows an error message if the blob callback never fires.
 
 ### BUG-36 (Medium): Z-index Conflict Between Search Palette and Cropper Modal
-- **File:** `public/assets/css/style.css`
+- **File:** `public/assets/css/style.css:2936`, `public/assets/js/app.js:236`
 - **Problem:** Search palette overlay had `z-index: 9999` while cropper modal had `z-index: 2000`. If search palette was open when triggering image crop, the search overlay would block the cropper.
-- **Fix:** Added `.cropper-modal-overlay { z-index: 10000 !important; }` to ensure cropper always appears above search palette.
+- **Fix:** Updated `.cropper-modal-overlay` z-index from 2000 to 10000 in both the CSS file and the inline JS modal style to ensure cropper always appears above search palette.
 
 ### BUG-37 (Low): Missing Dark Mode Styles for `.btn-secondary`
 - **File:** `public/assets/css/style.css`
@@ -240,6 +240,86 @@
 - **File:** `src/services/Mailer.php:425-435`
 - **Problem:** `fgets()` returns `false` on both EOF and socket timeout. The loop exited silently without distinguishing between the two, potentially returning a truncated SMTP response that could cause protocol violations.
 - **Fix:** Added `stream_get_meta_data()` check after the loop to detect and log timeout conditions.
+
+### BUG-45 (Medium): Search Input Focus States Missing (WCAG Violation)
+- **File:** `public/assets/css/style.css:928,1319`
+- **Problem:** `.search-palette-header input:focus` and `.search-form input:focus` had `outline: none` with no replacement focus indicator, making keyboard navigation inaccessible.
+- **Fix:** Added `:focus-visible` rules with `outline: 2px solid var(--color-primary-light)` and `outline-offset: 2px`.
+
+### BUG-46 (Low): Touch Targets Below 44px Minimum
+- **File:** `public/assets/css/style.css:632-634,821-822`
+- **Problem:** `.rail-btn` (40px) and `.header-icon-btn` (36px) were below the 44px WCAG minimum touch target size.
+- **Fix:** Increased both to 44px width and height.
+
+### BUG-47 (Low): Missing `prefers-reduced-motion` Support
+- **File:** `public/assets/css/style.css`
+- **Problem:** No `@media (prefers-reduced-motion: reduce)` block existed. Users with vestibular disorders or motion sensitivity had no way to disable animations.
+- **Fix:** Added global reduced-motion media query that sets all animation/transition durations to 0.01ms.
+
+### BUG-48 (Low): Hardcoded Values Instead of Design Tokens
+- **File:** `public/assets/css/style.css` (multiple locations)
+- **Problem:** ~40 instances of hardcoded px/rem values for spacing, shadows, border-radius, font-sizes, and transitions instead of using CSS custom property tokens. Creates maintenance burden and inconsistency.
+- **Fix:** Replaced all hardcoded values with corresponding `--spacing-*`, `--shadow-*`, `--radius-*`, `--font-size-*`, and `--transition-*` tokens.
+
+### BUG-49 (Medium): All buttons lack `:focus-visible` states
+- **File:** `public/assets/css/style.css:1893-1896`
+- **Problem:** No `.btn:focus-visible` rule existed. Keyboard-only users had no visual focus indicator when tabbing through buttons. WCAG 2.4.7 violation.
+- **Fix:** Added `.btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }` cascading to all button variants.
+
+### BUG-50 (Medium): Buttons lack `:active` state feedback
+- **File:** `public/assets/css/style.css:1893-1896`
+- **Problem:** No tactile feedback when clicking buttons — no visual change between hover and mousedown.
+- **Fix:** Added `.btn:active:not(:disabled) { transform: scale(0.97); }` for subtle press feedback.
+
+### BUG-51 (Medium): `.form-select.is-invalid` styling missing
+- **File:** `public/assets/css/style.css:2055-2069`
+- **Problem:** `.form-control.is-invalid` had red border styling but `.form-select.is-invalid` did not. Invalid select dropdowns showed no visual error indicator.
+- **Fix:** Added matching `.form-select.is-invalid` and `:focus` rules with danger border and box-shadow.
+
+### BUG-52 (Medium): Missing `:disabled` styling for form inputs
+- **File:** `public/assets/css/style.css`
+- **Problem:** No visual distinction for disabled form controls. Users couldn't tell which fields were interactive vs read-only.
+- **Fix:** Added `.form-control:disabled, .form-select:disabled` with gray background, muted text color, and not-allowed cursor. Added dark mode variant.
+
+### BUG-53 (Medium): Pagination and table-sort links lack focus indicators
+- **File:** `public/assets/css/style.css:2319,3039`
+- **Problem:** `.pagination-link` and `.table-sort` had no `:focus-visible` rules, invisible to keyboard navigation.
+- **Fix:** Added `:focus-visible` with consistent outline pattern matching buttons.
+
+### BUG-54 (Medium): Z-index conflicts between dropdowns, user menu, and modals
+- **File:** `public/assets/css/style.css:1350,1531,2523,2541`
+- **Problem:** `.search-dropdown`, `.user-dropdown`, `.modal-overlay`, and `.modal` all shared `z-index: 1000`. Overlapping elements could appear behind each other.
+- **Fix:** Staggered z-indices: search-dropdown: 1000, user-dropdown: 1010, modals: 1020. Removed duplicate cropper z-index override.
+
+### BUG-55 (Low): Inconsistent card-body padding removal across views
+- **Files:** 11 view files across categories, groups, materials, search, games, changelog, calendar
+- **Problem:** Three different patterns for zero-padding card bodies: `style="padding: 0;"`, `class="p-0"`, inline spacing tokens. No canonical CSS class.
+- **Fix:** Added `.card-body-flush` utility class. Updated all 11 occurrences across 8 view files.
+
+### BUG-56 (Low): Inconsistent toggle selection button ID and translation key
+- **File:** `src/views/materials/index.php:4,9,213`
+- **Problem:** Materials used `toggle-select-mode` + `action.select` while Games used `toggle-selection-mode` + `bulk.multi_select`. Same feature, different identifiers.
+- **Fix:** Standardized Materials to match Games: ID `toggle-selection-mode`, key `bulk.multi_select`.
+
+### BUG-57 (Low): Hardcoded German text in views
+- **Files:** `src/views/locations/index.php:18`, `src/views/categories/index.php:50`
+- **Problem:** "Sortieren nach:" and "Spiele" were hardcoded German strings instead of translation function calls.
+- **Fix:** Replaced with `__('action.sort_by')` and `__('nav.games')`. Added `action.sort_by` key to both language files.
+
+### BUG-58 (Low): Modal backdrop opacity inconsistency
+- **File:** `public/assets/css/style.css:2548`
+- **Problem:** `.modal-backdrop` used `rgba(0,0,0,0.45)` while `.modal-overlay` used `rgba(0,0,0,0.5)`. Different backdrop darkness for the same purpose.
+- **Fix:** Standardized to `rgba(0,0,0,0.5)`.
+
+### BUG-59 (Low): Groups form missing help-tooltip on name field
+- **File:** `src/views/groups/form.php:17-19`
+- **Problem:** Every other entity form (games, materials, boxes, categories, tags, locations) has a `.help-tooltip` with `data-help` on the name label. Groups form was missing it.
+- **Fix:** Added `<span class="help-tooltip" data-help="<?= e(__('help.field_name')) ?>">?</span>` to match all other forms.
+
+### BUG-60 (Low): Locations show page uses `btn-outline` for view button
+- **File:** `src/views/locations/show.php:94`
+- **Problem:** Box view button used `btn btn-sm btn-outline` while all other table action buttons use `btn btn-sm btn-secondary`. Inconsistent button variant for same action type.
+- **Fix:** Changed to `btn btn-sm btn-secondary`.
 
 ---
 

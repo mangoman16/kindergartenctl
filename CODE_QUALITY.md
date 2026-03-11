@@ -2,8 +2,8 @@
 
 **Application:** Kindergarten Spiele Organizer v1.0.0
 **Technology Stack:** PHP 8.0+, MySQL 8.x, Custom MVC Framework
-**Codebase Size:** ~122 PHP files, ~12,000 lines of code
-**Audit Date:** 2026-02-09
+**Codebase Size:** ~155 PHP files, ~16,000 lines of code
+**Audit Date:** 2026-02-09 (updated 2026-03-10)
 
 ---
 
@@ -43,12 +43,16 @@ The codebase demonstrates high quality for a custom MVC application. It has stro
 
 **Areas for Improvement:**
 - No PHP namespaces - all classes in global scope. Works for this project size but limits scalability
-- No dependency injection container - services instantiated inline with `require_once` + `new` or `::getInstance()`
-- No autoloading beyond optional Composer - manual `require_once` in App.php
-- Controllers use `require_once` for services inside methods rather than constructor injection
+- No dependency injection container - services instantiated inline with `new` or `::getInstance()`
 - Router uses static methods, making it harder to test
 
-**Recommendation:** For this project's scale (~122 files), the current approach is pragmatic and functional. Namespaces and autoloading would be the highest-value improvement if the project grows.
+**Recent Improvements (March 2026):**
+- `AppBoot` class centralizes class loading for all models and services (replaces scattered `require_once` calls)
+- Service layer (`ServiceResult` + 12 entity services) decouples business logic from HTTP concerns
+- Three controllers refactored to thin HTTP adapters (Game, Box, Material); remaining controllers still use inline logic
+- CLI tool (`bin/kindergartenctl`) shares the same service layer via `AppBoot`
+
+**Recommendation:** For this project's scale (~155 files), the current approach is pragmatic and functional. Namespaces and autoloading would be the highest-value improvement if the project grows.
 
 ### 2. PHP Best Practices (8/10 - Good)
 
@@ -152,13 +156,13 @@ See `SECURITY_AUDIT.md` for comprehensive security analysis.
 ### 9. Code Duplication (8/10 - Good)
 
 **Strengths:**
-- Base Model class eliminates CRUD boilerplate across 9 models
+- Base Model class eliminates CRUD boilerplate across 10 models
 - Base Controller class provides shared auth, CSRF, rendering, breadcrumbs
 - Helper functions centralize formatting, dates, security utilities
 - `sanitizeImagePath()` in base Controller used by all entity controllers
 
 **Areas for Improvement:**
-- Some controller store/update methods have similar validation patterns that could be extracted
+- Validation patterns partially extracted to service layer (Game, Box, Material); remaining controllers still inline
 - Date parsing/formatting has two overlapping functions (`formatDate()` and `formatDateGerman()`) with different APIs
 - Multiple models have similar `allWithGameCount()`/`allWithMaterialCount()` patterns that could be generalized
 
@@ -187,14 +191,15 @@ See `SECURITY_AUDIT.md` for comprehensive security analysis.
 
 | Metric | Value |
 |--------|-------|
-| Total PHP Files | ~122 |
-| Total Lines of Code | ~12,000 |
-| Core Classes | 9 |
-| Controllers | 14 |
-| Models | 9 |
-| Services | 4 |
+| Total PHP Files | ~155 |
+| Total Lines of Code | ~16,000 |
+| Core Classes | 11 |
+| Controllers | 15 |
+| Models | 10 |
+| Services | 16 |
 | Helper Files | 3 |
-| View Templates | ~50 |
+| View Templates | 58 |
+| CLI Commands | 14 |
 | Routes | 107+ |
 | API Endpoints | 20+ |
 | Database Tables | 16 |
@@ -228,8 +233,9 @@ See `SECURITY_AUDIT.md` for comprehensive security analysis.
 | 2026-01-16 | Schema alignment + auth hardening | Reliability: High |
 | 2026-02-06 | PDO parameter fixes + mass-assignment protection + comprehensive comments | Reliability: High, Docs: High |
 | 2026-02-09 | Missing function fix + type hint fixes + API consistency + scale fixes | Reliability: Medium, Compatibility: High |
+| 2026-03-10 | Service layer extraction, AppBoot shared bootstrap, CLI tool | Architecture: High, Maintainability: High |
 
 ---
 
-*This report provides a point-in-time assessment of code quality as of 2026-02-09.*
-*Next recommended review: After major feature additions or PHP version upgrade.*
+*This report provides a point-in-time assessment of code quality as of 2026-03-10.*
+*Next recommended review: After remaining controllers are refactored to use service layer.*
