@@ -854,7 +854,7 @@ small {
     transition: margin-left var(--transition-normal);
     border-left: 1px solid var(--color-gray-100);
     border-top: 1px solid var(--color-gray-100);
-    border-top-left-radius: var(--radius-xl);
+    border-top-left-radius: 16px;
 }
 
 .context-sidebar.open ~ .main-content {
