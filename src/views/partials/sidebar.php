@@ -20,10 +20,6 @@ $hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calen
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
 
-        <button class="rail-btn <?= $navSection === 'home' ? 'active' : '' ?>" data-section="home" data-href="<?= url('/') ?>" title="<?= __('nav.dashboard') ?>">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        </button>
-
         <button class="rail-btn <?= $navSection === 'games' ? 'active' : '' ?>" data-section="games" title="<?= __('nav.games') ?>">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         </button>
