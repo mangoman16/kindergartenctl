@@ -402,23 +402,12 @@
 }
 
 /* Dark mode: Navigation */
-[data-theme="dark"] .context-sidebar {
-    border-right-color: var(--color-gray-200);
-    border-top-color: var(--color-gray-200);
-}
-
-[data-theme="dark"] .main-content {
-    border-top-color: var(--color-gray-200);
-}
-
 [data-theme="dark"] .quick-create-popup {
     background: var(--color-gray-800);
     border: 1px solid var(--color-gray-300);
 }
 
 /* Dark mode: Header & Dropdowns */
-[data-theme="dark"] .top-header {
-}
 
 [data-theme="dark"] .search-dropdown {
     background: var(--color-gray-100);
@@ -716,9 +705,6 @@ small {
 .context-sidebar {
     width: 0;
     background: var(--color-white);
-    border-right: 1px solid var(--color-gray-100);
-    border-top: 1px solid var(--color-gray-100);
-    border-top-right-radius: 16px;
     position: fixed;
     left: var(--rail-width);
     top: 0;
@@ -854,7 +840,7 @@ small {
     flex-direction: column;
     min-height: 100vh;
     transition: margin-left var(--transition-normal);
-    border-top: 1px solid var(--color-gray-100);
+    background: var(--color-white);
 }
 
 .context-sidebar.open ~ .main-content {
@@ -1681,6 +1667,8 @@ small {
 .page-content {
     flex: 1;
     padding: var(--spacing-6);
+    background: var(--color-gray-50);
+    border-top-left-radius: 16px;
 }
 
 .container {
