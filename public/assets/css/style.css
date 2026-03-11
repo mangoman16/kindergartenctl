@@ -402,8 +402,12 @@
 }
 
 /* Dark mode: Navigation */
+[data-theme="dark"] .context-sidebar {
+    border-right-color: var(--color-gray-200);
+    border-top-color: var(--color-gray-200);
+}
+
 [data-theme="dark"] .main-content {
-    border-left-color: var(--color-gray-200);
     border-top-color: var(--color-gray-200);
 }
 
@@ -712,6 +716,9 @@ small {
 .context-sidebar {
     width: 0;
     background: var(--color-white);
+    border-right: 1px solid var(--color-gray-100);
+    border-top: 1px solid var(--color-gray-100);
+    border-top-right-radius: 16px;
     position: fixed;
     left: var(--rail-width);
     top: 0;
@@ -847,9 +854,7 @@ small {
     flex-direction: column;
     min-height: 100vh;
     transition: margin-left var(--transition-normal);
-    border-left: 1px solid var(--color-gray-100);
     border-top: 1px solid var(--color-gray-100);
-    border-top-left-radius: 16px;
 }
 
 .context-sidebar.open ~ .main-content {
