@@ -98,9 +98,9 @@
     --transition-slow: 500ms ease;
 
     /* Layout */
-    --rail-width: 68px;
+    --rail-width: 52px;
     --ctx-sidebar-width: 200px;
-    --sidebar-width: 68px;
+    --sidebar-width: 52px;
     --header-height: 60px;
     --container-max-width: 1200px;
 }
@@ -634,12 +634,12 @@ small {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-3);
+    gap: 2px;
 }
 
 .rail-btn {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -656,32 +656,20 @@ small {
     width: var(--rail-width);
     height: auto;
     flex-direction: column;
-    gap: 3px;
-    padding: var(--spacing-1) 0;
+    gap: 2px;
+    padding: 6px 0;
     border-radius: 0;
     background: none;
 }
 
 .rail-btn-labeled svg {
-    background: var(--color-gray-100);
-    border-radius: var(--radius-xl);
-    padding: 6px;
-    width: 32px;
-    height: 32px;
-    box-sizing: content-box;
-}
-
-.rail-btn-labeled:hover svg {
-    background: var(--color-gray-200);
-}
-
-.rail-btn-labeled.active svg {
-    background: var(--color-primary-bg);
+    width: 24px;
+    height: 24px;
 }
 
 .rail-label {
     font-size: 10px;
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-normal);
     line-height: 1;
     text-align: center;
     white-space: nowrap;
@@ -741,7 +729,7 @@ small {
 
 .ctx-home-link {
     padding: var(--spacing-3) var(--spacing-3) 0;
-    margin-top: var(--spacing-12);
+    margin-top: var(--spacing-10);
 }
 
 .ctx-home-link .ctx-link {
@@ -3951,12 +3939,6 @@ tr.selected td { background: var(--color-primary-bg) !important; }
         width: 44px;
         height: auto;
         padding: var(--spacing-1) 0;
-    }
-
-    .rail-btn-labeled svg {
-        padding: 4px;
-        width: 28px;
-        height: 28px;
     }
 
     .context-sidebar {
