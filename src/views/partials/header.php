@@ -7,15 +7,9 @@ $searchPlaceholder = __('search.global_placeholder');
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <span class="search-trigger-text"><?= __('search.placeholder') ?></span>
-        <kbd class="search-trigger-kbd">Ctrl+K</kbd>
     </button>
 
     <div class="header-actions">
-        <button class="header-icon-btn help-toggle-btn" id="helpToggleBtn" title="<?= __('help.title') ?>">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><circle cx="12" cy="17" r="0.5" fill="currentColor"></circle></svg>
-        </button>
-
         <?php $user = currentUser(); ?>
         <?php if ($user): ?>
         <div class="user-menu-wrapper">
@@ -77,8 +71,10 @@ $searchPlaceholder = __('search.global_placeholder');
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="text" id="searchPaletteInput" placeholder="<?= e($searchPlaceholder) ?>" autocomplete="off">
-            <kbd class="search-palette-esc">Esc</kbd>
+            <input type="text" id="searchPaletteInput" autocomplete="off">
+            <button type="button" class="search-palette-close" id="searchPaletteClose" title="<?= __('action.close') ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
         </div>
         <div class="search-palette-filters" id="searchFilters">
             <button type="button" class="search-filter-chip active" data-type="all"><?= __('search.all') ?></button>
@@ -92,11 +88,6 @@ $searchPlaceholder = __('search.global_placeholder');
             <div class="search-palette-hint">
                 <p><?= __('search.hint') ?></p>
             </div>
-        </div>
-        <div class="search-palette-footer">
-            <span class="search-palette-footer-item"><kbd>&uarr;</kbd><kbd>&darr;</kbd> <?= __('search.navigate') ?></span>
-            <span class="search-palette-footer-item"><kbd>&crarr;</kbd> <?= __('search.open') ?></span>
-            <span class="search-palette-footer-item"><kbd>Esc</kbd> <?= __('search.close') ?></span>
         </div>
     </div>
 </div>
@@ -119,32 +110,6 @@ $searchPlaceholder = __('search.global_placeholder');
     });
 })();
 
-(function() {
-    var helpBtn = document.getElementById('helpToggleBtn');
-    var helpPanel = document.getElementById('helpPanel');
-    var helpClose = document.getElementById('helpPanelClose');
-    if (!helpBtn || !helpPanel) return;
-    helpBtn.addEventListener('click', function() {
-        helpPanel.classList.toggle('open');
-        var currentPage = helpPanel.dataset.currentPage;
-        var activeSection = helpPanel.querySelector('.help-section[data-page="' + currentPage + '"]');
-        if (activeSection && helpPanel.classList.contains('open')) {
-            setTimeout(function() { activeSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 200);
-        }
-    });
-    if (helpClose) {
-        helpClose.addEventListener('click', function() { helpPanel.classList.remove('open'); });
-    }
-    helpPanel.querySelectorAll('.help-toc-item').forEach(function(item) {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            var target = document.getElementById(this.getAttribute('href').substring(1));
-            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            helpPanel.querySelectorAll('.help-toc-item').forEach(function(i) { i.classList.remove('active'); });
-            this.classList.add('active');
-        });
-    });
-})();
 
 (function() {
     var btn = document.getElementById('quickCreateBtn');
@@ -471,6 +436,10 @@ $searchPlaceholder = __('search.global_placeholder');
     overlay.addEventListener('click', function(e) {
         if (e.target === overlay) closePalette();
     });
+
+    // Close button
+    var closeBtn = document.getElementById('searchPaletteClose');
+    if (closeBtn) closeBtn.addEventListener('click', closePalette);
 
     // Input handling
     input.addEventListener('input', function() {

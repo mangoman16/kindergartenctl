@@ -68,8 +68,6 @@ $compactSidebar = userPreference('compact_sidebar', 'no');
             <?php include SRC_PATH . '/views/partials/footer.php'; ?>
         </main>
 
-        <!-- Help Panel -->
-        <?php include SRC_PATH . '/views/partials/help-panel.php'; ?>
     </div>
 
     <!-- Scripts -->

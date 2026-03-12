@@ -19,9 +19,9 @@
     </div>
 </div>
 
-<div class="grid grid-cols-3">
+<div class="grid grid-cols-form">
     <!-- Material Details -->
-    <div class="card" style="grid-column: span 2;">
+    <div class="card">
         <div class="card-header">
             <h2 class="card-title"><?= __('misc.details') ?></h2>
         </div>

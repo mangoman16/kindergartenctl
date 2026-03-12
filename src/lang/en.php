@@ -263,7 +263,7 @@ return [
     'search.all' => 'All',
     'search.show_all' => 'Show all results',
     'search.min_chars' => 'Enter at least 3 characters',
-    'search.global_placeholder' => 'Search everything... (Ctrl+K)',
+    'search.global_placeholder' => 'Search...',
     'search.recent_searches' => 'Recent Searches',
     'search.recently_found' => 'Recently Found',
     'search.hint' => 'Type to find games, materials, boxes and more.',

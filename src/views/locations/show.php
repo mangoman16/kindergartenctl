@@ -22,9 +22,9 @@
     </div>
 </div>
 
-<div class="grid grid-cols-3">
+<div class="grid grid-cols-form">
     <!-- Main Info -->
-    <div style="grid-column: span 2;">
+    <div>
         <div class="card">
             <div class="card-body">
                 <div class="flex gap-6">
