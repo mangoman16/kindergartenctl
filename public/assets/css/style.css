@@ -829,6 +829,7 @@ small {
     min-height: 100vh;
     transition: margin-left var(--transition-normal);
     background: var(--color-white);
+    border-top-left-radius: var(--radius-xl);
 }
 
 .context-sidebar.open ~ .main-content {
