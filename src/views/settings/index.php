@@ -93,18 +93,4 @@
         <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
     </a>
 
-    <a href="<?= url('/settings/help') ?>" class="settings-menu-item">
-        <span class="settings-menu-icon" style="background: #F5F3FF; color: #8B5CF6;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-        </span>
-        <span class="settings-menu-text">
-            <span class="settings-menu-label"><?= __('help.title') ?></span>
-            <span class="settings-menu-desc"><?= __('help.wizard_welcome') ?></span>
-        </span>
-        <svg class="settings-menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-    </a>
 </div>

@@ -11,10 +11,6 @@ $searchPlaceholder = __('search.global_placeholder');
     </button>
 
     <div class="header-actions">
-        <button class="header-icon-btn help-toggle-btn" id="helpToggleBtn" title="<?= __('help.title') ?>">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><circle cx="12" cy="17" r="0.5" fill="currentColor"></circle></svg>
-        </button>
-
         <?php $user = currentUser(); ?>
         <?php if ($user): ?>
         <div class="user-menu-wrapper">
@@ -115,32 +111,6 @@ $searchPlaceholder = __('search.global_placeholder');
     });
 })();
 
-(function() {
-    var helpBtn = document.getElementById('helpToggleBtn');
-    var helpPanel = document.getElementById('helpPanel');
-    var helpClose = document.getElementById('helpPanelClose');
-    if (!helpBtn || !helpPanel) return;
-    helpBtn.addEventListener('click', function() {
-        helpPanel.classList.toggle('open');
-        var currentPage = helpPanel.dataset.currentPage;
-        var activeSection = helpPanel.querySelector('.help-section[data-page="' + currentPage + '"]');
-        if (activeSection && helpPanel.classList.contains('open')) {
-            setTimeout(function() { activeSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 200);
-        }
-    });
-    if (helpClose) {
-        helpClose.addEventListener('click', function() { helpPanel.classList.remove('open'); });
-    }
-    helpPanel.querySelectorAll('.help-toc-item').forEach(function(item) {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            var target = document.getElementById(this.getAttribute('href').substring(1));
-            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            helpPanel.querySelectorAll('.help-toc-item').forEach(function(i) { i.classList.remove('active'); });
-            this.classList.add('active');
-        });
-    });
-})();
 
 (function() {
     var btn = document.getElementById('quickCreateBtn');
