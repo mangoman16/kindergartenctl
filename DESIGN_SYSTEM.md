@@ -93,10 +93,26 @@ The primary color is user-customizable via the settings page (16 presets + custo
 ### Color Rules
 
 - **Limit active colors**: Use neutrals as the dominant surface color. Accents (primary, status) appear only for calls-to-action, feedback, or emphasis.
-- **WCAG AA minimum**: All text/background pairings must meet 4.5:1 contrast ratio for normal text, 3:1 for large text.
+- **WCAG AA minimum**: All text/background pairings must meet 4.5:1 contrast ratio for normal text, 3:1 for large text and UI graphics.
 - **Never rely on color alone**: Use icons, labels, or patterns alongside color to convey meaning (e.g., status badges include text labels, not just colored dots).
 - **Cross-device consistency**: Use hex and rgba values (not system colors) so appearance is consistent on Apple and non-Apple devices.
 - **Dark mode**: Every component must have dark mode overrides. Use `[data-theme="dark"]` CSS scope. Dark backgrounds use reduced-opacity rgba for status tints.
+
+### Minimum Text Color by Mode
+
+Because the gray scale inverts in dark mode, always verify contrast against the actual resolved value, not just the token name.
+
+| Purpose | Light mode minimum | Dark mode minimum |
+|---------|-------------------|-------------------|
+| Body/primary text | `--color-gray-900` (#111827) | `--color-gray-900` (#f0f0f5) |
+| Secondary/muted text | `--color-gray-600` (#4B5563) | `--color-gray-600` (#b0b0c4) |
+| Placeholder/hint text | `--color-gray-500` (#6B7280) | `--color-gray-500` (#9090a8) |
+| Icons (non-active) | `--color-gray-500` (#6B7280) | `--color-gray-500` (#9090a8) |
+| Section headers (uppercase) | `--color-gray-500` (#6B7280) | `--color-gray-500` (#9090a8) |
+
+**Avoid `--color-gray-400`** for any text or icons — it resolves to #9CA3AF in light mode (~2.3:1 on white) and #6b6b8a in dark mode (~3.2:1 on dark bg), both below WCAG AA.
+
+**For colored backgrounds** (e.g., primary buttons), use hardcoded `#fff` instead of `var(--color-white)`, since `--color-white` inverts to `#1a1a2e` in dark mode.
 
 ---
 
