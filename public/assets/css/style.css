@@ -79,23 +79,23 @@
     --spacing-16: 4rem;
 
     /* Border Radius */
-    --radius-sm: 0.25rem;
-    --radius-md: 0.375rem;
-    --radius-lg: 0.5rem;
-    --radius-xl: 0.75rem;
-    --radius-2xl: 1rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.625rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.25rem;
     --radius-full: 9999px;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    /* Shadows (Apple-style diffused) */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
 
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-normal: 300ms ease;
-    --transition-slow: 500ms ease;
+    /* Transitions (Apple-style spring-like) */
+    --transition-fast: 180ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-normal: 320ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-slow: 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
 
     /* Layout */
     --rail-width: 52px;
@@ -137,6 +137,26 @@
 
 [data-theme="dark"] body {
     color-scheme: dark;
+}
+
+[data-theme="dark"] .icon-rail {
+    background: rgba(26, 26, 46, 0.82);
+    border-right-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .context-sidebar {
+    background: rgba(26, 26, 46, 0.82);
+    border-right-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .top-header {
+    background: rgba(26, 26, 46, 0.72);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .search-palette {
+    background: rgba(30, 30, 56, 0.92);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 [data-theme="dark"] .auth-wrapper {
@@ -602,7 +622,9 @@ small {
 /* Icon Rail */
 .icon-rail {
     width: var(--rail-width);
-    background: var(--color-white);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -613,6 +635,7 @@ small {
     z-index: 110;
     padding: var(--spacing-3) var(--spacing-1);
     overflow: hidden;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .rail-top, .rail-bottom {
@@ -635,7 +658,7 @@ small {
     border: none;
     background: none;
     color: var(--color-gray-400);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     cursor: pointer;
     transition: all var(--transition-fast);
     text-decoration: none;
@@ -689,7 +712,9 @@ small {
 /* Context Sidebar */
 .context-sidebar {
     width: 0;
-    background: var(--color-white);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
     position: fixed;
     left: var(--rail-width);
     top: 0;
@@ -697,6 +722,7 @@ small {
     z-index: 105;
     overflow: hidden;
     transition: width var(--transition-normal);
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .context-sidebar.open {
@@ -749,7 +775,7 @@ small {
     padding: var(--spacing-2) var(--spacing-3);
     color: var(--color-gray-600);
     font-size: var(--font-size-base);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     text-decoration: none;
     transition: all var(--transition-fast);
     white-space: nowrap;
@@ -845,15 +871,15 @@ small {
 
 /* Header icon buttons */
 .header-icon-btn {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: none;
     background: none;
     color: var(--color-gray-400);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-full);
     cursor: pointer;
     transition: all var(--transition-fast);
 }
@@ -868,20 +894,18 @@ small {
     margin-bottom: var(--spacing-2);
 }
 
-/* Search Trigger (Asana-style) */
+/* Search Trigger */
 .search-trigger {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
+    justify-content: center;
+    width: 40px;
+    height: 40px;
     background: var(--color-gray-50);
     border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-full);
-    padding: var(--spacing-2) var(--spacing-5);
     color: var(--color-gray-400);
     cursor: pointer;
-    font-size: var(--font-size-sm);
-    min-width: 400px;
-    max-width: 600px;
     transition: all var(--transition-fast);
 }
 
@@ -891,27 +915,13 @@ small {
     color: var(--color-gray-600);
 }
 
-.search-trigger-text {
-    flex: 1;
-    text-align: left;
-}
-
-.search-trigger-kbd {
-    background: var(--color-white);
-    border: 1px solid var(--color-gray-200);
-    border-radius: var(--radius-sm);
-    padding: 1px 6px;
-    font-size: var(--font-size-xs);
-    color: var(--color-gray-400);
-    font-family: inherit;
-    line-height: 1.4;
-}
-
 /* Search Command Palette */
 .search-palette-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 9999;
     display: none;
     align-items: flex-start;
@@ -926,15 +936,17 @@ small {
 .search-palette {
     width: 100%;
     max-width: 640px;
-    background: var(--color-white);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-xl);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-radius: 18px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
     overflow: hidden;
-    animation: paletteSlideIn var(--transition-fast);
+    animation: paletteSlideIn 220ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @keyframes paletteSlideIn {
-    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    from { opacity: 0; transform: translateY(-12px) scale(0.96); }
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -1330,11 +1342,14 @@ small {
 }
 
 .top-header {
-    background: var(--color-white);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
     padding: var(--spacing-3) var(--spacing-6);
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    gap: var(--spacing-3);
     position: fixed;
     top: 0;
     left: var(--rail-width);
@@ -1342,6 +1357,7 @@ small {
     z-index: 100;
     min-height: var(--header-height);
     box-sizing: border-box;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .search-form {
@@ -1669,7 +1685,7 @@ small {
     padding: var(--spacing-6);
     padding-top: calc(var(--header-height) + var(--spacing-6));
     background: var(--color-gray-50);
-    border-top-left-radius: 16px;
+    border-top-left-radius: 24px;
 }
 
 .container {
@@ -1932,7 +1948,7 @@ small {
     padding: var(--spacing-2) var(--spacing-4);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     border: none;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -1951,7 +1967,7 @@ small {
 }
 
 .btn:active:not(:disabled) {
-    transform: scale(0.97);
+    transform: scale(0.98);
 }
 
 .btn-primary {
@@ -2069,8 +2085,8 @@ small {
     width: 100%;
     padding: var(--spacing-3);
     font-size: var(--font-size-base);
-    border: 1px solid var(--color-gray-300);
-    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-xl);
     background: var(--color-white);
     transition: all var(--transition-fast);
 }
@@ -2078,7 +2094,7 @@ small {
 .form-control:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px var(--color-primary-bg);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
 }
 
 .form-control::placeholder {
@@ -2130,8 +2146,8 @@ select.form-control,
     width: 100%;
     padding: var(--spacing-3);
     font-size: var(--font-size-base);
-    border: 1px solid var(--color-gray-300);
-    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-xl);
     background-color: var(--color-white);
     transition: all var(--transition-fast);
 }
@@ -2298,7 +2314,7 @@ select.form-control,
    ============================================ */
 .alert {
     padding: var(--spacing-4);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     margin-bottom: var(--spacing-4);
     display: flex;
     align-items: flex-start;
@@ -2405,14 +2421,14 @@ select.form-control,
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 44px;
-    height: 44px;
+    min-width: 40px;
+    height: 40px;
     padding: var(--spacing-1) var(--spacing-2);
     font-size: var(--font-size-sm);
     color: var(--color-gray-600);
     background: var(--color-white);
     border: 1px solid var(--color-gray-200);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-xl);
     transition: all var(--transition-fast);
 }
 
@@ -2585,7 +2601,9 @@ select.form-control,
 .modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-content {
@@ -3968,14 +3986,6 @@ tr.selected td { background: var(--color-primary-bg) !important; }
         right: -100%;
     }
 
-    .search-trigger {
-        min-width: auto;
-    }
-
-    .search-trigger-text,
-    .search-trigger-kbd {
-        display: none;
-    }
 
     .search-palette {
         margin: 0 var(--spacing-3);
