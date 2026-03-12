@@ -7,7 +7,6 @@ $searchPlaceholder = __('search.global_placeholder');
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <span class="search-trigger-text"><?= __('search.placeholder') ?></span>
     </button>
 
     <div class="header-actions">
