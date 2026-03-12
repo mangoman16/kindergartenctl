@@ -155,7 +155,7 @@
 }
 
 [data-theme="dark"] .form-control::placeholder {
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
 }
 
 [data-theme="dark"] .form-control:focus,
@@ -343,7 +343,7 @@
 [data-theme="dark"] .dark-mode-option {
     background: var(--color-gray-100);
     border-color: var(--color-gray-300);
-    color: var(--color-gray-500);
+    color: var(--color-gray-600);
 }
 
 [data-theme="dark"] .dark-mode-option:hover {
@@ -358,10 +358,10 @@
 
 /* Additional dark mode overrides */
 [data-theme="dark"] .detail-list dt {
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
 }
 [data-theme="dark"] .mini-cal-day {
-    color: var(--color-gray-300);
+    color: var(--color-gray-500);
 }
 [data-theme="dark"] .mini-cal-popover {
     background: var(--color-gray-800);
@@ -381,7 +381,7 @@
     color: var(--color-danger);
 }
 [data-theme="dark"] .empty-state {
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
 }
 [data-theme="dark"] .empty-state-icon {
     color: var(--color-gray-600);
@@ -634,7 +634,7 @@ small {
     justify-content: center;
     border: none;
     background: none;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -677,7 +677,7 @@ small {
 
 .rail-btn-create {
     background: var(--color-primary);
-    color: var(--color-white) !important;
+    color: #fff !important;
     border-radius: var(--radius-xl);
 }
 
@@ -731,7 +731,7 @@ small {
     font-weight: var(--font-weight-bold);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     padding: var(--spacing-1) var(--spacing-2) var(--spacing-2);
     margin-top: 0;
 }
@@ -795,7 +795,7 @@ small {
     font-weight: var(--font-weight-bold);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     padding: var(--spacing-2) var(--spacing-3);
 }
 
@@ -853,7 +853,7 @@ small {
     justify-content: center;
     border: none;
     background: none;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -878,7 +878,7 @@ small {
     border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-full);
     padding: var(--spacing-2) var(--spacing-5);
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     cursor: pointer;
     font-size: var(--font-size-sm);
     min-width: 400px;
@@ -903,7 +903,7 @@ small {
     border-radius: var(--radius-sm);
     padding: 1px 6px;
     font-size: var(--font-size-xs);
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     font-family: inherit;
     line-height: 1.4;
 }
@@ -945,7 +945,7 @@ small {
     gap: var(--spacing-3);
     padding: var(--spacing-5) var(--spacing-6);
     border-bottom: 1px solid var(--color-gray-100);
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
 }
 
 .search-palette-header input {
@@ -963,7 +963,7 @@ small {
 }
 
 .search-palette-header input::placeholder {
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
 }
 
 .search-palette-close {
@@ -974,7 +974,7 @@ small {
     height: 32px;
     border: none;
     background: none;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     cursor: pointer;
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
@@ -994,7 +994,7 @@ small {
 .search-palette-hint {
     padding: var(--spacing-8) var(--spacing-5);
     text-align: center;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     font-size: var(--font-size-sm);
 }
 
@@ -1030,7 +1030,7 @@ small {
 
 .search-palette-item-icon {
     flex-shrink: 0;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     display: flex;
     align-items: center;
 }
@@ -1158,12 +1158,12 @@ small {
     font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
 }
 .search-palette-clear-btn {
     background: none;
     border: none;
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
     font-size: var(--font-size-xs);
     cursor: pointer;
     text-decoration: underline;
@@ -1178,7 +1178,7 @@ small {
 }
 [data-theme="dark"] .search-filter-chip {
     border-color: var(--color-gray-600);
-    color: var(--color-gray-300);
+    color: var(--color-gray-600);
 }
 [data-theme="dark"] .search-filter-chip:hover {
     border-color: var(--color-primary);
@@ -4238,7 +4238,7 @@ body[data-pattern="waves"]::before {
     background: rgba(79, 70, 229, 0.15);
 }
 [data-theme="dark"] .settings-hint {
-    color: var(--color-gray-400);
+    color: var(--color-gray-500);
 }
 
 /* Dark mode overrides for secondary buttons */
