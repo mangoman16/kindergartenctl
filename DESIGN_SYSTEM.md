@@ -195,11 +195,11 @@ Based on a **4px base unit** (multiples of 0.25rem):
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--radius-sm` | 0.25rem (4px) | Badges, small chips |
-| `--radius-md` | 0.375rem (6px) | Form inputs, inline elements |
-| `--radius-lg` | 0.5rem (8px) | Buttons, dropdowns |
-| `--radius-xl` | 0.75rem (12px) | Cards (secondary) |
-| `--radius-2xl` | 1rem (16px) | Primary cards, modals, overlays |
+| `--radius-sm` | 0.5rem (8px) | Badges, small chips |
+| `--radius-md` | 0.75rem (12px) | Form inputs, inline elements |
+| `--radius-lg` | 0.875rem (14px) | Buttons, dropdowns |
+| `--radius-xl` | 1.125rem (18px) | Cards (secondary) |
+| `--radius-2xl` | 1.5rem (24px) | Primary cards, modals, overlays |
 | `--radius-full` | 9999px | Circular buttons, avatars, pills |
 
 ### Radius Rules

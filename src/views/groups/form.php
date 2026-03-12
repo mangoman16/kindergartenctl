@@ -5,9 +5,9 @@
 <form action="<?= $isEdit ? url('/groups/' . $group['id']) : url('/groups') ?>" method="POST">
     <?= csrfField() ?>
 
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-form gap-4">
         <!-- Main Form -->
-        <div style="grid-column: span 2;">
+        <div>
             <div class="card mb-4">
                 <div class="card-header">
                     <h2 class="card-title"><?= __('form.basic_info') ?></h2>

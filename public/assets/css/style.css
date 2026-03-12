@@ -80,10 +80,10 @@
 
     /* Border Radius (Apple-style) */
     --radius-sm: 0.5rem;
-    --radius-md: 0.625rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
-    --radius-2xl: 1.25rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 0.875rem;
+    --radius-xl: 1.125rem;
+    --radius-2xl: 1.5rem;
     --radius-full: 9999px;
 
     /* Shadows */
@@ -102,7 +102,7 @@
     --ctx-sidebar-width: 200px;
     --sidebar-width: 52px;
     --header-height: 60px;
-    --container-max-width: 1200px;
+    --container-max-width: 1400px;
 }
 
 /* ============================================
@@ -1670,7 +1670,7 @@ small {
     padding: var(--spacing-6);
     padding-top: calc(var(--header-height) + var(--spacing-6));
     background: var(--color-gray-50);
-    border-top-left-radius: 24px;
+    border-top-left-radius: var(--radius-2xl);
 }
 
 .container {
@@ -1921,6 +1921,7 @@ small {
 .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
 .grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+.grid-cols-form { grid-template-columns: 2fr 1fr; }
 
 /* ============================================
    Buttons
@@ -3906,7 +3907,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 /* ============================================
    Responsive
    ============================================ */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
     .grid-cols-4 {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -3992,6 +3993,10 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     .grid-cols-3,
     .grid-cols-4 {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-cols-form {
+        grid-template-columns: 1fr;
     }
 
     /* Single column on small mobile */

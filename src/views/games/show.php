@@ -19,9 +19,9 @@
     </div>
 </div>
 
-<div class="grid grid-cols-3 gap-4">
+<div class="grid grid-cols-form gap-4">
     <!-- Main Content -->
-    <div style="grid-column: span 2;">
+    <div>
         <!-- Game Details Card -->
         <div class="card mb-4">
             <div class="card-body">
