@@ -15,6 +15,31 @@
         <div class="settings-group-body">
             <div class="settings-group-item settings-group-item-inline">
                 <div class="settings-group-item-info">
+                    <span class="settings-group-item-label"><?= __('settings.profile_picture') ?></span>
+                </div>
+                <div class="profile-picture-controls">
+                    <?php $profilePic = userPreference('profile_picture', ''); ?>
+                    <?php if ($profilePic): ?>
+                        <img src="<?= url('/uploads/' . e($profilePic)) ?>" alt="" class="profile-picture-preview">
+                        <form action="<?= url('/user/settings/remove-profile-picture') ?>" method="POST" class="settings-inline-form">
+                            <?= csrfField() ?>
+                            <button type="submit" class="btn btn-sm btn-secondary"><?= __('settings.remove_picture') ?></button>
+                        </form>
+                    <?php else: ?>
+                        <span class="profile-picture-placeholder"><?= strtoupper(mb_substr($user['username'] ?? 'U', 0, 1)) ?></span>
+                    <?php endif; ?>
+                    <form action="<?= url('/user/settings/profile-picture') ?>" method="POST" enctype="multipart/form-data" class="settings-inline-form">
+                        <?= csrfField() ?>
+                        <label class="btn btn-sm btn-secondary profile-picture-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <?= __('settings.upload_picture') ?>
+                            <input type="file" name="profile_picture" accept="image/jpeg,image/png,image/gif,image/webp" hidden onchange="this.form.submit()">
+                        </label>
+                    </form>
+                </div>
+            </div>
+            <div class="settings-group-item settings-group-item-inline">
+                <div class="settings-group-item-info">
                     <span class="settings-group-item-label"><?= __('form.name') ?></span>
                     <span class="settings-group-item-desc"><?= __('user.username_readonly') ?></span>
                 </div>
@@ -357,6 +382,36 @@ button.settings-group-item:hover {
     flex-direction: column;
     gap: var(--spacing-3);
     max-width: 400px;
+}
+.profile-picture-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+.profile-picture-preview {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.profile-picture-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+.profile-picture-btn {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 .user-list-avatar {
     width: 32px;

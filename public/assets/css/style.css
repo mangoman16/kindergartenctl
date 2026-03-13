@@ -619,7 +619,7 @@ small {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-2);
+    gap: var(--spacing-4);
 }
 
 .rail-top .sidebar-toggle-btn {
@@ -1545,6 +1545,11 @@ small {
     font-weight: var(--font-weight-semibold);
     flex-shrink: 0;
     line-height: 1;
+}
+
+img.user-avatar-img {
+    object-fit: cover;
+    background: none;
 }
 
 .user-menu-name {

@@ -28,38 +28,4 @@
             </button>
         </form>
     </div>
-
-    <div class="settings-section">
-        <h2 class="settings-section-title"><?= __('settings.ip_bans') ?></h2>
-
-        <?php if (empty($bans)): ?>
-            <p class="text-muted"><?= __('settings.no_banned_ips') ?></p>
-        <?php else: ?>
-            <div class="ban-list">
-                <?php foreach ($bans as $ban): ?>
-                    <div class="ban-list-item">
-                        <div>
-                            <span class="ban-list-ip"><?= e($ban['ip_address']) ?></span>
-                            <span class="text-muted text-sm"><?= e($ban['reason'] ?? '') ?></span>
-                        </div>
-                        <form action="<?= url('/settings/unban') ?>" method="POST" style="margin: 0;">
-                            <?= csrfField() ?>
-                            <input type="hidden" name="ip" value="<?= e($ban['ip_address']) ?>">
-                            <button type="submit" class="btn btn-sm btn-secondary"><?= __('settings.unban') ?></button>
-                        </form>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-
-        <form action="<?= url('/settings/ban') ?>" method="POST" style="margin-top: var(--spacing-4);">
-            <?= csrfField() ?>
-            <div class="flex gap-2">
-                <input type="text" name="ip" class="form-control" placeholder="192.168.1.1" required>
-                <input type="text" name="reason" class="form-control" placeholder="<?= __('form.notes') ?>">
-                <button type="submit" class="btn btn-secondary" style="white-space: nowrap;"><?= __('settings.ban_ip') ?></button>
-            </div>
-        </form>
-    </div>
-
 </div>

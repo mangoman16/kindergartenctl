@@ -11,51 +11,27 @@ class SettingsController extends Controller
     }
 
     /**
-     * Show settings page
+     * Redirect /settings to first settings sub-page
      */
     public function index(): void
     {
-        require_once SRC_PATH . '/models/User.php';
+        $this->redirect('/settings/customization');
+    }
 
-        $user = User::find(Auth::id());
-        if (!$user) {
-            Session::setFlash('error', __('user.not_found'));
-            $this->redirect('/login');
-            return;
-        }
-
-        // Get IP bans
+    /**
+     * Show system settings page (debug + IP bans)
+     */
+    public function showSystem(): void
+    {
         $db = Database::getInstance();
         $bans = $db->query("SELECT * FROM ip_bans ORDER BY created_at DESC")->fetchAll();
 
-        // Get storage info
-        $uploadsSize = $this->getDirectorySize(UPLOADS_PATH);
-        $tempSize = $this->getDirectorySize(TEMP_PATH);
+        $this->setTitle(__('settings.system'));
+        $this->addBreadcrumb(__('settings.title'), '/settings');
+        $this->addBreadcrumb(__('settings.system'));
 
-        // Get SMTP settings
-        $smtpConfig = $this->getSmtpConfig();
-
-        // Get user preferences
-        $preferences = $this->getUserPreferences();
-
-        $this->setTitle(__('settings.title'));
-        $this->addBreadcrumb(__('settings.title'));
-
-        $this->render('settings/index', [
-            'user' => $user,
+        $this->render('settings/system', [
             'bans' => $bans,
-            'uploadsSize' => $this->formatBytes($uploadsSize),
-            'tempSize' => $this->formatBytes($tempSize),
-            'smtp' => [
-                'host' => $smtpConfig['smtp_host'] ?? '',
-                'port' => $smtpConfig['smtp_port'] ?? 587,
-                'username' => $smtpConfig['smtp_user'] ?? '',
-                'password' => $smtpConfig['smtp_pass'] ?? '',
-                'from_email' => $smtpConfig['smtp_from'] ?? '',
-                'from_name' => $smtpConfig['smtp_from_name'] ?? '',
-                'encryption' => $smtpConfig['smtp_encryption'] ?? 'tls',
-            ],
-            'preferences' => $preferences,
         ]);
     }
 
@@ -363,7 +339,7 @@ class SettingsController extends Controller
 
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
             Session::setFlash('error', __('validation.invalid_ip'));
-            $this->redirect('/settings/data');
+            $this->redirect('/settings/system');
             return;
         }
 
@@ -374,7 +350,7 @@ class SettingsController extends Controller
         $stmt->execute(['ip' => $ip]);
         if ($stmt->fetch()) {
             Session::setFlash('error', __('settings.ip_already_banned'));
-            $this->redirect('/settings/data');
+            $this->redirect('/settings/system');
             return;
         }
 
@@ -383,7 +359,7 @@ class SettingsController extends Controller
         $stmt->execute(['ip' => $ip, 'reason' => $reason]);
 
         Session::setFlash('success', __('settings.ip_banned_success'));
-        $this->redirect('/settings/data');
+        $this->redirect('/settings/system');
     }
 
     /**
@@ -397,7 +373,7 @@ class SettingsController extends Controller
 
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
             Session::setFlash('error', __('validation.invalid_ip'));
-            $this->redirect('/settings/data');
+            $this->redirect('/settings/system');
             return;
         }
 
@@ -406,7 +382,7 @@ class SettingsController extends Controller
         $stmt->execute(['ip' => $ip]);
 
         Session::setFlash('success', __('settings.ip_unbanned'));
-        $this->redirect('/settings/data');
+        $this->redirect('/settings/system');
     }
 
     /**
@@ -474,9 +450,6 @@ class SettingsController extends Controller
      */
     public function showData(): void
     {
-        $db = Database::getInstance();
-        $bans = $db->query("SELECT * FROM ip_bans ORDER BY created_at DESC")->fetchAll();
-
         $uploadsSize = $this->getDirectorySize(UPLOADS_PATH);
         $tempSize = $this->getDirectorySize(TEMP_PATH);
 
@@ -485,7 +458,6 @@ class SettingsController extends Controller
         $this->addBreadcrumb(__('settings.data'));
 
         $this->render('settings/data', [
-            'bans' => $bans,
             'uploadsSize' => $this->formatBytes($uploadsSize),
             'tempSize' => $this->formatBytes($tempSize),
         ]);
@@ -531,6 +503,111 @@ class SettingsController extends Controller
             'preferences' => $preferences,
             'users' => $users,
         ]);
+    }
+
+    /**
+     * Upload profile picture
+     */
+    public function uploadProfilePicture(): void
+    {
+        $this->requireCsrf();
+
+        if (empty($_FILES['profile_picture']) || $_FILES['profile_picture']['error'] !== UPLOAD_ERR_OK) {
+            Session::setFlash('error', __('validation.invalid_file'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        $file = $_FILES['profile_picture'];
+
+        // Validate MIME type
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($file['tmp_name']);
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($mime, $allowedMimes, true)) {
+            Session::setFlash('error', __('validation.invalid_file'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        // Validate file size (2MB max)
+        if ($file['size'] > 2 * 1024 * 1024) {
+            Session::setFlash('error', __('validation.file_too_large'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        // Create profile directory if needed
+        $profileDir = UPLOADS_PATH . '/profiles';
+        if (!is_dir($profileDir)) {
+            mkdir($profileDir, 0755, true);
+        }
+
+        // Delete old profile picture
+        $oldPic = userPreference('profile_picture', '');
+        if ($oldPic && file_exists(UPLOADS_PATH . '/' . $oldPic)) {
+            unlink(UPLOADS_PATH . '/' . $oldPic);
+        }
+
+        // Generate unique filename and convert to WebP
+        $filename = 'profiles/' . Auth::id() . '_' . time() . '.webp';
+        $destPath = UPLOADS_PATH . '/' . $filename;
+
+        $sourceImage = null;
+        switch ($mime) {
+            case 'image/jpeg': $sourceImage = imagecreatefromjpeg($file['tmp_name']); break;
+            case 'image/png': $sourceImage = imagecreatefrompng($file['tmp_name']); break;
+            case 'image/gif': $sourceImage = imagecreatefromgif($file['tmp_name']); break;
+            case 'image/webp': $sourceImage = imagecreatefromwebp($file['tmp_name']); break;
+        }
+
+        if (!$sourceImage) {
+            Session::setFlash('error', __('validation.invalid_file'));
+            $this->redirect('/user/settings');
+            return;
+        }
+
+        // Resize to square 200x200
+        $srcW = imagesx($sourceImage);
+        $srcH = imagesy($sourceImage);
+        $size = min($srcW, $srcH);
+        $srcX = (int)(($srcW - $size) / 2);
+        $srcY = (int)(($srcH - $size) / 2);
+
+        $thumb = imagecreatetruecolor(200, 200);
+        imagecopyresampled($thumb, $sourceImage, 0, 0, $srcX, $srcY, 200, 200, $size, $size);
+        imagewebp($thumb, $destPath, 85);
+        imagedestroy($sourceImage);
+        imagedestroy($thumb);
+
+        // Save to preferences
+        $preferences = $this->getUserPreferences();
+        $preferences['profile_picture'] = $filename;
+        $this->savePreferences($preferences);
+
+        Session::setFlash('success', __('settings.profile_picture_updated'));
+        $this->redirect('/user/settings');
+    }
+
+    /**
+     * Remove profile picture
+     */
+    public function removeProfilePicture(): void
+    {
+        $this->requireCsrf();
+
+        $preferences = $this->getUserPreferences();
+        $oldPic = $preferences['profile_picture'] ?? '';
+
+        if ($oldPic && file_exists(UPLOADS_PATH . '/' . $oldPic)) {
+            unlink(UPLOADS_PATH . '/' . $oldPic);
+        }
+
+        unset($preferences['profile_picture']);
+        $this->savePreferences($preferences);
+
+        Session::setFlash('success', __('settings.profile_picture_removed'));
+        $this->redirect('/user/settings');
     }
 
     /**
@@ -738,7 +815,7 @@ class SettingsController extends Controller
             Session::setFlash('success', __('settings.debug_mode_enabled'));
         }
 
-        $this->redirect('/settings/debug');
+        $this->redirect('/settings/system');
     }
 
     /**
