@@ -62,7 +62,4 @@
         </form>
     </div>
 
-    <div class="settings-actions">
-        <a href="<?= url('/settings') ?>" class="btn btn-secondary"><?= __('action.back') ?></a>
-    </div>
 </div>

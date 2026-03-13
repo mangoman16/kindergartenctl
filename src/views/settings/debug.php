@@ -30,7 +30,6 @@
             <button type="submit" class="btn <?= $debugEnabled ? 'btn-danger' : 'btn-primary' ?>">
                 <?= $debugEnabled ? __('settings.debug_disable') : __('settings.debug_enable') ?>
             </button>
-            <a href="<?= url('/settings') ?>" class="btn btn-secondary"><?= __('action.back') ?></a>
         </div>
     </form>
 </div>

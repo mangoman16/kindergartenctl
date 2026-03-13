@@ -117,13 +117,13 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 ### 9. Navigation Structure (Asana-style)
 - **Icon Rail** (56px fixed left): Sidebar toggle (hamburger) at top, then Home, Games, Inventory, Calendar buttons + Quick Create (plus) and Settings at bottom
 - **Sidebar Toggle**: Hamburger button at top of icon rail (`#sidebarToggleBtn`). Collapses/expands context sidebar. State persisted in localStorage (`sidebarCollapsed`). Always visible across all pages.
-- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes, locations (Standorte). Calendar section has its own link. Changelog moved to settings.
+- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes, locations (Standorte). Calendar section has its own link. Settings section → overview, customization, email, data, changelog + user profile link.
 - **Header**: Search trigger button (opens global command palette, Ctrl+K shortcut) + Help toggle + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
 - **Help Panel** (380px right-side slide): Handbook-style guide with table of contents, auto-scrolls to current page guide
 - **Quick Create Popup**: Accessible from plus button on icon rail, shortcuts to create games, materials, boxes, groups, calendar events
 - **Dark Mode**: Settings in user settings page (`/user/settings`) with three buttons: System, Light, Dark. Persisted via AJAX POST to `/settings/dark-mode` as `dark_mode_preference` (system|light|dark). System mode uses `prefers-color-scheme` media query. CSS variables in `[data-theme="dark"]`
-- **User settings** (`/user/settings`): Profile, language change, dark mode, password change, email change, user management (create/delete users)
-- **App settings** (`/settings`): Menu with links to sub-pages: customization, language, email, debug, data, changelog, help wizard
+- **User settings** (`/user/settings`): Grouped layout (Profile & Preferences, Security, User Management) with expandable sections for password/email change and user creation. Inline toggles for language and dark mode.
+- **App settings** (`/settings`): Overview page with grouped settings (Appearance, System, Activity). Sidebar provides navigation to sub-pages. Inline toggles for language, dark mode, and debug.
 - **Settings sub-pages**: `GET /settings/customization`, `/settings/language`, `/settings/email`, `/settings/debug`, `/settings/data`
 - **Help wizard** (`/settings/help`): Step-by-step guided tour of the application
 - **User management routes**: `POST /user/settings/language`, `POST /user/settings/create-user`, `POST /user/settings/delete-user`
