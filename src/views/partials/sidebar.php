@@ -133,7 +133,7 @@ $hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calen
     </div>
 
     <div class="ctx-section <?= $navSection === 'settings' ? 'visible' : '' ?>" data-for="settings">
-        <div class="ctx-header"><?= __('nav.settings') ?></div>
+        <div class="ctx-header"><?= __('settings.group_appearance') ?></div>
         <nav class="ctx-nav">
             <a href="<?= url('/settings/customization') ?>" class="ctx-link <?= isActiveNav('/settings/customization') ? 'active' : '' ?>">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="15.5" r="2.5"></circle><circle cx="8.5" cy="15.5" r="2.5"></circle></svg>
@@ -143,6 +143,10 @@ $hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calen
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                 <?= __('settings.language') ?>
             </a>
+        </nav>
+
+        <div class="ctx-header"><?= __('settings.group_system') ?></div>
+        <nav class="ctx-nav">
             <a href="<?= url('/settings/email') ?>" class="ctx-link <?= isActiveNav('/settings/email') ? 'active' : '' ?>">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                 <?= __('settings.email_short') ?>
@@ -155,12 +159,17 @@ $hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calen
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
                 <?= __('settings.data') ?>
             </a>
+        </nav>
+
+        <div class="ctx-header"><?= __('settings.group_activity') ?></div>
+        <nav class="ctx-nav">
             <a href="<?= url('/changelog') ?>" class="ctx-link <?= isActiveNav('/changelog') ? 'active' : '' ?>">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 <?= __('nav.changelog') ?>
             </a>
         </nav>
-        <div class="ctx-header" style="margin-top: var(--spacing-4);"><?= __('user.settings') ?></div>
+
+        <div class="ctx-header"><?= __('settings.group_profile') ?></div>
         <nav class="ctx-nav">
             <a href="<?= url('/user/settings') ?>" class="ctx-link <?= isActiveNav('/user/settings') ? 'active' : '' ?>">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>

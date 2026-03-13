@@ -736,6 +736,10 @@ small {
     margin-top: 0;
 }
 
+.ctx-nav + .ctx-header {
+    margin-top: var(--spacing-4);
+}
+
 .ctx-nav {
     display: flex;
     flex-direction: column;

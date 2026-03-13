@@ -11,11 +11,21 @@ class SettingsController extends Controller
     }
 
     /**
-     * Redirect /settings to first settings sub-page
+     * Show settings overview page with grouped settings
      */
     public function index(): void
     {
-        $this->redirect('/settings/customization');
+        $this->setTitle(__('settings.title'));
+        $this->addBreadcrumb(__('settings.title'));
+
+        $smtp = [];
+        if (file_exists(ROOT_PATH . '/storage/smtp.php')) {
+            $smtp = include ROOT_PATH . '/storage/smtp.php';
+        }
+
+        $this->render('settings/index', [
+            'smtp' => $smtp,
+        ]);
     }
 
     /**
