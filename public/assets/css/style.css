@@ -1355,7 +1355,7 @@ small {
     left: 0;
     width: var(--radius-xl);
     height: var(--radius-xl);
-    background: radial-gradient(circle at 100% 0, transparent var(--radius-xl), var(--color-white) var(--radius-xl));
+    background: radial-gradient(circle at 100% 100%, transparent var(--radius-xl), var(--color-white) var(--radius-xl));
 }
 
 .search-form {
