@@ -160,13 +160,13 @@ $searchPlaceholder = __('search.global_placeholder');
             } else {
                 contextSidebar.classList.remove('collapsed');
                 document.body.classList.remove('sidebar-collapsed');
+                contextSidebar.classList.add('open');
                 // Restore last section
                 var savedSection = localStorage.getItem('ctxSidebarSection');
                 if (savedSection) {
                     var savedTarget = contextSidebar.querySelector('.ctx-section[data-for="' + savedSection + '"]');
                     if (savedTarget) {
                         savedTarget.classList.add('visible');
-                        contextSidebar.classList.add('open');
                         contextSidebar.dataset.active = savedSection;
                     }
                 }
