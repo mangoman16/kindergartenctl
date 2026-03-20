@@ -108,10 +108,34 @@ $searchPlaceholder = __('search.global_placeholder');
 (function() {
     var btn = document.getElementById('quickCreateBtn');
     var popup = document.getElementById('quickCreatePopup');
-    if (!btn || !popup) return;
-    btn.addEventListener('click', function(e) { e.stopPropagation(); popup.classList.toggle('open'); });
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.quick-create-popup') && !e.target.closest('#quickCreateBtn')) popup.classList.remove('open');
+    var overlay = document.getElementById('quickCreateOverlay');
+    if (!btn || !popup || !overlay) return;
+
+    function openPopup() {
+        popup.classList.add('open');
+        overlay.classList.add('open');
+        btn.style.transform = 'rotate(45deg)';
+    }
+    function closePopup() {
+        popup.classList.remove('open');
+        overlay.classList.remove('open');
+        btn.style.transform = '';
+    }
+    function toggle(e) {
+        e.stopPropagation();
+        popup.classList.contains('open') ? closePopup() : openPopup();
+    }
+
+    btn.addEventListener('click', toggle);
+    overlay.addEventListener('click', closePopup);
+
+    // Keyboard shortcuts: 1-5 to navigate, Escape to close
+    document.addEventListener('keydown', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable) return;
+        if (!popup.classList.contains('open')) return;
+        if (e.key === 'Escape') { closePopup(); return; }
+        var tile = popup.querySelector('[data-key="' + e.key + '"]');
+        if (tile) { e.preventDefault(); closePopup(); window.location.href = tile.href; }
     });
 })();
 

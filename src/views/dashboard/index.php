@@ -84,59 +84,6 @@
     </a>
 </div>
 
-<!-- Quick Actions -->
-<div class="quick-action-grid">
-    <a href="<?= url('/games/create') ?>" class="quick-action-card">
-        <div class="quick-action-icon" style="background: var(--color-primary-bg); color: var(--color-primary);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="16"></line>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
-        </div>
-        <span class="quick-action-label"><?= __('game.add_new') ?></span>
-    </a>
-    <a href="<?= url('/materials/create') ?>" class="quick-action-card">
-        <div class="quick-action-icon" style="background: var(--color-success-bg); color: var(--color-success);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                <line x1="12" y1="8" x2="12" y2="16"></line>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
-        </div>
-        <span class="quick-action-label"><?= __('material.add_new') ?></span>
-    </a>
-    <a href="<?= url('/boxes/create') ?>" class="quick-action-card">
-        <div class="quick-action-icon" style="background: var(--color-warning-bg); color: var(--color-warning);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                <line x1="12" y1="8" x2="12" y2="16"></line>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
-        </div>
-        <span class="quick-action-label"><?= __('box.add_new') ?></span>
-    </a>
-    <a href="<?= url('/groups/create') ?>" class="quick-action-card">
-        <div class="quick-action-icon" style="background: var(--color-info-bg); color: var(--color-info);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                <line x1="12" y1="11" x2="12" y2="17"></line>
-                <line x1="9" y1="14" x2="15" y2="14"></line>
-            </svg>
-        </div>
-        <span class="quick-action-label"><?= __('group.add_new') ?></span>
-    </a>
-    <a href="<?= url('/search') ?>" class="quick-action-card">
-        <div class="quick-action-icon" style="background: #fae8ff; color: #a855f7;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-        </div>
-        <span class="quick-action-label"><?= __('search.title') ?></span>
-    </a>
-</div>
-
 <!-- Dashboard Widgets -->
 <div class="dash-layout" id="dashLayout">
     <!-- Left Column (collapsible) -->
@@ -244,11 +191,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Toggle Button for Left Column -->
-    <button type="button" class="dash-col-toggle" id="dashColToggle" title="<?= __('action.toggle_sidebar') ?>">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </button>
 
     <!-- Right Column -->
     <div class="dash-col-right">
@@ -410,51 +352,11 @@
     margin-top: 2px;
 }
 
-/* === Quick Actions Grid === */
-.quick-action-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: var(--spacing-3);
-    margin-top: var(--spacing-5);
-}
-.quick-action-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-5) var(--spacing-3);
-    background: var(--color-white);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-sm);
-    text-decoration: none;
-    color: var(--color-gray-700);
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-}
-.quick-action-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    color: var(--color-gray-900);
-}
-.quick-action-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-xl);
-}
-.quick-action-label {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    text-align: center;
-    line-height: 1.3;
-}
-
 /* === Dashboard Layout === */
 .dash-layout {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 0;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-5);
     margin-top: var(--spacing-6);
     align-items: start;
 }
@@ -462,50 +364,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4);
-    padding-right: var(--spacing-3);
-    transition: width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
-    overflow: hidden;
-}
-.dash-col-left.collapsed {
-    width: 0 !important;
-    opacity: 0;
-    padding: 0;
-    pointer-events: none;
-}
-.dash-layout.left-collapsed {
-    grid-template-columns: 0 auto 1fr;
 }
 .dash-col-right {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4);
-    padding-left: var(--spacing-3);
-}
-.dash-col-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 40px;
-    background: var(--color-white);
-    border: 1px solid var(--color-gray-200);
-    border-radius: var(--radius-lg);
-    color: var(--color-gray-400);
-    cursor: pointer;
-    margin-top: var(--spacing-4);
-    transition: color var(--transition-fast), background var(--transition-fast);
-    flex-shrink: 0;
-    align-self: start;
-}
-.dash-col-toggle:hover {
-    color: var(--color-gray-700);
-    background: var(--color-gray-50);
-}
-.dash-col-toggle svg {
-    transition: transform 0.3s ease;
-}
-.dash-layout.left-collapsed .dash-col-toggle svg {
-    transform: rotate(180deg);
 }
 
 /* === Fixed-height Dashboard Cards === */
@@ -889,21 +752,9 @@
     .dash-stats-row {
         grid-template-columns: repeat(2, 1fr);
     }
-    .quick-action-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
     .dash-layout {
         grid-template-columns: 1fr;
         gap: var(--spacing-4);
-    }
-    .dash-col-left {
-        padding-right: 0;
-    }
-    .dash-col-right {
-        padding-left: 0;
-    }
-    .dash-col-toggle {
-        display: none;
     }
     .dash-card-fixed {
         height: auto;
@@ -914,9 +765,6 @@
     .dash-stats-row {
         grid-template-columns: repeat(2, 1fr);
     }
-    .quick-action-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
     .dash-picker-filters {
         flex-direction: column;
     }
@@ -924,9 +772,6 @@
 @media (max-width: 480px) {
     .dash-stats-row {
         grid-template-columns: 1fr;
-    }
-    .quick-action-grid {
-        grid-template-columns: repeat(2, 1fr);
     }
 }
 </style>
@@ -1212,29 +1057,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     randomBtn.disabled = false;
                     randomBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> <?= __('dashboard.pick_random') ?>';
                 });
-        });
-    })();
-
-    // ============================
-    // Dashboard Left Column Toggle
-    // ============================
-    (function() {
-        var toggleBtn = document.getElementById('dashColToggle');
-        var layout = document.getElementById('dashLayout');
-        var colLeft = document.getElementById('dashColLeft');
-        if (!toggleBtn || !layout || !colLeft) return;
-
-        // Restore state from localStorage
-        var collapsed = localStorage.getItem('dashLeftCollapsed') === '1';
-        if (collapsed) {
-            layout.classList.add('left-collapsed');
-            colLeft.classList.add('collapsed');
-        }
-
-        toggleBtn.addEventListener('click', function() {
-            var isCollapsed = layout.classList.toggle('left-collapsed');
-            colLeft.classList.toggle('collapsed');
-            localStorage.setItem('dashLeftCollapsed', isCollapsed ? '1' : '0');
         });
     })();
 
