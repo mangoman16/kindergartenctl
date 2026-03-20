@@ -26,20 +26,22 @@
     if (!empty($filters['tag_id'])) $activeFilterCount++;
     if (!empty($filters['is_favorite'])) $activeFilterCount++;
 ?>
-<!-- Filter Toggle Button -->
-<div class="filter-toggle-bar">
-    <button type="button" class="btn btn-secondary btn-sm" id="filterToggleBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-        </svg>
-        <?= __('action.filter') ?>
-        <?php if ($activeFilterCount > 0): ?>
-            <span class="filter-badge"><?= $activeFilterCount ?></span>
+<!-- List Toolbar -->
+<div class="list-toolbar">
+    <div class="list-toolbar-left">
+        <button type="button" class="btn btn-secondary btn-sm" id="filterToggleBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            <?= __('action.filter') ?>
+            <?php if ($activeFilterCount > 0): ?>
+                <span class="filter-badge"><?= $activeFilterCount ?></span>
+            <?php endif; ?>
+        </button>
+        <?php if ($hasActiveFilters): ?>
+            <a href="<?= url('/games') ?>" class="btn btn-sm btn-ghost"><?= __('action.reset') ?></a>
         <?php endif; ?>
-    </button>
-    <?php if ($hasActiveFilters): ?>
-        <a href="<?= url('/games') ?>" class="btn btn-sm btn-ghost"><?= __('action.reset') ?></a>
-    <?php endif; ?>
+    </div>
 </div>
 
 <!-- Inline Filters (collapsible) -->
@@ -103,7 +105,7 @@
 </div>
 <?php else: ?>
 <!-- Bulk Actions Bar -->
-<div id="bulk-actions-bar" class="bulk-actions-bar" style="display: none;">
+<div id="bulk-actions-bar" class="bulk-actions-bar">
     <div class="flex items-center gap-4">
         <label class="form-check">
             <input type="checkbox" id="select-all-checkbox">
@@ -325,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selectionMode = !selectionMode;
         gamesGrid.classList.toggle('selection-mode', selectionMode);
         toggleBtn.classList.toggle('active', selectionMode);
-        bulkBar.style.display = selectionMode ? 'flex' : 'none';
+        bulkBar.classList.toggle('active', selectionMode);
         if (!selectionMode) clearSelection();
     });
 
@@ -334,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selectionMode = false;
         gamesGrid.classList.remove('selection-mode');
         toggleBtn.classList.remove('active');
-        bulkBar.style.display = 'none';
+        bulkBar.classList.remove('active');
         clearSelection();
     });
 

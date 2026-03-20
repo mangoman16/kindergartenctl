@@ -11,11 +11,11 @@
     </div>
 </div>
 
-<!-- Sorting -->
-<div class="card mb-6">
-    <div class="card-body" style="padding: var(--spacing-3) var(--spacing-5);">
-        <div class="flex items-center gap-4">
-            <span class="text-sm text-muted"><?= __('action.sort_by') ?>:</span>
+<!-- List Toolbar -->
+<div class="list-toolbar">
+    <div class="list-toolbar-right">
+        <span class="list-toolbar-label"><?= __('action.sort_by') ?>:</span>
+        <div class="sort-pills">
             <?php
             $sortOptions = [
                 'name' => 'Name',
@@ -26,7 +26,7 @@
                 $newDir = ($isActive && $currentDir === 'ASC') ? 'DESC' : 'ASC';
             ?>
             <a href="<?= url('/locations', ['sort' => $key, 'dir' => $newDir]) ?>"
-               class="btn btn-sm <?= $isActive ? 'btn-primary' : 'btn-secondary' ?>">
+               class="sort-pill <?= $isActive ? 'active' : '' ?>">
                 <?= e($label) ?>
                 <?php if ($isActive): ?>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

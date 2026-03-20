@@ -18,8 +18,29 @@
     </div>
 </div>
 
-<!-- Inline Filters -->
-<form action="<?= url('/materials') ?>" method="GET" class="inline-filters">
+<?php $hasActiveFilters = !empty($filters['is_favorite']); ?>
+<?php $activeFilterCount = $hasActiveFilters ? 1 : 0; ?>
+
+<!-- List Toolbar -->
+<div class="list-toolbar">
+    <div class="list-toolbar-left">
+        <button type="button" class="btn btn-secondary btn-sm" id="filterToggleBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            <?= __('action.filter') ?>
+            <?php if ($activeFilterCount > 0): ?>
+                <span class="filter-badge"><?= $activeFilterCount ?></span>
+            <?php endif; ?>
+        </button>
+        <?php if ($hasActiveFilters): ?>
+            <a href="<?= url('/materials') ?>" class="btn btn-sm btn-ghost"><?= __('action.reset') ?></a>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Inline Filters (collapsible) -->
+<form action="<?= url('/materials') ?>" method="GET" class="inline-filters" id="filtersPanel" style="<?= $hasActiveFilters ? '' : 'display:none;' ?>">
     <label class="inline-filter-check">
         <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
@@ -27,9 +48,6 @@
         </svg>
         <span><?= __('misc.favorites_only') ?></span>
     </label>
-    <?php if (!empty($filters['search']) || !empty($filters['is_favorite'])): ?>
-        <a href="<?= url('/materials') ?>" class="inline-filter-reset"><?= __('action.reset') ?></a>
-    <?php endif; ?>
     <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
 </form>
 
@@ -60,7 +78,7 @@
 <?php else: ?>
 
 <!-- Bulk Actions Bar -->
-<div id="bulk-actions-bar" class="bulk-actions-bar" style="display: none;">
+<div id="bulk-actions-bar" class="bulk-actions-bar">
     <div class="flex items-center gap-4">
         <span id="selected-count" class="text-muted">0 <?= __('bulk.selected') ?></span>
     </div>
@@ -250,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBtn?.classList.add('active');
         document.querySelector('.table')?.classList.add('selection-mode');
         document.querySelectorAll('.bulk-select-col').forEach(col => col.style.display = 'table-cell');
-        bulkBar.style.display = 'flex';
+        bulkBar.classList.add('active');
     }
 
     function disableSelectionMode() {
@@ -258,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBtn?.classList.remove('active');
         document.querySelector('.table')?.classList.remove('selection-mode');
         document.querySelectorAll('.bulk-select-col').forEach(col => col.style.display = 'none');
-        bulkBar.style.display = 'none';
+        bulkBar.classList.remove('active');
         clearSelection();
     }
 
@@ -373,3 +391,24 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
+
+<script<?= cspNonce() ?>>
+// Filter toggle
+(function() {
+    var filterBtn = document.getElementById('filterToggleBtn');
+    var filtersPanel = document.getElementById('filtersPanel');
+    if (filterBtn && filtersPanel) {
+        var filtersVisible = filtersPanel.style.display !== 'none';
+        filterBtn.addEventListener('click', function() {
+            filtersVisible = !filtersVisible;
+            filtersPanel.style.display = filtersVisible ? '' : 'none';
+            localStorage.setItem('materialsFiltersVisible', filtersVisible);
+        });
+        var savedVis = localStorage.getItem('materialsFiltersVisible');
+        if (savedVis === 'true' && !filtersVisible) {
+            filtersPanel.style.display = '';
+            filtersVisible = true;
+        }
+    }
+})();
+</script>
