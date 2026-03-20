@@ -1603,7 +1603,7 @@ img.user-avatar-img {
     right: 0;
     top: calc(100% + 4px);
     background: var(--color-white);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
     min-width: 260px;
     z-index: 1010;
@@ -1670,18 +1670,18 @@ img.user-avatar-img {
     display: flex;
     align-items: center;
     gap: var(--spacing-3);
-    padding: var(--spacing-2) var(--spacing-4);
+    padding: var(--spacing-2) var(--spacing-3);
     width: 100%;
     text-align: left;
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--color-gray-700);
+    color: var(--color-gray-600);
     font-family: var(--font-family);
     font-size: var(--font-size-sm);
     text-decoration: none;
     transition: all var(--transition-fast);
-    border-radius: 0;
+    border-radius: var(--radius-lg);
 }
 
 .user-dropdown-logout:hover {
@@ -1690,8 +1690,7 @@ img.user-avatar-img {
 }
 
 .user-dropdown-footer {
-    margin-top: var(--spacing-1);
-    padding-top: var(--spacing-1);
+    padding: var(--spacing-2) var(--spacing-2);
     border-top: 1px solid var(--color-gray-100);
 }
 
