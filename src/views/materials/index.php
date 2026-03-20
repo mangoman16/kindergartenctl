@@ -1,13 +1,9 @@
+<?php $hasActiveFilters = !empty($filters['is_favorite']); ?>
+<?php $activeFilterCount = $hasActiveFilters ? 1 : 0; ?>
+
 <div class="page-header">
     <h1 class="page-title"><?= __('material.title_plural') ?></h1>
     <div class="page-actions">
-        <button type="button" id="toggle-selection-mode" class="btn btn-ghost">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9 11 12 14 22 4"></polyline>
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-            </svg>
-            <?= __('bulk.multi_select') ?>
-        </button>
         <a href="<?= url('/materials/create') ?>" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -18,30 +14,37 @@
     </div>
 </div>
 
-<?php $hasActiveFilters = !empty($filters['is_favorite']); ?>
-<?php $activeFilterCount = $hasActiveFilters ? 1 : 0; ?>
-
-<!-- List Toolbar -->
+<!-- Unified Toolbar -->
 <div class="list-toolbar">
     <div class="list-toolbar-left">
-        <button type="button" class="btn btn-secondary btn-sm" id="filterToggleBtn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        <button type="button" class="toolbar-btn" id="filterToggleBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="4" y1="6" x2="20" y2="6"></line>
+                <line x1="7" y1="12" x2="17" y2="12"></line>
+                <line x1="10" y1="18" x2="14" y2="18"></line>
             </svg>
             <?= __('action.filter') ?>
             <?php if ($activeFilterCount > 0): ?>
-                <span class="filter-badge"><?= $activeFilterCount ?></span>
+                <span class="toolbar-badge"><?= $activeFilterCount ?></span>
             <?php endif; ?>
         </button>
         <?php if ($hasActiveFilters): ?>
-            <a href="<?= url('/materials') ?>" class="btn btn-sm btn-ghost"><?= __('action.reset') ?></a>
+            <a href="<?= url('/materials') ?>" class="toolbar-reset"><?= __('action.reset') ?></a>
         <?php endif; ?>
+        <span class="toolbar-divider"></span>
+        <button type="button" id="toggle-selection-mode" class="toolbar-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+            <?= __('bulk.multi_select') ?>
+        </button>
     </div>
 </div>
 
-<!-- Inline Filters (collapsible) -->
-<form action="<?= url('/materials') ?>" method="GET" class="inline-filters" id="filtersPanel" style="<?= $hasActiveFilters ? '' : 'display:none;' ?>">
-    <label class="inline-filter-check">
+<!-- Filter Panel (collapsible) -->
+<form action="<?= url('/materials') ?>" method="GET" class="filter-panel" id="filtersPanel" style="<?= $hasActiveFilters ? '' : 'display:none;' ?>">
+    <label class="filter-chip">
         <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>

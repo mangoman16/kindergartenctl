@@ -11,11 +11,11 @@
     </div>
 </div>
 
-<!-- List Toolbar -->
+<!-- Unified Toolbar -->
 <div class="list-toolbar">
-    <div class="list-toolbar-right">
+    <div class="list-toolbar-left">
         <span class="list-toolbar-label"><?= __('box.sort_by') ?></span>
-        <div class="sort-pills">
+        <div class="segmented-control">
             <?php
             $sortOptions = [
                 'name' => __('box.sort_name'),
@@ -28,7 +28,7 @@
                 $newDir = ($isActive && $currentDir === 'ASC') ? 'DESC' : 'ASC';
             ?>
             <a href="<?= url('/boxes', ['sort' => $key, 'dir' => $newDir]) ?>"
-               class="sort-pill <?= $isActive ? 'active' : '' ?>">
+               class="<?= $isActive ? 'active' : '' ?>">
                 <?= e($label) ?>
                 <?php if ($isActive): ?>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
