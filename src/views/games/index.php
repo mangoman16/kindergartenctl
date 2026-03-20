@@ -23,56 +23,73 @@
 <!-- Unified Toolbar -->
 <div class="list-toolbar">
     <div class="list-toolbar-left">
-        <button type="button" class="toolbar-btn" id="filterToggleBtn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="4" y1="6" x2="20" y2="6"></line>
-                <line x1="7" y1="12" x2="17" y2="12"></line>
-                <line x1="10" y1="18" x2="14" y2="18"></line>
-            </svg>
-            <?= __('action.filter') ?>
-            <?php if ($activeFilterCount > 0): ?>
-                <span class="toolbar-badge"><?= $activeFilterCount ?></span>
-            <?php endif; ?>
-        </button>
-        <?php if ($hasActiveFilters): ?>
-            <a href="<?= url('/games') ?>" class="toolbar-reset"><?= __('action.reset') ?></a>
-        <?php endif; ?>
-        <!-- Inline filter controls (expand within toolbar) -->
-        <form action="<?= url('/games') ?>" method="GET" class="toolbar-filters" id="filtersPanel" style="<?= $hasActiveFilters ? '' : 'display:none;' ?>">
-            <span class="toolbar-divider"></span>
-            <select name="box" class="filter-select" onchange="this.form.submit()">
-                <option value=""><?= __('misc.all') ?> <?= __('nav.boxes') ?></option>
-                <?php foreach ($boxes as $box): ?>
-                    <option value="<?= $box['id'] ?>" <?= ($filters['box_id'] ?? '') == $box['id'] ? 'selected' : '' ?>>
-                        <?= e($box['name']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <select name="category" class="filter-select" onchange="this.form.submit()">
-                <option value=""><?= __('misc.all') ?> <?= __('nav.categories') ?></option>
-                <?php foreach ($categories as $category): ?>
-                    <option value="<?= $category['id'] ?>" <?= ($filters['category_id'] ?? '') == $category['id'] ? 'selected' : '' ?>>
-                        <?= e($category['name']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <select name="tag" class="filter-select" onchange="this.form.submit()">
-                <option value=""><?= __('misc.all') ?> <?= __('nav.tags') ?></option>
-                <?php foreach ($tags as $tag): ?>
-                    <option value="<?= $tag['id'] ?>" <?= ($filters['tag_id'] ?? '') == $tag['id'] ? 'selected' : '' ?>>
-                        <?= e($tag['name']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <label class="filter-chip">
-                <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        <div class="filter-popover-wrap">
+            <button type="button" class="toolbar-btn<?= $hasActiveFilters ? ' active' : '' ?>" id="filterToggleBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                    <line x1="7" y1="12" x2="17" y2="12"></line>
+                    <line x1="10" y1="18" x2="14" y2="18"></line>
                 </svg>
-                <span><?= __('misc.favorites_only') ?></span>
-            </label>
-            <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
-        </form>
+                <?= __('action.filter') ?>
+                <?php if ($activeFilterCount > 0): ?>
+                    <span class="toolbar-badge"><?= $activeFilterCount ?></span>
+                <?php endif; ?>
+            </button>
+            <!-- Filter Popover -->
+            <div class="filter-popover" id="filtersPanel">
+                <div class="filter-popover-header">
+                    <span class="filter-popover-title"><?= __('action.filter') ?></span>
+                    <?php if ($hasActiveFilters): ?>
+                        <a href="<?= url('/games') ?>" class="toolbar-reset"><?= __('action.reset') ?></a>
+                    <?php endif; ?>
+                </div>
+                <form action="<?= url('/games') ?>" method="GET" class="filter-popover-body">
+                    <div class="filter-popover-row">
+                        <label class="filter-popover-label"><?= __('nav.boxes') ?></label>
+                        <select name="box" class="filter-select" onchange="this.form.submit()">
+                            <option value=""><?= __('misc.all') ?></option>
+                            <?php foreach ($boxes as $box): ?>
+                                <option value="<?= $box['id'] ?>" <?= ($filters['box_id'] ?? '') == $box['id'] ? 'selected' : '' ?>>
+                                    <?= e($box['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="filter-popover-row">
+                        <label class="filter-popover-label"><?= __('nav.categories') ?></label>
+                        <select name="category" class="filter-select" onchange="this.form.submit()">
+                            <option value=""><?= __('misc.all') ?></option>
+                            <?php foreach ($categories as $category): ?>
+                                <option value="<?= $category['id'] ?>" <?= ($filters['category_id'] ?? '') == $category['id'] ? 'selected' : '' ?>>
+                                    <?= e($category['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="filter-popover-row">
+                        <label class="filter-popover-label"><?= __('nav.tags') ?></label>
+                        <select name="tag" class="filter-select" onchange="this.form.submit()">
+                            <option value=""><?= __('misc.all') ?></option>
+                            <?php foreach ($tags as $tag): ?>
+                                <option value="<?= $tag['id'] ?>" <?= ($filters['tag_id'] ?? '') == $tag['id'] ? 'selected' : '' ?>>
+                                    <?= e($tag['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="filter-popover-row">
+                        <label class="filter-chip">
+                            <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <span><?= __('misc.favorites_only') ?></span>
+                        </label>
+                    </div>
+                    <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
+                </form>
+            </div>
+        </div>
     </div>
     <div class="list-toolbar-right">
         <button type="button" id="toggle-selection-mode" class="toolbar-btn">
@@ -498,22 +515,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.selectedIds = selectedIds;
 
-    // Filter toggle
+    // Filter popover toggle
     var filterBtn = document.getElementById('filterToggleBtn');
     var filtersPanel = document.getElementById('filtersPanel');
     if (filterBtn && filtersPanel) {
-        var filtersVisible = filtersPanel.style.display !== 'none';
-        filterBtn.addEventListener('click', function() {
-            filtersVisible = !filtersVisible;
-            filtersPanel.style.display = filtersVisible ? '' : 'none';
-            localStorage.setItem('gamesFiltersVisible', filtersVisible);
+        filterBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            filtersPanel.classList.toggle('open');
+            filterBtn.classList.toggle('active', filtersPanel.classList.contains('open'));
         });
-        // Restore from localStorage (but keep visible if filters are active)
-        var savedVis = localStorage.getItem('gamesFiltersVisible');
-        if (savedVis === 'true' && !filtersVisible) {
-            filtersPanel.style.display = '';
-            filtersVisible = true;
-        }
+        // Close on outside click
+        document.addEventListener('click', function(e) {
+            if (!filtersPanel.contains(e.target) && !filterBtn.contains(e.target)) {
+                filtersPanel.classList.remove('open');
+                if (!<?= $hasActiveFilters ? 'true' : 'false' ?>) {
+                    filterBtn.classList.remove('active');
+                }
+            }
+        });
     }
 });
 </script>
