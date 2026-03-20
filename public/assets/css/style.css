@@ -2610,11 +2610,15 @@ select.form-control,
 .modal {
     position: fixed;
     inset: 0;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     z-index: 1020;
     padding: var(--spacing-4);
+}
+
+.modal.active {
+    display: flex;
 }
 
 .modal-backdrop {

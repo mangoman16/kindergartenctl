@@ -93,7 +93,7 @@
 </div>
 
 <!-- Event Modal -->
-<div id="event-modal" class="modal" style="display: none;">
+<div id="event-modal" class="modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
@@ -458,12 +458,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('delete-event-btn').style.display = 'none';
         }
 
-        modal.style.display = 'flex';
+        modal.classList.add('active');
     }
 
     // Close modal
     function closeModal() {
-        modal.style.display = 'none';
+        modal.classList.remove('active');
         currentEvent = null;
     }
 

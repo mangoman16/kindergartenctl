@@ -180,7 +180,7 @@
 </div>
 
 <!-- Add to Group Modal -->
-<div id="add-to-group-modal" class="modal" style="display: none;">
+<div id="add-to-group-modal" class="modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            document.getElementById('add-to-group-modal').style.display = 'flex';
+            document.getElementById('add-to-group-modal').classList.add('active');
         } catch (error) {
             console.error('Failed to load groups:', error);
             alert('<?= __('flash.error') ?>');
@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.closeGroupModal = function() {
-        document.getElementById('add-to-group-modal').style.display = 'none';
+        document.getElementById('add-to-group-modal').classList.remove('active');
     };
 
     window.confirmBulkAddToGroup = async function() {

@@ -274,21 +274,21 @@ document.addEventListener('DOMContentLoaded', function() {
 function openAddToGroupModal() {
     const modal = document.getElementById('add-to-group-modal');
     if (modal) {
-        modal.style.display = 'flex';
+        modal.classList.add('active');
     }
 }
 
 function closeAddToGroupModal() {
     const modal = document.getElementById('add-to-group-modal');
     if (modal) {
-        modal.style.display = 'none';
+        modal.classList.remove('active');
     }
 }
 </script>
 
 <?php if (!empty($groups)): ?>
 <!-- Add to Group Modal -->
-<div id="add-to-group-modal" class="modal" style="display: none;">
+<div id="add-to-group-modal" class="modal">
     <div class="modal-backdrop" onclick="closeAddToGroupModal()"></div>
     <div class="modal-content">
         <div class="modal-header">
