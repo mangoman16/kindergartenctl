@@ -119,9 +119,9 @@ $searchPlaceholder = __('search.global_placeholder');
 (function() {
     var contextSidebar = document.getElementById('contextSidebar');
     var toggleBtn = document.getElementById('sidebarToggleBtn');
-    var sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    var sidebarCollapsed = localStorage.getItem('sidebarCollapsed') !== 'false';
 
-    // Apply collapsed state on load
+    // Apply collapsed state on load (default: collapsed on first visit)
     if (sidebarCollapsed && contextSidebar) {
         contextSidebar.classList.remove('open');
         contextSidebar.classList.add('collapsed');
