@@ -2317,11 +2317,11 @@ select.form-control,
    Flash Messages / Alerts
    ============================================ */
 .alert {
-    padding: var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-4);
     border-radius: var(--radius-lg);
     margin-bottom: var(--spacing-4);
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--spacing-3);
 }
 
