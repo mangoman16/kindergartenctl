@@ -3386,6 +3386,18 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* Inline filter controls (expand within toolbar row) */
+.toolbar-filters {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    animation: filterExpandIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes filterExpandIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
 /* Segmented control (Apple-style sort/view toggle) */
 .segmented-control {
     display: inline-flex;
@@ -3442,29 +3454,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Filter panel (collapsible, Apple-style) */
-.filter-panel {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-3) var(--spacing-4);
-    margin-bottom: var(--spacing-4);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    flex-wrap: wrap;
-    animation: filterSlideIn var(--transition-fast);
-}
-[data-theme="dark"] .filter-panel {
-    background: rgba(30, 30, 30, 0.8);
-    border-color: rgba(255, 255, 255, 0.08);
-}
-@keyframes filterSlideIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+/* (filter-panel removed — filters now inline in toolbar via .toolbar-filters) */
 
 /* Filter select dropdowns (Apple-style) */
 .filter-select {
@@ -4340,7 +4330,8 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     .segmented-control {
         flex-wrap: wrap;
     }
-    .filter-panel {
+    .toolbar-filters {
+        flex-wrap: wrap;
         gap: var(--spacing-2);
     }
     /* Bulk actions bar: stack on mobile */
@@ -4400,7 +4391,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     }
 
     .inline-filters,
-    .filter-panel {
+    .toolbar-filters {
         gap: var(--spacing-2);
     }
 

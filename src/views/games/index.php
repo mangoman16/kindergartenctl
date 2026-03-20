@@ -37,7 +37,44 @@
         <?php if ($hasActiveFilters): ?>
             <a href="<?= url('/games') ?>" class="toolbar-reset"><?= __('action.reset') ?></a>
         <?php endif; ?>
-        <span class="toolbar-divider"></span>
+        <!-- Inline filter controls (expand within toolbar) -->
+        <form action="<?= url('/games') ?>" method="GET" class="toolbar-filters" id="filtersPanel" style="<?= $hasActiveFilters ? '' : 'display:none;' ?>">
+            <span class="toolbar-divider"></span>
+            <select name="box" class="filter-select" onchange="this.form.submit()">
+                <option value=""><?= __('misc.all') ?> <?= __('nav.boxes') ?></option>
+                <?php foreach ($boxes as $box): ?>
+                    <option value="<?= $box['id'] ?>" <?= ($filters['box_id'] ?? '') == $box['id'] ? 'selected' : '' ?>>
+                        <?= e($box['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <select name="category" class="filter-select" onchange="this.form.submit()">
+                <option value=""><?= __('misc.all') ?> <?= __('nav.categories') ?></option>
+                <?php foreach ($categories as $category): ?>
+                    <option value="<?= $category['id'] ?>" <?= ($filters['category_id'] ?? '') == $category['id'] ? 'selected' : '' ?>>
+                        <?= e($category['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <select name="tag" class="filter-select" onchange="this.form.submit()">
+                <option value=""><?= __('misc.all') ?> <?= __('nav.tags') ?></option>
+                <?php foreach ($tags as $tag): ?>
+                    <option value="<?= $tag['id'] ?>" <?= ($filters['tag_id'] ?? '') == $tag['id'] ? 'selected' : '' ?>>
+                        <?= e($tag['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <label class="filter-chip">
+                <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span><?= __('misc.favorites_only') ?></span>
+            </label>
+            <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
+        </form>
+    </div>
+    <div class="list-toolbar-right">
         <button type="button" id="toggle-selection-mode" class="toolbar-btn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 11 12 14 22 4"></polyline>
@@ -47,42 +84,6 @@
         </button>
     </div>
 </div>
-
-<!-- Filter Panel (collapsible) -->
-<form action="<?= url('/games') ?>" method="GET" class="filter-panel" id="filtersPanel" style="<?= $hasActiveFilters ? '' : 'display:none;' ?>">
-    <select name="box" class="filter-select" onchange="this.form.submit()">
-        <option value=""><?= __('misc.all') ?> <?= __('nav.boxes') ?></option>
-        <?php foreach ($boxes as $box): ?>
-            <option value="<?= $box['id'] ?>" <?= ($filters['box_id'] ?? '') == $box['id'] ? 'selected' : '' ?>>
-                <?= e($box['name']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <select name="category" class="filter-select" onchange="this.form.submit()">
-        <option value=""><?= __('misc.all') ?> <?= __('nav.categories') ?></option>
-        <?php foreach ($categories as $category): ?>
-            <option value="<?= $category['id'] ?>" <?= ($filters['category_id'] ?? '') == $category['id'] ? 'selected' : '' ?>>
-                <?= e($category['name']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <select name="tag" class="filter-select" onchange="this.form.submit()">
-        <option value=""><?= __('misc.all') ?> <?= __('nav.tags') ?></option>
-        <?php foreach ($tags as $tag): ?>
-            <option value="<?= $tag['id'] ?>" <?= ($filters['tag_id'] ?? '') == $tag['id'] ? 'selected' : '' ?>>
-                <?= e($tag['name']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <label class="filter-chip">
-        <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
-        <span><?= __('misc.favorites_only') ?></span>
-    </label>
-    <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
-</form>
 
 <?php if (empty($games)): ?>
 <!-- Empty State -->
