@@ -372,7 +372,7 @@ return [
     'settings.group_appearance' => 'Darstellung',
     'settings.group_system' => 'System',
     'settings.group_activity' => 'Aktivität',
-    'settings.group_profile' => 'Profil & Einstellungen',
+    'settings.group_profile' => 'Profil',
     'settings.group_security' => 'Sicherheit',
     'settings.help_wizard_desc' => 'Schritt-für-Schritt-Anleitung',
     'settings.smtp_not_configured_short' => 'Nicht konfiguriert',

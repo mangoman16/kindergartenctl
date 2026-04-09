@@ -99,7 +99,7 @@
 
     /* Layout */
     --rail-width: 60px;
-    --ctx-sidebar-width: 200px;
+    --ctx-sidebar-width: 240px;
     --sidebar-width: 52px;
     --header-height: 60px;
     --container-max-width: 1400px;
@@ -920,13 +920,6 @@ small {
     transition-delay: 0.2s;
 }
 
-/* 5th tile spans full bottom row center */
-.qc-tile:nth-child(4) {
-    grid-column: 1 / 2;
-}
-.qc-tile:nth-child(5) {
-    grid-column: 2 / 4;
-}
 
 /* Main Content - dynamic margin */
 .main-content {
@@ -3492,47 +3485,42 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 /* Filter Popover */
 .filter-popover-wrap {
     position: relative;
+    z-index: 201;
 }
 .filter-popover {
-    display: none;
     position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    z-index: 200;
-    min-width: 260px;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px) scale(0.97);
+    z-index: 202;
+    min-width: 280px;
     background: var(--color-white);
     border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
     padding: var(--spacing-2);
-    animation: popoverIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top center;
 }
 .filter-popover.open {
-    display: block;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
 }
 [data-theme="dark"] .filter-popover {
     background: var(--color-gray-800);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
-@keyframes popoverIn {
-    from { opacity: 0; transform: translateY(-4px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
 .filter-popover-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-2) var(--spacing-3);
+    justify-content: flex-end;
+    padding: var(--spacing-1) var(--spacing-3) var(--spacing-1);
     margin-bottom: var(--spacing-1);
 }
 .filter-popover-title {
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-gray-500);
-}
-[data-theme="dark"] .filter-popover-title {
-    color: var(--color-gray-400);
+    display: none;
 }
 .filter-popover-body {
     display: flex;

@@ -79,12 +79,19 @@ $hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calen
         <span class="qc-tile-label"><?= __('nav.groups') ?></span>
         <kbd class="qc-kbd">4</kbd>
     </a>
-    <a href="<?= url('/calendar?create=1') ?>" class="qc-tile" data-key="5" style="--qc-color: #3b82f6; --qc-bg: #eff6ff; --qc-delay: 4">
+    <a href="<?= url('/tags/create') ?>" class="qc-tile" data-key="5" style="--qc-color: #8b5cf6; --qc-bg: #f5f3ff; --qc-delay: 4">
+        <span class="qc-tile-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+        </span>
+        <span class="qc-tile-label"><?= __('nav.tags') ?></span>
+        <kbd class="qc-kbd">5</kbd>
+    </a>
+    <a href="<?= url('/calendar?create=1') ?>" class="qc-tile" data-key="6" style="--qc-color: #3b82f6; --qc-bg: #eff6ff; --qc-delay: 5">
         <span class="qc-tile-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
         </span>
         <span class="qc-tile-label"><?= __('nav.calendar') ?></span>
-        <kbd class="qc-kbd">5</kbd>
+        <kbd class="qc-kbd">6</kbd>
     </a>
 </div>
 
