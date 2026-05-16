@@ -110,7 +110,6 @@
 
         <div class="settings-actions">
             <button type="submit" class="btn btn-primary"><?= __('action.save') ?></button>
-            <a href="<?= url('/settings') ?>" class="btn btn-secondary"><?= __('action.back') ?></a>
         </div>
     </form>
 </div>

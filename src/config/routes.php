@@ -114,6 +114,7 @@ return [
     'GET /settings/customization' => ['SettingsController', 'showCustomization'],
     'GET /settings/language' => ['SettingsController', 'showLanguage'],
     'GET /settings/email' => ['SettingsController', 'showEmail'],
+    'GET /settings/system' => ['SettingsController', 'showSystem'],
     'GET /settings/debug' => ['SettingsController', 'showDebug'],
     'GET /settings/data' => ['SettingsController', 'showData'],
     'POST /settings/password' => ['SettingsController', 'updatePassword'],
@@ -136,6 +137,8 @@ return [
     'POST /user/settings/language' => ['SettingsController', 'updateUserLanguage'],
     'POST /user/settings/create-user' => ['SettingsController', 'createUser'],
     'POST /user/settings/delete-user' => ['SettingsController', 'deleteUser'],
+    'POST /user/settings/profile-picture' => ['SettingsController', 'uploadProfilePicture'],
+    'POST /user/settings/remove-profile-picture' => ['SettingsController', 'removeProfilePicture'],
 
     // API routes
     'GET /api/health' => ['ApiController', 'health'],

@@ -117,16 +117,16 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 ### 9. Navigation Structure (Asana-style)
 - **Icon Rail** (56px fixed left): Sidebar toggle (hamburger) at top, then Home, Games, Inventory, Calendar buttons + Quick Create (plus) and Settings at bottom
 - **Sidebar Toggle**: Hamburger button at top of icon rail (`#sidebarToggleBtn`). Collapses/expands context sidebar. State persisted in localStorage (`sidebarCollapsed`). Always visible across all pages.
-- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes, locations (Standorte). Calendar section has its own link. Changelog moved to settings.
-- **Header**: Search trigger button (opens global command palette, Ctrl+K shortcut) + Help toggle + User dropdown (click username to open dropdown with Mein Konto, Einstellungen, Abmelden)
+- **Context Sidebar** (200px, slides in/out): Section-specific nav items. Games section → games, categories, tags, groups. Inventory section → materials, boxes, locations (Standorte). Calendar section has its own link. Settings section → customization, language, email, system, data, changelog + user profile link.
+- **Header**: Search trigger button (opens global command palette, Ctrl+K shortcut) + Help toggle + User dropdown (click username to open dropdown with Abmelden only). Profile picture shown if uploaded.
 - **Help Panel** (380px right-side slide): Handbook-style guide with table of contents, auto-scrolls to current page guide
 - **Quick Create Popup**: Accessible from plus button on icon rail, shortcuts to create games, materials, boxes, groups, calendar events
 - **Dark Mode**: Settings in user settings page (`/user/settings`) with three buttons: System, Light, Dark. Persisted via AJAX POST to `/settings/dark-mode` as `dark_mode_preference` (system|light|dark). System mode uses `prefers-color-scheme` media query. CSS variables in `[data-theme="dark"]`
-- **User settings** (`/user/settings`): Profile, language change, dark mode, password change, email change, user management (create/delete users)
-- **App settings** (`/settings`): Menu with links to sub-pages: customization, language, email, debug, data, changelog, help wizard
-- **Settings sub-pages**: `GET /settings/customization`, `/settings/language`, `/settings/email`, `/settings/debug`, `/settings/data`
-- **Help wizard** (`/settings/help`): Step-by-step guided tour of the application
-- **User management routes**: `POST /user/settings/language`, `POST /user/settings/create-user`, `POST /user/settings/delete-user`
+- **User settings** (`/user/settings`): Grouped layout (Profile & Preferences, Security, User Management) with expandable sections for password/email change and user creation. Profile picture upload. Inline toggles for language and dark mode.
+- **App settings** (`/settings`): Redirects to `/settings/customization`. No overview page. Sidebar provides all navigation. Settings gear icon only toggles sidebar, does not navigate.
+- **Settings sub-pages**: `GET /settings/customization`, `/settings/language`, `/settings/email`, `/settings/system` (debug + IP bans), `/settings/data` (storage only)
+- **Help wizard** (`/settings/help`): Step-by-step guided tour (not linked from settings sidebar)
+- **User management routes**: `POST /user/settings/language`, `POST /user/settings/create-user`, `POST /user/settings/delete-user`, `POST /user/settings/profile-picture`, `POST /user/settings/remove-profile-picture`
 
 ### 10. Help System
 - **Field tooltips**: `.help-tooltip` spans with `data-help` attribute on form labels
@@ -157,7 +157,7 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 - 10 Models in `src/models/` (includes Location)
 - 16 Services in `src/services/` (4 original + 12 new entity services)
 - 3 Helpers in `src/helpers/`
-- 58 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages, locations/)
+- 59 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages incl. system.php, locations/)
 - 11 Core classes in `src/core/` (includes AppBoot, ServiceResult)
 - 2 Language files in `src/lang/`
 - 14 CLI command files in `src/cli/commands/`

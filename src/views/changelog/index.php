@@ -186,7 +186,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
 <?php endif; ?>
 
 <!-- Details Modal -->
-<div id="changelog-modal" class="modal" style="display: none;">
+<div id="changelog-modal" class="modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
@@ -316,13 +316,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 changesTable.appendChild(row);
             }
 
-            modal.style.display = 'flex';
+            modal.classList.add('active');
         });
     });
 
     // Close modal
-    modal.querySelector('.modal-close').addEventListener('click', () => modal.style.display = 'none');
-    modal.querySelector('.modal-backdrop').addEventListener('click', () => modal.style.display = 'none');
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.style.display = 'none'; });
+    modal.querySelector('.modal-close').addEventListener('click', () => modal.classList.remove('active'));
+    modal.querySelector('.modal-backdrop').addEventListener('click', () => modal.classList.remove('active'));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('active'); });
 });
 </script>

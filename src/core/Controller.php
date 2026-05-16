@@ -258,7 +258,6 @@ abstract class Controller
     protected function requireAuth(): void
     {
         if (!Auth::check()) {
-            Session::setFlash('error', __('auth.please_login'));
             $this->redirect('/login');
         }
     }

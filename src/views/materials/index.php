@@ -1,13 +1,9 @@
+<?php $hasActiveFilters = !empty($filters['is_favorite']); ?>
+<?php $activeFilterCount = $hasActiveFilters ? 1 : 0; ?>
+
 <div class="page-header">
     <h1 class="page-title"><?= __('material.title_plural') ?></h1>
     <div class="page-actions">
-        <button type="button" id="toggle-selection-mode" class="btn btn-ghost">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9 11 12 14 22 4"></polyline>
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-            </svg>
-            <?= __('bulk.multi_select') ?>
-        </button>
         <a href="<?= url('/materials/create') ?>" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -18,20 +14,54 @@
     </div>
 </div>
 
-<!-- Inline Filters -->
-<form action="<?= url('/materials') ?>" method="GET" class="inline-filters">
-    <label class="inline-filter-check">
-        <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
-        <span><?= __('misc.favorites_only') ?></span>
-    </label>
-    <?php if (!empty($filters['search']) || !empty($filters['is_favorite'])): ?>
-        <a href="<?= url('/materials') ?>" class="inline-filter-reset"><?= __('action.reset') ?></a>
-    <?php endif; ?>
-    <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
-</form>
+<!-- Unified Toolbar -->
+<div class="list-toolbar">
+    <div class="list-toolbar-left">
+        <div class="filter-popover-wrap">
+            <button type="button" class="toolbar-btn<?= $hasActiveFilters ? ' active' : '' ?>" id="filterToggleBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                    <line x1="7" y1="12" x2="17" y2="12"></line>
+                    <line x1="10" y1="18" x2="14" y2="18"></line>
+                </svg>
+                <?= __('action.filter') ?>
+                <?php if ($activeFilterCount > 0): ?>
+                    <span class="toolbar-badge"><?= $activeFilterCount ?></span>
+                <?php endif; ?>
+            </button>
+            <!-- Filter Popover -->
+            <div class="filter-popover" id="filtersPanel">
+                <div class="filter-popover-header">
+                    <span class="filter-popover-title"><?= __('action.filter') ?></span>
+                    <?php if ($hasActiveFilters): ?>
+                        <a href="<?= url('/materials') ?>" class="toolbar-reset"><?= __('action.reset') ?></a>
+                    <?php endif; ?>
+                </div>
+                <form action="<?= url('/materials') ?>" method="GET" class="filter-popover-body">
+                    <div class="filter-popover-row">
+                        <label class="filter-chip">
+                            <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <span><?= __('misc.favorites_only') ?></span>
+                        </label>
+                    </div>
+                    <input type="hidden" name="q" value="<?= e($filters['search'] ?? '') ?>">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="list-toolbar-right">
+        <button type="button" id="toggle-selection-mode" class="toolbar-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+            <?= __('bulk.multi_select') ?>
+        </button>
+    </div>
+</div>
 
 <?php if (empty($materials)): ?>
 <!-- Empty State -->
@@ -60,7 +90,7 @@
 <?php else: ?>
 
 <!-- Bulk Actions Bar -->
-<div id="bulk-actions-bar" class="bulk-actions-bar" style="display: none;">
+<div id="bulk-actions-bar" class="bulk-actions-bar">
     <div class="flex items-center gap-4">
         <span id="selected-count" class="text-muted">0 <?= __('bulk.selected') ?></span>
     </div>
@@ -180,7 +210,7 @@
 </div>
 
 <!-- Add to Group Modal -->
-<div id="add-to-group-modal" class="modal" style="display: none;">
+<div id="add-to-group-modal" class="modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
@@ -250,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBtn?.classList.add('active');
         document.querySelector('.table')?.classList.add('selection-mode');
         document.querySelectorAll('.bulk-select-col').forEach(col => col.style.display = 'table-cell');
-        bulkBar.style.display = 'flex';
+        bulkBar.classList.add('active');
     }
 
     function disableSelectionMode() {
@@ -258,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBtn?.classList.remove('active');
         document.querySelector('.table')?.classList.remove('selection-mode');
         document.querySelectorAll('.bulk-select-col').forEach(col => col.style.display = 'none');
-        bulkBar.style.display = 'none';
+        bulkBar.classList.remove('active');
         clearSelection();
     }
 
@@ -340,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            document.getElementById('add-to-group-modal').style.display = 'flex';
+            document.getElementById('add-to-group-modal').classList.add('active');
         } catch (error) {
             console.error('Failed to load groups:', error);
             alert('<?= __('flash.error') ?>');
@@ -348,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.closeGroupModal = function() {
-        document.getElementById('add-to-group-modal').style.display = 'none';
+        document.getElementById('add-to-group-modal').classList.remove('active');
     };
 
     window.confirmBulkAddToGroup = async function() {
@@ -373,3 +403,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
+
+<script<?= cspNonce() ?>>
+// Filter popover toggle
+(function() {
+    var filterBtn = document.getElementById('filterToggleBtn');
+    var filtersPanel = document.getElementById('filtersPanel');
+    if (filterBtn && filtersPanel) {
+        filterBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            filtersPanel.classList.toggle('open');
+            filterBtn.classList.toggle('active', filtersPanel.classList.contains('open'));
+        });
+        document.addEventListener('click', function(e) {
+            if (!filtersPanel.contains(e.target) && !filterBtn.contains(e.target)) {
+                filtersPanel.classList.remove('open');
+                if (!<?= $hasActiveFilters ? 'true' : 'false' ?>) {
+                    filterBtn.classList.remove('active');
+                }
+            }
+        });
+    }
+})();
+</script>
