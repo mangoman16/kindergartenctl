@@ -100,7 +100,6 @@
     /* Layout */
     --rail-width: 60px;
     --ctx-sidebar-width: 240px;
-    --sidebar-width: 52px;
     --header-height: 60px;
     --container-max-width: 1400px;
 }
@@ -935,7 +934,7 @@ small {
 /* Main Content - dynamic margin */
 .main-content {
     flex: 1;
-    margin-left: var(--sidebar-width);
+    margin-left: var(--rail-width);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -960,7 +959,7 @@ small {
 }
 
 .sidebar-collapsed .context-sidebar.open ~ .main-content {
-    margin-left: var(--sidebar-width);
+    margin-left: var(--rail-width);
 }
 
 .sidebar-collapsed .context-sidebar.open ~ .main-content .top-header::after {
@@ -2098,12 +2097,12 @@ img.user-avatar-img {
 
 .btn-primary {
     background: var(--color-primary);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-primary:hover:not(:disabled) {
     background: var(--color-primary-dark);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-secondary {
@@ -2118,32 +2117,32 @@ img.user-avatar-img {
 
 .btn-success {
     background: var(--color-success);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-success:hover:not(:disabled) {
     background: var(--color-success-dark);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-danger {
     background: var(--color-danger);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-danger:hover:not(:disabled) {
     background: var(--color-danger-dark);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-warning {
     background: var(--color-warning);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-warning:hover:not(:disabled) {
     background: var(--color-warning-dark);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-outline {
@@ -3405,7 +3404,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 }
 .list-toolbar-label {
     font-size: var(--font-size-sm);
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
     white-space: nowrap;
     font-weight: var(--font-weight-medium);
     letter-spacing: -0.01em;
@@ -3438,7 +3437,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     color: var(--color-primary);
 }
 [data-theme="dark"] .toolbar-btn {
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
 }
 [data-theme="dark"] .toolbar-btn:hover {
     background: rgba(255, 255, 255, 0.08);
@@ -3468,7 +3467,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 /* Clear / reset link in toolbar */
 .toolbar-reset {
     font-size: var(--font-size-sm);
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
     text-decoration: none;
     padding: 4px 8px;
     border-radius: var(--radius-sm);
@@ -3480,6 +3479,19 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 .toolbar-reset:hover {
     color: var(--color-danger);
     background: var(--color-danger-bg);
+}
+
+/* Keyboard focus indicators for the redesigned toolbar / filter / quick-create
+   controls (WCAG 2.4.7 — these previously had no visible focus ring). */
+.toolbar-btn:focus-visible,
+.toolbar-reset:focus-visible,
+.filter-chip:focus-visible,
+.segmented-control a:focus-visible,
+.segmented-control button:focus-visible,
+.qc-tile:focus-visible,
+.alert-close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 /* Toolbar divider */
@@ -4600,11 +4612,11 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     padding: var(--spacing-1) var(--spacing-3);
 }
 [data-compact-sidebar] .main-content {
-    margin-left: calc(56px + 160px);
+    margin-left: calc(var(--rail-width) + 160px);
 }
 @media (max-width: 992px) {
     [data-compact-sidebar] .main-content {
-        margin-left: 56px;
+        margin-left: var(--rail-width);
     }
 }
 
