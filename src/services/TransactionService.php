@@ -399,12 +399,15 @@ class TransactionService
      */
     public function cleanupOldTransactions(int $daysToKeep = 90): int
     {
+        // INTERVAL ... DAY cannot take a bound parameter when PDO emulated
+        // prepares are off, so the value is inlined ($daysToKeep is an int).
+        $days = max(0, $daysToKeep);
         $stmt = $this->db->prepare("
             DELETE FROM transactions
             WHERE status = 'verified'
-            AND created_at < DATE_SUB(NOW(), INTERVAL :days DAY)
+            AND created_at < DATE_SUB(NOW(), INTERVAL {$days} DAY)
         ");
-        $stmt->execute(['days' => $daysToKeep]);
+        $stmt->execute();
 
         return $stmt->rowCount();
     }

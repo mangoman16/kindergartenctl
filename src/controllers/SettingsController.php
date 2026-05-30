@@ -104,17 +104,15 @@ class SettingsController extends Controller
             $defaultView = 'grid';
         }
 
-        // Save preferences
-        $config = [
-            'items_per_page' => $itemsPerPage,
-            'default_view' => $defaultView,
-        ];
+        // Load existing preferences and merge so unrelated settings (language,
+        // theme color/pattern, dark mode, profile picture) are preserved rather
+        // than wiped by overwriting the whole file.
+        $preferences = $this->getUserPreferences();
+        $preferences['items_per_page'] = $itemsPerPage;
+        $preferences['default_view'] = $defaultView;
 
-        $configPath = STORAGE_PATH . '/preferences.php';
-        $content = "<?php\nreturn " . var_export($config, true) . ";\n";
-
-        if (file_put_contents($configPath, $content) === false) {
-            Logger::error('Failed to save preferences', ['path' => $configPath]);
+        if (!$this->savePreferences($preferences)) {
+            Logger::error('Failed to save preferences', ['path' => STORAGE_PATH . '/preferences.php']);
             Session::setFlash('error', __('settings.save_failed'));
             $this->redirect('/settings');
             return;

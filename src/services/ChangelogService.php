@@ -544,11 +544,15 @@ class ChangelogService
      */
     public function cleanup(int $keepDays = 365): int
     {
+        // INTERVAL ... DAY cannot take a bound parameter when PDO emulated
+        // prepares are off (native prepares reject a placeholder there), so the
+        // value is inlined. $keepDays is an int; clamp to >= 0 defensively.
+        $days = max(0, $keepDays);
         $stmt = $this->db->prepare("
             DELETE FROM changelog
-            WHERE created_at < DATE_SUB(NOW(), INTERVAL :days DAY)
+            WHERE created_at < DATE_SUB(NOW(), INTERVAL {$days} DAY)
         ");
-        $stmt->execute(['days' => $keepDays]);
+        $stmt->execute();
 
         return $stmt->rowCount();
     }
