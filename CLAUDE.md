@@ -113,6 +113,9 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 5. **`str_replace()` cascading** - Replacement text may contain the next search pattern
 6. **`random_bytes(float)`** - PHP 8.1+ deprecation warning; always pass int
 7. **Validation in update methods** - Must match create/store validation (don't skip)
+8. **Inline `on*=` / `style=` attributes are CSP-blocked** - The app's CSP (`public/index.php`) has no `'unsafe-inline'`, so the browser silently strips inline `onclick`/`onchange`/`onsubmit` handlers and `style="..."` attributes. Bind events in a nonce'd `<script><?= cspNonce() ?>>` via `addEventListener`, or use the reusable hooks in `app.js`: `data-confirm` (on a form/button), `.js-auto-submit` (submit form on change), `.js-file-trigger` (open a hidden file input). Move per-element colors/styles into the stylesheet (e.g. keyed by `data-key`) or use the `hidden` attribute instead of `style="display:none"`. For fetch CSRF use `$csrfToken` / `Session::csrfToken()` / `fetchWithCsrf()` — never `Session::get('csrf_token')` (wrong key → null → 403). Enforced by `tests/Unit/ViewCspComplianceTest.php`.
+9. **`INTERVAL :param DAY` fails under native prepares** - With emulated prepares off, a bound parameter inside an `INTERVAL ... DAY` expression throws a 1064 syntax error. Inline a validated `(int)` value instead (see `ChangelogService::cleanup()`).
+10. **Per-view modal `<style>` blocks** - The global stylesheet already styles `.modal` (hidden by default, shown via `.modal.active`). Do NOT redefine `.modal { display:flex }` in a view; it overrides the hide rule and the modal shows on page load.
 
 ### 9. Navigation Structure (Asana-style)
 - **Icon Rail** (56px fixed left): Sidebar toggle (hamburger) at top, then Home, Games, Inventory, Calendar buttons + Quick Create (plus) and Settings at bottom

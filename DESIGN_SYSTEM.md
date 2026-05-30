@@ -140,10 +140,10 @@ Based on a **4px base unit** (multiples of 0.25rem):
 
 | Token | Value | Component |
 |-------|-------|-----------|
-| `--rail-width` | 56px | Icon rail (left navigation bar) |
-| `--ctx-sidebar-width` | 200px | Context sidebar (expandable) |
+| `--rail-width` | 60px | Icon rail (left navigation bar) |
+| `--ctx-sidebar-width` | 240px | Context sidebar (expandable) |
 | `--header-height` | 60px | Top header bar |
-| `--container-max-width` | 1200px | Main content max width |
+| `--container-max-width` | 1400px | Main content max width |
 
 ### Layout Rules
 
@@ -151,7 +151,7 @@ Based on a **4px base unit** (multiples of 0.25rem):
 - **Generous whitespace**: Especially around text blocks and interactive elements. Space signals calm.
 - **Single-column on mobile**: Multi-column grids collapse at `max-width: 768px`.
 - **Content scales naturally**: Use `max-width` and flexible containers, not fixed widths, so content adapts without breaking.
-- **App shell**: Icon rail (56px, fixed left) + context sidebar (200px, collapsible) + main content area. On mobile, sidebar becomes an overlay.
+- **App shell**: Icon rail (60px, fixed left) + context sidebar (240px, collapsible) + main content area. On mobile, sidebar becomes an overlay. `.main-content` margin is driven by `--rail-width` (collapsed) or `--rail-width + --ctx-sidebar-width` (expanded) — never hardcode these widths.
 
 ---
 
