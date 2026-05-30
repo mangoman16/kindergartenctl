@@ -60,8 +60,8 @@
                             </div>
                         <?php endif; ?>
                     </div>
-                    <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" style="display: none;">
-                    <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="this.previousElementSibling.click()">
+                    <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
+                    <button type="button" class="btn btn-secondary btn-sm mt-2 js-file-trigger">
                         <?= __('action.upload') ?>
                     </button>
                 </div>

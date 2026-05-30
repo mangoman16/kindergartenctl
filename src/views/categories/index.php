@@ -88,7 +88,7 @@
                                 </svg>
                             </a>
                             <form action="<?= url('/categories/' . $category['id'] . '/delete') ?>" method="POST" style="display: inline;"
-                                  onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')">
+                                  data-confirm="<?= e(__('misc.confirm_delete')) ?>">
                                 <?= csrfField() ?>
                                 <button type="submit" class="btn btn-sm btn-danger">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

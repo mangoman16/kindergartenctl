@@ -162,7 +162,7 @@ require_once SRC_PATH . '/services/ChangelogService.php';
     <div class="card-body">
         <p class="text-muted mb-3"><?= __('changelog.purge_text') ?></p>
         <form action="<?= url('/changelog/clear') ?>" method="POST" class="flex items-end gap-3"
-              onsubmit="return confirm('<?= __('changelog.purge_confirm') ?>')">
+              data-confirm="<?= e(__('changelog.purge_confirm')) ?>">
             <?= csrfField() ?>
             <div class="form-group mb-0">
                 <label class="form-label"><?= __('changelog.keep_for') ?></label>

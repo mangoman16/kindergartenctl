@@ -276,58 +276,11 @@
     border-color: var(--color-gray-800);
 }
 
-/* Modal Styles */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.modal-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-}
-.modal-content {
-    position: relative;
-    background: white;
-    border-radius: var(--radius-lg);
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
+/* Modal styling comes from the global stylesheet (.modal / .modal.active),
+   which keeps it hidden until the .active class is toggled on. Only the
+   calendar event modal's scrollable body differs from the default. */
+#event-modal .modal-content {
     overflow: auto;
-}
-.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--color-gray-200);
-}
-.modal-title {
-    margin: 0;
-    font-size: 1.125rem;
-}
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-gray-400);
-}
-.modal-close:hover {
-    color: var(--color-gray-600);
-}
-.modal-body {
-    padding: 20px;
 }
 
 /* FullCalendar customization */
@@ -494,6 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(data)
             });
 
+            if (!response.ok) throw new Error('HTTP ' + response.status);
             const result = await response.json();
 
             if (result.success) {
@@ -522,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'X-CSRF-Token': csrfToken }
             });
 
+            if (!response.ok) throw new Error('HTTP ' + response.status);
             const result = await response.json();
 
             if (result.success) {

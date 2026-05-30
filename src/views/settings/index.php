@@ -98,7 +98,7 @@
                     <?= csrfField() ?>
                     <input type="hidden" name="debug" value="<?= $debugEnabled ? '0' : '1' ?>">
                     <label class="settings-switch">
-                        <input type="checkbox" <?= $debugEnabled ? 'checked' : '' ?> onchange="this.form.submit()">
+                        <input type="checkbox" class="js-auto-submit" <?= $debugEnabled ? 'checked' : '' ?>>
                         <span class="settings-switch-slider"></span>
                     </label>
                 </form>

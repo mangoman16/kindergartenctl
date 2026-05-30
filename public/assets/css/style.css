@@ -868,6 +868,17 @@ small {
     transform: scale(0.95);
 }
 
+/* Per-tile accent colors + stagger order. CSP-safe replacement for the inline
+   style="--qc-color/--qc-bg/--qc-delay" attributes that were stripped from the
+   tiles in sidebar.php (style-src has no 'unsafe-inline', so attribute styles
+   are blocked by the browser). */
+.qc-tile[data-key="1"] { --qc-color: #6366f1; --qc-bg: #eef2ff; --qc-delay: 0; }
+.qc-tile[data-key="2"] { --qc-color: #f59e0b; --qc-bg: #fffbeb; --qc-delay: 1; }
+.qc-tile[data-key="3"] { --qc-color: #10b981; --qc-bg: #ecfdf5; --qc-delay: 2; }
+.qc-tile[data-key="4"] { --qc-color: #ec4899; --qc-bg: #fdf2f8; --qc-delay: 3; }
+.qc-tile[data-key="5"] { --qc-color: #8b5cf6; --qc-bg: #f5f3ff; --qc-delay: 4; }
+.qc-tile[data-key="6"] { --qc-color: #3b82f6; --qc-bg: #eff6ff; --qc-delay: 5; }
+
 /* Tile icon circle */
 .qc-tile-icon {
     display: flex;

@@ -105,7 +105,7 @@
                     <?= __('action.print') ?>
                 </a>
                 <form action="<?= url('/materials/' . $material['id'] . '/delete') ?>" method="POST"
-                      onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')">
+                      data-confirm="<?= e(__('misc.confirm_delete')) ?>">
                     <?= csrfField() ?>
                     <button type="submit" class="btn btn-danger btn-block">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -116,7 +116,7 @@
                     </button>
                 </form>
                 <?php if (!empty($groups)): ?>
-                <button type="button" class="btn btn-secondary btn-block" onclick="openAddToGroupModal()">
+                <button type="button" class="btn btn-secondary btn-block" id="open-add-to-group">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                         <line x1="12" y1="11" x2="12" y2="17"></line>
@@ -263,6 +263,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    document.getElementById('open-add-to-group')?.addEventListener('click', openAddToGroupModal);
+    document.querySelectorAll('#add-to-group-modal [data-close-modal]').forEach(function(el) {
+        el.addEventListener('click', closeAddToGroupModal);
+    });
+
     // Escape key to close modals
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -289,11 +294,11 @@ function closeAddToGroupModal() {
 <?php if (!empty($groups)): ?>
 <!-- Add to Group Modal -->
 <div id="add-to-group-modal" class="modal">
-    <div class="modal-backdrop" onclick="closeAddToGroupModal()"></div>
+    <div class="modal-backdrop" data-close-modal></div>
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><?= __('group.add_to') ?></h3>
-            <button type="button" class="modal-close" onclick="closeAddToGroupModal()" aria-label="<?= __('action.close') ?>">
+            <button type="button" class="modal-close" data-close-modal aria-label="<?= __('action.close') ?>">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
         </div>
@@ -310,73 +315,12 @@ function closeAddToGroupModal() {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeAddToGroupModal()"><?= __('action.cancel') ?></button>
+                <button type="button" class="btn btn-secondary" data-close-modal><?= __('action.cancel') ?></button>
                 <button type="submit" class="btn btn-primary"><?= __('action.add') ?></button>
             </div>
         </form>
     </div>
 </div>
 
-<style<?= cspNonce() ?>>
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.modal-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.modal-content {
-    position: relative;
-    background: white;
-    border-radius: var(--radius-lg);
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--color-gray-200);
-}
-.modal-title {
-    margin: 0;
-    font-size: 1.125rem;
-    font-weight: 600;
-}
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-gray-500);
-    line-height: 1;
-}
-.modal-close:hover {
-    color: var(--color-gray-700);
-}
-.modal-body {
-    padding: 20px;
-}
-.modal-footer {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    padding: 16px 20px;
-    border-top: 1px solid var(--color-gray-200);
-}
-</style>
+<!-- Modal styling provided by the global stylesheet (.modal / .modal.active) -->
 <?php endif; ?>

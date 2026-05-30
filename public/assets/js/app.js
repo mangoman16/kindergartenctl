@@ -105,11 +105,42 @@
      */
     function initConfirmDialogs() {
         document.querySelectorAll('[data-confirm]').forEach(el => {
-            el.addEventListener('click', function(e) {
+            // Forms confirm on submit (covers button click and Enter); other
+            // elements (links/buttons) confirm on click.
+            const eventName = el.tagName === 'FORM' ? 'submit' : 'click';
+            el.addEventListener(eventName, function(e) {
                 const message = this.dataset.confirm || t('confirm_default');
                 if (!confirm(message)) {
                     e.preventDefault();
                 }
+            });
+        });
+    }
+
+    /**
+     * Auto-submit a form when a tagged control changes. CSP-safe replacement
+     * for inline onchange="this.form.submit()".
+     */
+    function initAutoSubmit() {
+        document.querySelectorAll('.js-auto-submit').forEach(el => {
+            el.addEventListener('change', function() {
+                if (this.form) this.form.submit();
+            });
+        });
+    }
+
+    /**
+     * Proxy buttons that open a hidden file picker. CSP-safe replacement for
+     * inline onclick="this.previousElementSibling.click()". Targets the element
+     * named by data-target, falling back to the previous sibling.
+     */
+    function initFileTriggers() {
+        document.querySelectorAll('.js-file-trigger').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const target = this.dataset.target
+                    ? document.getElementById(this.dataset.target)
+                    : this.previousElementSibling;
+                if (target) target.click();
             });
         });
     }
@@ -454,6 +485,8 @@
         initAlerts();
         initSidebar();
         initConfirmDialogs();
+        initAutoSubmit();
+        initFileTriggers();
         initFavoriteToggles();
         initChoices();
         initImageUpload();

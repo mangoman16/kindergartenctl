@@ -40,7 +40,7 @@
                 <form action="<?= url('/materials') ?>" method="GET" class="filter-popover-body">
                     <div class="filter-popover-row">
                         <label class="filter-chip">
-                            <input type="checkbox" name="favorites" value="1" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?> onchange="this.form.submit()">
+                            <input type="checkbox" name="favorites" value="1" class="js-auto-submit" <?= !empty($filters['is_favorite']) ? 'checked' : '' ?>>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="color: var(--color-warning);">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                             </svg>
@@ -191,7 +191,7 @@
                                 </svg>
                             </a>
                             <form action="<?= url('/materials/' . $material['id'] . '/delete') ?>" method="POST"
-                                  onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')">
+                                  data-confirm="<?= e(__('misc.confirm_delete')) ?>">
                                 <?= csrfField() ?>
                                 <button type="submit" class="btn btn-sm btn-danger" title="<?= __('action.delete') ?>">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -215,7 +215,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><?= __('group.add_to') ?></h3>
-            <button type="button" class="modal-close" onclick="closeGroupModal()" aria-label="<?= __('action.close') ?>">
+            <button type="button" class="modal-close" id="bulk-group-modal-close" aria-label="<?= __('action.close') ?>">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
         </div>
@@ -228,8 +228,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeGroupModal()"><?= __('action.cancel') ?></button>
-            <button type="button" class="btn btn-primary" onclick="confirmBulkAddToGroup()"><?= __('action.add') ?></button>
+            <button type="button" class="btn btn-secondary" id="bulk-group-modal-cancel"><?= __('action.cancel') ?></button>
+            <button type="button" class="btn btn-primary" id="bulk-group-modal-confirm"><?= __('action.add') ?></button>
         </div>
     </div>
 </div>
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': '<?= Session::get('csrf_token') ?>'
+                    'X-CSRF-Token': '<?= e($csrfToken) ?>'
                 },
                 body: JSON.stringify({ favorite: true })
             });
@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': '<?= Session::get('csrf_token') ?>'
+                    'X-CSRF-Token': '<?= e($csrfToken) ?>'
                 },
                 body: JSON.stringify({ favorite: false })
             });
@@ -390,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': '<?= Session::get('csrf_token') ?>'
+                    'X-CSRF-Token': '<?= e($csrfToken) ?>'
                 },
                 body: JSON.stringify({ group_id: groupId, item_type: 'material', item_id: id })
             });
@@ -400,6 +400,10 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('<?= __('bulk.added_to_group') ?>');
         location.reload();
     };
+
+    document.getElementById('bulk-group-modal-close')?.addEventListener('click', closeGroupModal);
+    document.getElementById('bulk-group-modal-cancel')?.addEventListener('click', closeGroupModal);
+    document.getElementById('bulk-group-modal-confirm')?.addEventListener('click', confirmBulkAddToGroup);
 });
 </script>
 <?php endif; ?>

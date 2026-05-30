@@ -169,7 +169,7 @@
                         <?= __('action.edit') ?>
                     </a>
                     <form action="<?= url('/groups/' . $group['id'] . '/delete') ?>" method="POST"
-                          onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')">
+                          data-confirm="<?= e(__('misc.confirm_delete')) ?>">
                         <?= csrfField() ?>
                         <button type="submit" class="btn btn-danger btn-block">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
