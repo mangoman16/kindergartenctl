@@ -11,21 +11,12 @@ class SettingsController extends Controller
     }
 
     /**
-     * Show settings overview page with grouped settings
+     * /settings has no overview page; the settings sidebar provides all
+     * navigation (see CLAUDE.md §9), so redirect to the first sub-page.
      */
     public function index(): void
     {
-        $this->setTitle(__('settings.title'));
-        $this->addBreadcrumb(__('settings.title'));
-
-        $smtp = [];
-        if (file_exists(ROOT_PATH . '/storage/smtp.php')) {
-            $smtp = include ROOT_PATH . '/storage/smtp.php';
-        }
-
-        $this->render('settings/index', [
-            'smtp' => $smtp,
-        ]);
+        $this->redirect('/settings/customization');
     }
 
     /**
@@ -442,17 +433,6 @@ class SettingsController extends Controller
     }
 
     /**
-     * Show debug page
-     */
-    public function showDebug(): void
-    {
-        $this->setTitle(__('settings.debug'));
-        $this->addBreadcrumb(__('settings.title'), '/settings');
-        $this->addBreadcrumb(__('settings.debug'));
-
-        $this->render('settings/debug');
-    }
-
     /**
      * Show data management page
      */

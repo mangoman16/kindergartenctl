@@ -265,18 +265,20 @@
         const modal = document.createElement('div');
         modal.className = 'cropper-modal-overlay';
         modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex !important;align-items:center;justify-content:center;z-index:10000;opacity:1 !important;visibility:visible !important;';
+        // No inline style attributes here: the CSP strips them. All dialog
+        // styling lives in style.css under .cropper-dialog-*.
         modal.innerHTML = `
-            <div class="cropper-dialog" style="background:var(--color-white, #fff);border-radius:0.75rem;width:90%;max-width:600px;max-height:90vh;overflow:hidden;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);transform:scale(1) !important;">
-                <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--color-gray-200, #E5E7EB);display:flex;justify-content:space-between;align-items:center;">
-                    <h3 style="font-size:1.125rem;font-weight:600;margin:0;">${t('crop_title')}</h3>
-                    <button type="button" class="cropper-modal-close" style="background:none;border:none;cursor:pointer;color:var(--color-gray-400,#9CA3AF);padding:0.25rem;display:flex;align-items:center;border-radius:0.375rem;" aria-label="${t('action_close')}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            <div class="cropper-dialog">
+                <div class="cropper-dialog-header">
+                    <h3 class="cropper-dialog-title">${t('crop_title')}</h3>
+                    <button type="button" class="cropper-modal-close" aria-label="${t('action_close')}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 </div>
-                <div style="padding:1.25rem;overflow-y:auto;max-height:calc(90vh - 140px);">
-                    <div style="max-height: 400px; overflow: hidden;">
-                        <img id="cropperImage" src="${imageSrc}" style="max-width: 100%;">
+                <div class="cropper-dialog-body">
+                    <div class="cropper-dialog-stage">
+                        <img id="cropperImage" src="${imageSrc}">
                     </div>
                 </div>
-                <div style="padding:1rem 1.25rem;border-top:1px solid var(--color-gray-200, #E5E7EB);display:flex;justify-content:flex-end;gap:0.75rem;">
+                <div class="cropper-dialog-footer">
                     <button type="button" class="btn btn-secondary" id="cancelCrop">${t('crop_cancel')}</button>
                     <button type="button" class="btn btn-primary" id="applyCrop">${t('crop_apply')}</button>
                 </div>
@@ -440,41 +442,19 @@
     }
 
     /**
-     * Initialize search functionality
+     * Apply data-bg / data-fg attributes as element styles. The CSP blocks
+     * inline style="..." attributes (no 'unsafe-inline' in style-src), but
+     * styling via the CSSOM is allowed — so dynamic per-element colors (tag
+     * badges, color dots, swatches) are declared as data attributes and
+     * applied here. Runs on DOM ready; call App.applyDataStyles(container)
+     * again after injecting new markup (e.g. search results).
      */
-    function initSearch() {
-        const searchInput = document.querySelector('.search-form input');
-        const searchDropdown = document.querySelector('.search-dropdown');
-
-        if (!searchInput) return;
-
-        let timeout;
-
-        searchInput.addEventListener('input', function() {
-            clearTimeout(timeout);
-
-            const query = this.value.trim();
-
-            if (query.length < 3) {
-                if (searchDropdown) searchDropdown.classList.remove('active');
-                return;
-            }
-
-            timeout = setTimeout(async () => {
-                try {
-                    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-
-                    if (!response.ok) throw new Error('HTTP ' + response.status);
-                    const data = await response.json();
-
-                    if (searchDropdown) {
-                        // Populate dropdown with results
-                        // Implementation depends on UI design
-                    }
-                } catch (error) {
-                    console.error('Search error:', error);
-                }
-            }, 300);
+    function applyDataStyles(root) {
+        (root || document).querySelectorAll('[data-bg]').forEach(el => {
+            el.style.backgroundColor = el.dataset.bg;
+        });
+        (root || document).querySelectorAll('[data-fg]').forEach(el => {
+            el.style.color = el.dataset.fg;
         });
     }
 
@@ -487,11 +467,11 @@
         initConfirmDialogs();
         initAutoSubmit();
         initFileTriggers();
+        applyDataStyles();
         initFavoriteToggles();
         initChoices();
         initImageUpload();
         initDuplicateCheck();
-        initSearch();
 
         // Prevent browser autocomplete from cross-contaminating form fields
         document.querySelectorAll('form textarea, form input[type="text"]').forEach(input => {
@@ -519,6 +499,7 @@
     window.App = {
         fetchWithCsrf,
         uploadImage,
+        applyDataStyles,
         t,
     };
 })();

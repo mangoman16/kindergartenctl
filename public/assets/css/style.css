@@ -643,8 +643,8 @@ small {
 }
 
 .rail-btn {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -947,11 +947,24 @@ small {
     margin-left: calc(var(--rail-width) + var(--ctx-sidebar-width));
 }
 
+/* Keep the fixed header aligned with the content area: when the sidebar is
+   open the header starts at its right edge, so the centered search pill is
+   centered in the visible space instead of partially under the sidebar. */
+.context-sidebar.open ~ .main-content .top-header {
+    left: calc(var(--rail-width) + var(--ctx-sidebar-width));
+}
+
+.sidebar-collapsed .context-sidebar.open ~ .main-content .top-header {
+    left: var(--rail-width);
+}
+
 .context-sidebar.open ~ .main-content .top-header::after {
     content: '';
     position: absolute;
     bottom: calc(-1 * var(--radius-xl));
-    left: var(--ctx-sidebar-width);
+    /* The header's left edge now sits at the sidebar's right edge, so the
+       inverse-radius corner anchors at 0 (same on-screen position as before). */
+    left: 0;
     width: var(--radius-xl);
     height: var(--radius-xl);
     background: radial-gradient(circle at 100% 100%, transparent var(--radius-xl), var(--color-white) var(--radius-xl));
@@ -1007,7 +1020,9 @@ small {
     color: var(--color-gray-500);
     cursor: pointer;
     font-size: var(--font-size-sm);
-    min-width: 400px;
+    /* Shrink on narrow viewports so the centered pill cannot collide with the
+       absolutely-positioned user menu in the ~769-1100px range. */
+    min-width: clamp(200px, 28vw, 400px);
     max-width: 600px;
     transition: all var(--transition-fast);
 }
@@ -1468,6 +1483,7 @@ small {
     z-index: 100;
     min-height: var(--header-height);
     box-sizing: border-box;
+    transition: left var(--transition-normal);
 }
 
 .top-header::before {
@@ -2915,6 +2931,103 @@ select.form-control,
 .overflow-hidden { overflow: hidden; }
 .relative { position: relative; }
 
+/* CSP-safe replacements for former inline style="..." attributes (the CSP has
+   no 'unsafe-inline' in style-src, so the browser strips style attributes). */
+.m-0 { margin: 0; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.d-inline { display: inline; }
+.nowrap { white-space: nowrap; }
+.va-middle { vertical-align: middle; }
+.max-w-300 { max-width: 300px; }
+.max-w-600 { max-width: 600px; }
+.max-w-700 { max-width: 700px; }
+
+/* Table column widths (former style="width: ..." on th/td) */
+.col-20p { width: 20%; }
+.col-25p { width: 25%; }
+.col-30p { width: 30%; }
+.col-40p { width: 40%; }
+.col-50p { width: 50%; }
+.col-40px { width: 40px; }
+.col-50px { width: 50px; }
+.col-60px { width: 60px; }
+.col-80px { width: 80px; }
+.col-100px { width: 100px; }
+.col-120px { width: 120px; }
+.col-150px { width: 150px; }
+
+/* Image thumbnails and placeholders (list/table views) */
+.img-cover { width: 100%; height: 100%; object-fit: cover; }
+.thumb-40 {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+}
+.thumb-40-placeholder {
+    width: 40px;
+    height: 40px;
+    background: var(--color-gray-100);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+}
+.thumb-48-color {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+}
+.icon-tile-40 {
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary-bg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+}
+.square-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--color-gray-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+}
+.center-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+}
+.upload-dropzone {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+/* Dynamic per-element colors are declared as data-bg/data-fg and applied via
+   the CSSOM by App.applyDataStyles() in app.js (the style attribute itself is
+   CSP-blocked). Colored tag badges always get white text. */
+.tag-badge[data-bg],
+.tag-badge-sm[data-bg] { color: #fff; }
+
+/* Help wizard steps are hidden until the wizard JS shows them */
+.help-step { display: none; }
+
 .hidden { display: none; }
 .d-inline { display: inline; }
 .d-inline-block { display: inline-block; }
@@ -3127,6 +3240,60 @@ select.form-control,
     max-height: 90vh;
     overflow: hidden;
     box-shadow: var(--shadow-xl);
+}
+
+/* Cropper dialog interior (markup built in app.js; inline style attributes
+   would be stripped by the CSP, so all styling lives here). */
+.cropper-dialog-header {
+    padding: var(--spacing-4) var(--spacing-5);
+    border-bottom: 1px solid var(--color-gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cropper-dialog-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+}
+
+.cropper-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-gray-400);
+    padding: var(--spacing-1);
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-md);
+}
+
+.cropper-modal-close:hover {
+    color: var(--color-gray-600);
+}
+
+.cropper-dialog-body {
+    padding: var(--spacing-5);
+    overflow-y: auto;
+    max-height: calc(90vh - 140px);
+}
+
+.cropper-dialog-stage {
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.cropper-dialog-stage img {
+    max-width: 100%;
+}
+
+.cropper-dialog-footer {
+    padding: var(--spacing-4) var(--spacing-5);
+    border-top: 1px solid var(--color-gray-200);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-3);
 }
 
 /* ============================================
@@ -4428,6 +4595,10 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     /* On mobile the open sidebar overlays content, no margin shift */
     .context-sidebar.open ~ .main-content {
         margin-left: 44px;
+    }
+
+    .context-sidebar.open ~ .main-content .top-header {
+        left: 44px;
     }
 
     .context-sidebar.open {

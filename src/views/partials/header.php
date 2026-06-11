@@ -39,7 +39,7 @@ $searchPlaceholder = __('search.global_placeholder');
                     </div>
                 </div>
                 <div class="user-dropdown-footer">
-                    <form action="<?= url('/logout') ?>" method="POST" style="margin: 0;">
+                    <form action="<?= url('/logout') ?>" method="POST" class="m-0">
                         <?= csrfField() ?>
                         <button type="submit" class="user-dropdown-item user-dropdown-logout">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -370,7 +370,7 @@ $searchPlaceholder = __('search.global_placeholder');
             html += '<div class="search-palette-section"><div class="search-palette-section-header"><span>' + escHtml(label) + '</span></div>';
             grouped[type].forEach(function(item) {
                 var icon = typeIcons[item.type] || '';
-                var colorDot = item.color ? '<span class="color-dot" style="background:' + escHtml(item.color) + '"></span>' : '';
+                var colorDot = item.color ? '<span class="color-dot" data-bg="' + escHtml(item.color) + '"></span>' : '';
                 html += '<a href="' + escHtml(item.url) + '" class="search-palette-item' + (firstItem ? ' active' : '') + '" data-result-name="' + escHtml(item.name) + '" data-result-type="' + escHtml(item.type) + '" data-result-url="' + escHtml(item.url) + '"><span class="search-palette-item-icon">' + icon + '</span><span class="search-palette-item-content"><span class="search-palette-item-name">' + colorDot + highlightMatch(item.name, query) + '</span><span class="search-palette-item-type">' + escHtml(label) + '</span></span></a>';
                 firstItem = false;
             });
@@ -394,6 +394,7 @@ $searchPlaceholder = __('search.global_placeholder');
         });
 
         body.innerHTML = html;
+        if (window.App && window.App.applyDataStyles) window.App.applyDataStyles(body);
 
         // Track clicked items as recent
         body.querySelectorAll('.search-palette-item').forEach(function(el) {
