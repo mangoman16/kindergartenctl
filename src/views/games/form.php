@@ -177,7 +177,7 @@
                             <label class="flex items-center gap-2 cursor-pointer mb-2">
                                 <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>"
                                        <?= in_array($tag['id'], $selectedTags) ? 'checked' : '' ?>>
-                                <span class="tag-badge-sm" style="<?= $tag['color'] ? 'background-color: ' . e($tag['color']) . '; color: white;' : '' ?>">
+                                <span class="tag-badge-sm"<?= $tag['color'] ? ' data-bg="' . e($tag['color']) . '"' : '' ?>>
                                     <?= e($tag['name']) ?>
                                 </span>
                             </label>

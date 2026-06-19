@@ -71,19 +71,19 @@
             <div class="card-body">
                 <div class="legend-items">
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #3788d8;"></span>
+                        <span class="legend-color" data-bg="#3788d8"></span>
                         <?= __('calendar.color_default') ?>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #22c55e;"></span>
+                        <span class="legend-color" data-bg="#22c55e"></span>
                         <?= __('calendar.color_outdoor') ?>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #f59e0b;"></span>
+                        <span class="legend-color" data-bg="#f59e0b"></span>
                         <?= __('calendar.color_party') ?>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #ef4444;"></span>
+                        <span class="legend-color" data-bg="#ef4444"></span>
                         <?= __('calendar.color_important') ?>
                     </div>
                 </div>
@@ -160,27 +160,27 @@
                     <div class="color-options">
                         <label class="color-option">
                             <input type="radio" name="color" value="#3788d8" checked>
-                            <span style="background: #3788d8;"></span>
+                            <span data-bg="#3788d8"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#22c55e">
-                            <span style="background: #22c55e;"></span>
+                            <span data-bg="#22c55e"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#f59e0b">
-                            <span style="background: #f59e0b;"></span>
+                            <span data-bg="#f59e0b"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#ef4444">
-                            <span style="background: #ef4444;"></span>
+                            <span data-bg="#ef4444"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#8b5cf6">
-                            <span style="background: #8b5cf6;"></span>
+                            <span data-bg="#8b5cf6"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#ec4899">
-                            <span style="background: #ec4899;"></span>
+                            <span data-bg="#ec4899"></span>
                         </label>
                     </div>
                 </div>

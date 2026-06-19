@@ -33,7 +33,7 @@
 <!-- Stats Row: 4 cards -->
 <div class="dash-stats-row">
     <a href="<?= url('/games') ?>" class="dash-stat-card">
-        <div class="dash-stat-icon" style="background: var(--color-primary-bg); color: var(--color-primary);">
+        <div class="dash-stat-icon tint-primary">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polygon points="10 8 16 12 10 16 10 8"></polygon>
@@ -46,7 +46,7 @@
     </a>
 
     <a href="<?= url('/materials') ?>" class="dash-stat-card">
-        <div class="dash-stat-icon" style="background: var(--color-success-bg); color: var(--color-success);">
+        <div class="dash-stat-icon tint-success">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
             </svg>
@@ -58,7 +58,7 @@
     </a>
 
     <a href="<?= url('/boxes') ?>" class="dash-stat-card">
-        <div class="dash-stat-icon" style="background: var(--color-warning-bg); color: var(--color-warning);">
+        <div class="dash-stat-icon tint-warning">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                 <path d="M3.3 7l8.7 5 8.7-5"></path>
@@ -72,7 +72,7 @@
     </a>
 
     <a href="<?= url('/groups') ?>" class="dash-stat-card">
-        <div class="dash-stat-icon" style="background: var(--color-info-bg); color: var(--color-info);">
+        <div class="dash-stat-icon tint-info">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
             </svg>

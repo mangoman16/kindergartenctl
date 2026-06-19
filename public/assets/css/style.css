@@ -3028,6 +3028,30 @@ select.form-control,
 /* Help wizard steps are hidden until the wizard JS shows them */
 .help-step { display: none; }
 
+/* Tinted icon badges (background + matching text color) */
+.tint-primary { background: var(--color-primary-bg); color: var(--color-primary); }
+.tint-success { background: var(--color-success-bg); color: var(--color-success); }
+.tint-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+.tint-info { background: var(--color-info-bg); color: var(--color-info); }
+.tint-danger { background: var(--color-danger-bg); color: var(--color-danger); }
+
+/* More inline-style-sweep replacements */
+.max-w-800 { max-width: 800px; }
+.p-8 { padding: var(--spacing-8); }
+.va-n2 { vertical-align: -2px; }
+.scroll-200 { max-height: 200px; overflow-y: auto; }
+.upload-dropzone-wide {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 2px dashed var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
 .hidden { display: none; }
 .d-inline { display: inline; }
 .d-inline-block { display: inline-block; }

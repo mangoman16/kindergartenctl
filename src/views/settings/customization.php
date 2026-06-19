@@ -24,7 +24,7 @@
                     <?php foreach ($colors as $color): ?>
                         <label class="color-swatch">
                             <input type="radio" name="theme_color" value="<?= $color ?>" <?= $currentColor === $color ? 'checked' : '' ?>>
-                            <span class="color-swatch-circle" style="background: <?= $color ?>;">
+                            <span class="color-swatch-circle" data-bg="<?= e($color) ?>">
                                 <?php if ($currentColor === $color): ?>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                 <?php endif; ?>
