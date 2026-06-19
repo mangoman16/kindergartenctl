@@ -67,7 +67,7 @@
                             <img src="<?= upload($material['image_path']) ?>" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
                         <?php else: ?>
                             <div class="text-center text-muted">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin: 0 auto;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto">
                                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>

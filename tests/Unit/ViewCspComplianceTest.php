@@ -70,7 +70,7 @@ class ViewCspComplianceTest extends TestCase
      */
     public function testInlineStyleAttributesDoNotIncrease(): void
     {
-        $baseline = 115;
+        $baseline = 104;
 
         $count = 0;
         $perFile = [];
