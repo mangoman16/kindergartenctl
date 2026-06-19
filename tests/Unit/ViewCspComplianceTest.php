@@ -59,6 +59,57 @@ class ViewCspComplianceTest extends TestCase
         );
     }
 
+    /**
+     * style="..." attributes are stripped by the CSP (style-src has no
+     * 'unsafe-inline'). The migration of every view off inline styles
+     * (utility classes / nonce'd <style> / data-bg+data-fg) is in progress;
+     * this is a ratchet — the count must never rise above the baseline, which
+     * is lowered as files are converted. Target is 0, at which point this
+     * becomes a hard "=== 0" assertion. Email templates are exempt (mail
+     * clients require inline styles and the CSP does not apply to them).
+     */
+    public function testInlineStyleAttributesDoNotIncrease(): void
+    {
+        $baseline = 187;
+
+        $count = 0;
+        $perFile = [];
+        foreach ($this->viewFiles() as $file) {
+            if (str_contains($file, '/emails/')) {
+                continue;
+            }
+            $n = preg_match_all('/\sstyle\s*=\s*["\']/i', file_get_contents($file));
+            if ($n > 0) {
+                $count += $n;
+                $perFile[] = basename(dirname($file)) . '/' . basename($file) . " ({$n})";
+            }
+        }
+
+        $this->assertLessThanOrEqual(
+            $baseline,
+            $count,
+            "Inline style attributes rose to {$count} (baseline {$baseline}). New inline " .
+            "styles are CSP-stripped — use stylesheet classes, a nonce'd <style> block, or " .
+            "data-bg/data-fg + App.applyDataStyles(). Files:\n  " . implode("\n  ", $perFile)
+        );
+    }
+
+    public function testNoInlineStyleAttributesInJsTemplates(): void
+    {
+        // JS-built markup (innerHTML/template literals) is parsed as HTML, so
+        // style attributes inside it are CSP-stripped too. Styling elements
+        // via the CSSOM (el.style.x = ...) is fine and not matched here.
+        $offenders = [];
+        foreach (glob(ROOT_PATH . '/public/assets/js/*.js') as $file) {
+            $contents = file_get_contents($file);
+            if (($count = preg_match_all('/\sstyle\s*=\s*\\\\?["\']/i', $contents)) > 0) {
+                $offenders[] = basename($file) . ' (' . $count . ')';
+            }
+        }
+
+        $this->assertSame([], $offenders, 'style= attributes in JS-built markup are CSP-stripped: ' . implode(', ', $offenders));
+    }
+
     public function testNoViewReadsCsrfTokenFromWrongSessionKey(): void
     {
         // The token is stored under _csrf_token; Session::get('csrf_token')

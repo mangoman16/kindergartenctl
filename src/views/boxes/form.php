@@ -2,7 +2,7 @@
     <h1 class="page-title"><?= $isEdit ? __('box.edit') : __('box.create') ?></h1>
 </div>
 
-<div class="card" style="max-width: 800px;">
+<div class="card form-container-md">
     <div class="card-body">
         <form action="<?= $isEdit ? url('/boxes/' . $box['id']) : url('/boxes') ?>" method="POST">
             <?= csrfField() ?>
@@ -81,12 +81,12 @@
                 <label class="form-label"><?= __('form.image') ?></label>
                 <div class="image-upload-container" data-type="boxes">
                     <input type="hidden" name="image_path" value="<?= e($box['image_path'] ?? '') ?>">
-                    <div class="image-preview" style="width: 120px; height: 120px; border: 2px dashed var(--color-gray-300); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden;">
+                    <div class="image-preview upload-dropzone">
                         <?php if (!empty($box['image_path'])): ?>
-                            <img src="<?= upload($box['image_path']) ?>" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="<?= upload($box['image_path']) ?>" alt="Preview" class="img-cover">
                         <?php else: ?>
                             <div class="text-center text-muted">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin: 0 auto;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto">
                                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>

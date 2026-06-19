@@ -16,7 +16,7 @@
             </svg>
             <?= __('action.edit') ?>
         </a>
-        <form action="<?= url('/boxes/' . $box['id'] . '/delete') ?>" method="POST" style="display: inline;"
+        <form action="<?= url('/boxes/' . $box['id'] . '/delete') ?>" method="POST" class="d-inline"
               data-confirm="<?= e(__('misc.confirm_delete')) ?>">
             <?= csrfField() ?>
             <button type="submit" class="btn btn-danger">
@@ -37,12 +37,12 @@
             <div class="card-body">
                 <!-- Box Image and Info -->
                 <div class="flex gap-6">
-                    <div style="width: 200px; flex-shrink: 0;">
+                    <div class="box-show-media">
                         <?php if ($box['image_path']): ?>
                             <img src="<?= upload($box['image_path']) ?>" alt="<?= e($box['name']) ?>"
-                                 style="width: 100%; border-radius: var(--radius-lg);">
+                                 class="box-show-img">
                         <?php else: ?>
-                            <div style="width: 100%; aspect-ratio: 1; background: var(--color-gray-100); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: var(--color-gray-400);">
+                            <div class="square-placeholder">
                                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                                     <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                                     <path d="M3.3 7l8.7 5 8.7-5"></path>
@@ -112,7 +112,7 @@
             </div>
             <div class="card-body">
                 <?php if (empty($materials)): ?>
-                <div class="empty-state" style="padding: var(--spacing-8);">
+                <div class="empty-state empty-state-compact">
                     <p class="text-muted"><?= __('box.empty') ?></p>
                 </div>
                 <?php else: ?>
@@ -168,7 +168,7 @@
             </div>
             <div class="card-body">
                 <div class="flex items-center gap-3 mb-4">
-                    <div style="width: 40px; height: 40px; background: var(--color-primary-bg); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: var(--color-primary);">
+                    <div class="icon-tile-40">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                         </svg>
@@ -218,3 +218,9 @@
         </div>
     </div>
 </div>
+
+<style<?= cspNonce() ?>>
+.box-show-media { width: 200px; flex-shrink: 0; }
+.box-show-img { width: 100%; border-radius: var(--radius-lg); }
+.empty-state-compact { padding: var(--spacing-8); }
+</style>

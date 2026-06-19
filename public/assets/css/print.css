@@ -269,3 +269,75 @@
     border-bottom: 1pt solid #ccc;
     font-weight: bold;
 }
+
+/* Additional shared print-view classes (CSP-safe inline-style replacements) */
+.print-muted { color: #666; }
+
+.print-lead-sm {
+    margin-bottom: 0.5cm;
+    color: #666;
+}
+
+.print-mb-1 { margin-bottom: 1cm; }
+
+.print-no-shrink { flex-shrink: 0; }
+
+.print-img {
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.print-img-120 {
+    width: 120px;
+    height: 120px;
+}
+
+.print-img-150 {
+    width: 150px;
+    height: 150px;
+}
+
+.print-col-15 { width: 15%; }
+.print-col-35 { width: 35%; }
+
+.print-col-60px { width: 60px; }
+.print-col-80px { width: 80px; }
+.print-col-150px { width: 150px; }
+
+.print-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1cm;
+}
+
+.print-alert { color: #c00; }
+.print-small { font-size: 0.9em; }
+.print-gap-left { margin-left: 0.5cm; }
+.print-indent { margin-left: 2.5cm; }
+
+.print-no-break { page-break-inside: avoid; }
+
+.print-heading-fill {
+    background: #f5f5f5;
+    padding: 0.3cm;
+    margin-bottom: 0.3cm;
+}
+
+.print-heading-fill-warn {
+    background: #fff3cd;
+    padding: 0.3cm;
+    margin-bottom: 0.3cm;
+}
+
+.print-heading-count {
+    float: right;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+.print-qty {
+    display: inline-block;
+    width: 2cm;
+    text-align: right;
+    margin-right: 0.5cm;
+}

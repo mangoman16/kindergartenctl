@@ -147,6 +147,7 @@ Based on a **4px base unit** (multiples of 0.25rem):
 
 ### Layout Rules
 
+- **No inline styles or handlers (CSP)**: The app ships a nonce-based CSP without `'unsafe-inline'`, so the browser strips `style="..."` attributes and inline `on*=` handlers. Style via stylesheet/utility classes or a nonce'd `<style>` block; use `data-bg`/`data-fg` + `App.applyDataStyles()` for dynamic per-element colors; bind events with `addEventListener` or the `data-confirm` / `.js-auto-submit` / `.js-file-trigger` hooks. Email templates (`views/auth/emails/`) are the only exception. Enforced by `tests/Unit/ViewCspComplianceTest.php`.
 - **Modular spacing**: Always use spacing tokens. Never hardcode pixel values for margins/padding.
 - **Generous whitespace**: Especially around text blocks and interactive elements. Space signals calm.
 - **Single-column on mobile**: Multi-column grids collapse at `max-width: 768px`.

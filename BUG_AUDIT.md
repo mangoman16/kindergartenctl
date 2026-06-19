@@ -401,12 +401,49 @@ used them everywhere.
 - `tests/Unit/ViewCspComplianceTest.php` — fails the build if any view reintroduces an inline `on*=` handler or reads the CSRF token from the wrong session key.
 - `tests/Unit/TranslationIntegrityTest.php` — fails on duplicate keys or de/en drift.
 
+### BUG-74 (High): Image-crop dialog rendered unstyled
+- **Files:** `public/assets/js/app.js`, `public/assets/css/style.css`
+- **Problem:** The cropper modal's interior was built via `innerHTML` with inline `style` attributes, which the CSP strips — the dialog appeared as unstyled stacked content. (The overlay itself used `style.cssText`, which is CSSOM and unaffected.)
+- **Fix:** Moved all dialog styling into `.cropper-dialog-*` rules in the stylesheet and removed the inline attributes from the JS template.
+
+### BUG-75 (High): Print pages rendered unstyled
+- **Files:** `src/views/{games,materials,boxes,categories,tags,groups}/print*.php`, `public/assets/css/print.css`
+- **Problem:** Print views carried all their table/typography styling as inline `style` attributes — stripped by the CSP, so printouts and the on-screen print preview lost their layout.
+- **Fix:** Added shared `.print-*` classes to `print.css` (outside `@media print` so the screen preview matches) and converted the views.
+
+### BUG-76 (Medium): Stale settings overview + debug leftovers
+- **Files:** `src/controllers/SettingsController.php`, `src/config/routes.php`, `src/views/settings/index.php` (deleted), `src/views/settings/debug.php` (deleted)
+- **Problem:** `GET /settings` rendered a pre-redesign overview page (duplicating email/debug settings), contradicting CLAUDE.md §9; `GET /settings/debug` + `showDebug()` + its view were orphaned (debug lives on `/settings/system`).
+- **Fix:** `/settings` now redirects to `/settings/customization`; removed the orphaned route, method, and both dead views. (`POST /settings/debug` remains — used by the system page.)
+
+### BUG-77 (Medium): No asset cache-busting — stale CSS/JS after deploys
+- **File:** `src/helpers/functions.php` (`asset()`)
+- **Problem:** Asset URLs had no version component, so browsers kept serving cached CSS/JS after changes (the effect previously misdiagnosed in BUG-20).
+- **Fix:** `asset()` appends `?v=<filemtime>` when the file exists.
+
+### BUG-78 (Medium): Fixed header ignored the open sidebar; search pill overlap
+- **File:** `public/assets/css/style.css`
+- **Problem:** `.top-header` spanned from the icon rail regardless of the 240px context sidebar, so the centered search pill sat visually off-center (partially under the sidebar); its `min-width: 400px` could also collide with the absolutely-positioned user menu around 769–1100px.
+- **Fix:** Header now starts at the sidebar's right edge when open (corner-curve `::after` re-anchored to 0, collapsed + mobile overrides added, `transition: left`); pill `min-width` is `clamp(200px, 28vw, 400px)`.
+
+### BUG-79 (Low): Rail buttons regressed below the 44px touch target
+- **File:** `public/assets/css/style.css`
+- **Problem:** `.rail-btn` was 36×36px — a regression of the BUG-46 fix (WCAG touch-target minimum is 44px; DESIGN_SYSTEM.md mandates it).
+- **Fix:** Restored 44×44px.
+
+### BUG-80 (Medium): Favorite toggle showed both icons at once
+- **Files:** `src/views/games/show.php`, `src/views/materials/show.php`
+- **Problem:** The filled/outline star icons were switched via conditional `style="display:none"` — stripped by the CSP, so both icons rendered simultaneously; the JS toggled `style.display` with an empty string, which cannot override the `hidden` attribute.
+- **Fix:** Conditional `hidden` attribute + `el.hidden` toggling in the JS.
+
+### BUG-81 (Medium): App-wide inline `style=` sweep + dynamic colors
+- **Files:** ~45 views, `public/assets/js/app.js`, `public/assets/css/style.css`
+- **Problem:** ~239 inline `style` attributes remained app-wide — all stripped by the CSP. Effects included colorless tag badges/search-result dots/calendar legend/theme swatches, visible elements that should be hidden, and collapsed table column widths.
+- **Fix:** Converted to utility classes (`.col-*`, `.thumb-*`, `.d-inline`, …), nonce'd per-view `<style>` blocks for one-offs, and `data-bg`/`data-fg` attributes applied via the new `App.applyDataStyles()` (CSSOM is CSP-exempt). Email templates under `views/auth/emails/` are exempt by design. Enforced by new `ViewCspComplianceTest` checks that ban `style=` in views and JS-built markup.
+
 ### Known-remaining (not yet addressed)
-- The broader inline `style=` attribute sweep (~240 remaining occurrences, mostly cosmetic: table column widths, small spacing, search-result colour dots) is still pending.
-- Touch targets below 44px on `.rail-btn`/`.toolbar-btn` (left as-is to avoid changing the icon-rail visual density on this desktop-first tool).
-- `GET /settings` still renders an overview page although `CLAUDE.md` §9 says it should redirect to `/settings/customization` — needs a product decision (redirect vs. update the doc).
-- Search pill can overlap the user menu in a narrow tablet range (~769–1100px with the sidebar open).
-- Dead code: `Group::duplicate()` (no route), `initSearch()` in `app.js` (targets removed elements).
+- Dead code: `Group::duplicate()` (implemented but unrouted; also omits `notes` when copying — fix or remove when groups duplication becomes a feature).
+- `.toolbar-btn` is ~30px tall (below the 44px touch-target guideline); left as-is to preserve the dense desktop toolbar design.
 
 ---
 

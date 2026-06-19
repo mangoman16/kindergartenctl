@@ -443,7 +443,7 @@
 
     /**
      * Apply data-bg / data-fg attributes as element styles. The CSP blocks
-     * inline style="..." attributes (no 'unsafe-inline' in style-src), but
+     * inline style attributes (no 'unsafe-inline' in style-src), but
      * styling via the CSSOM is allowed — so dynamic per-element colors (tag
      * badges, color dots, swatches) are declared as data attributes and
      * applied here. Runs on DOM ready; call App.applyDataStyles(container)

@@ -8,16 +8,16 @@
 <div class="print-section">
     <div class="flex gap-6">
         <?php if ($game['image_path']): ?>
-            <div style="flex-shrink: 0;">
+            <div class="print-no-shrink">
                 <img src="<?= upload($game['image_path']) ?>" alt="<?= e($game['name']) ?>"
-                     style="width: 150px; height: 150px; border-radius: 8px; object-fit: cover;">
+                     class="print-img print-img-150">
             </div>
         <?php endif; ?>
 
         <div class="flex-1">
             <table class="print-table">
                 <tr>
-                    <th style="width: 150px;"><?= __('game.age_group') ?></th>
+                    <th class="print-col-150px"><?= __('game.age_group') ?></th>
                     <td><?= $game['category_name'] ? e($game['category_name']) : 'Alle' ?></td>
                 </tr>
                 <tr>
@@ -69,14 +69,14 @@
     <table class="print-table">
         <thead>
             <tr>
-                <th style="width: 60px;">Anzahl</th>
+                <th class="print-col-60px">Anzahl</th>
                 <th>Material</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($game['materials'] as $material): ?>
             <tr>
-                <td style="text-align: center;"><?= $material['quantity'] ?>×</td>
+                <td class="print-center"><?= $material['quantity'] ?>×</td>
                 <td><?= e($material['name']) ?></td>
             </tr>
             <?php endforeach; ?>

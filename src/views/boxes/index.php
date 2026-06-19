@@ -78,7 +78,7 @@
             <?php if ($box['image_path']): ?>
                 <img src="<?= upload($box['image_path']) ?>" alt="<?= e($box['name']) ?>">
             <?php else: ?>
-                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--color-gray-400);">
+                <div class="center-placeholder">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                         <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                         <path d="M3.3 7l8.7 5 8.7-5"></path>
