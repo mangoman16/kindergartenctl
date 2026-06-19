@@ -253,11 +253,15 @@
 .print-strong { font-weight: bold; }
 .print-center { text-align: center; }
 
+.print-col-15 { width: 15%; }
 .print-col-20 { width: 20%; }
 .print-col-25 { width: 25%; }
 .print-col-30 { width: 30%; }
+.print-col-35 { width: 35%; }
 .print-col-40 { width: 40%; }
 .print-col-50 { width: 50%; }
+
+.print-danger { color: #c00; }
 
 .print-cell {
     padding: 0.2cm;
