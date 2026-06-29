@@ -43,12 +43,12 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 60px;"></th>
+                    <th class="col-60px"></th>
                     <th><?= __('form.name') ?></th>
                     <th><?= __('form.description') ?></th>
-                    <th style="width: 100px;"><?= __('category.sort_order') ?></th>
-                    <th style="width: 120px;"><?= __('nav.games') ?></th>
-                    <th style="width: 150px;"></th>
+                    <th class="col-100px"><?= __('category.sort_order') ?></th>
+                    <th class="col-120px"><?= __('nav.games') ?></th>
+                    <th class="col-150px"></th>
                 </tr>
             </thead>
             <tbody>
@@ -57,9 +57,9 @@
                     <td>
                         <?php if ($category['image_path']): ?>
                             <img src="<?= upload($category['image_path']) ?>" alt="<?= e($category['name']) ?>"
-                                 style="width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover;">
+                                 class="thumb-40">
                         <?php else: ?>
-                            <div style="width: 40px; height: 40px; background: var(--color-gray-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-gray-400);">
+                            <div class="thumb-40-placeholder">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="9" cy="7" r="4"></circle>
@@ -87,8 +87,8 @@
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                 </svg>
                             </a>
-                            <form action="<?= url('/categories/' . $category['id'] . '/delete') ?>" method="POST" style="display: inline;"
-                                  onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')">
+                            <form action="<?= url('/categories/' . $category['id'] . '/delete') ?>" method="POST" class="d-inline"
+                                  data-confirm="<?= e(__('misc.confirm_delete')) ?>">
                                 <?= csrfField() ?>
                                 <button type="submit" class="btn btn-sm btn-danger">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

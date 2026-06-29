@@ -216,7 +216,7 @@
         <div class="flex flex-wrap gap-2">
             <?php foreach (array_slice($results['tags'], 0, $type === 'all' ? 10 : 50) as $tag): ?>
                 <a href="<?= url('/games?tag=' . $tag['id']) ?>" class="tag-badge"
-                   style="<?= $tag['color'] ? 'background-color: ' . e($tag['color']) . '; color: white;' : '' ?>">
+                   <?= $tag['color'] ? 'data-bg="' . e($tag['color']) . '"' : '' ?>>
                     <?= e($tag['name']) ?>
                 </a>
             <?php endforeach; ?>

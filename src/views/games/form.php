@@ -149,7 +149,7 @@
                                 <img src="<?= upload($game['image_path']) ?>" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
                             <?php else: ?>
                                 <div class="text-center text-muted">
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin: 0 auto;">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto">
                                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                         <polyline points="21 15 16 10 5 21"></polyline>
@@ -158,8 +158,8 @@
                                 </div>
                             <?php endif; ?>
                         </div>
-                        <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" style="display: none;">
-                        <button type="button" class="btn btn-secondary btn-block mt-3" onclick="this.previousElementSibling.click()">
+                        <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
+                        <button type="button" class="btn btn-secondary btn-block mt-3 js-file-trigger">
                             <?= __('action.upload') ?>
                         </button>
                     </div>
@@ -172,12 +172,12 @@
                     <h2 class="card-title"><?= __('nav.tags') ?></h2>
                 </div>
                 <div class="card-body">
-                    <div class="tags-checkboxes" style="max-height: 200px; overflow-y: auto;">
+                    <div class="tags-checkboxes scroll-200">
                         <?php foreach ($tags as $tag): ?>
                             <label class="flex items-center gap-2 cursor-pointer mb-2">
                                 <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>"
                                        <?= in_array($tag['id'], $selectedTags) ? 'checked' : '' ?>>
-                                <span class="tag-badge-sm" style="<?= $tag['color'] ? 'background-color: ' . e($tag['color']) . '; color: white;' : '' ?>">
+                                <span class="tag-badge-sm"<?= $tag['color'] ? ' data-bg="' . e($tag['color']) . '"' : '' ?>>
                                     <?= e($tag['name']) ?>
                                 </span>
                             </label>

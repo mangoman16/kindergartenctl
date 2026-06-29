@@ -799,7 +799,6 @@ return [
     'form.no_tags_exist' => 'No topics available.',
 
     // Action extended
-    'action.remove' => 'Remove',
     'action.create_one' => 'Create',
 
     // Group show
@@ -807,7 +806,6 @@ return [
     'group.no_materials' => 'No materials in this group.',
 
     // Misc extended
-    'misc.not_specified' => 'Not specified',
     'misc.printed_on' => 'Printed on',
 
     // JavaScript strings (used in app.js via window.AppTranslations)

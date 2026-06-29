@@ -71,19 +71,19 @@
             <div class="card-body">
                 <div class="legend-items">
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #3788d8;"></span>
+                        <span class="legend-color" data-bg="#3788d8"></span>
                         <?= __('calendar.color_default') ?>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #22c55e;"></span>
+                        <span class="legend-color" data-bg="#22c55e"></span>
                         <?= __('calendar.color_outdoor') ?>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #f59e0b;"></span>
+                        <span class="legend-color" data-bg="#f59e0b"></span>
                         <?= __('calendar.color_party') ?>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #ef4444;"></span>
+                        <span class="legend-color" data-bg="#ef4444"></span>
                         <?= __('calendar.color_important') ?>
                     </div>
                 </div>
@@ -160,27 +160,27 @@
                     <div class="color-options">
                         <label class="color-option">
                             <input type="radio" name="color" value="#3788d8" checked>
-                            <span style="background: #3788d8;"></span>
+                            <span data-bg="#3788d8"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#22c55e">
-                            <span style="background: #22c55e;"></span>
+                            <span data-bg="#22c55e"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#f59e0b">
-                            <span style="background: #f59e0b;"></span>
+                            <span data-bg="#f59e0b"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#ef4444">
-                            <span style="background: #ef4444;"></span>
+                            <span data-bg="#ef4444"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#8b5cf6">
-                            <span style="background: #8b5cf6;"></span>
+                            <span data-bg="#8b5cf6"></span>
                         </label>
                         <label class="color-option">
                             <input type="radio" name="color" value="#ec4899">
-                            <span style="background: #ec4899;"></span>
+                            <span data-bg="#ec4899"></span>
                         </label>
                     </div>
                 </div>
@@ -276,58 +276,11 @@
     border-color: var(--color-gray-800);
 }
 
-/* Modal Styles */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.modal-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-}
-.modal-content {
-    position: relative;
-    background: white;
-    border-radius: var(--radius-lg);
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
+/* Modal styling comes from the global stylesheet (.modal / .modal.active),
+   which keeps it hidden until the .active class is toggled on. Only the
+   calendar event modal's scrollable body differs from the default. */
+#event-modal .modal-content {
     overflow: auto;
-}
-.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--color-gray-200);
-}
-.modal-title {
-    margin: 0;
-    font-size: 1.125rem;
-}
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-gray-400);
-}
-.modal-close:hover {
-    color: var(--color-gray-600);
-}
-.modal-body {
-    padding: 20px;
 }
 
 /* FullCalendar customization */
@@ -494,6 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(data)
             });
 
+            if (!response.ok) throw new Error('HTTP ' + response.status);
             const result = await response.json();
 
             if (result.success) {
@@ -522,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'X-CSRF-Token': csrfToken }
             });
 
+            if (!response.ok) throw new Error('HTTP ' + response.status);
             const result = await response.json();
 
             if (result.success) {

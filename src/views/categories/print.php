@@ -2,12 +2,12 @@
     <div class="print-section-title"><?= __('category.title') ?>: <?= e($category['name']) ?></div>
 
     <?php if ($category['description']): ?>
-        <p style="margin-bottom: 1cm; color: #666;"><?= nl2br(e($category['description'])) ?></p>
+        <p class="print-lead"><?= nl2br(e($category['description'])) ?></p>
     <?php endif; ?>
 
-    <table style="width: 100%; margin-bottom: 0.5cm;">
+    <table class="print-kv">
         <tr>
-            <td style="font-weight: bold;"><?= __('game.count') ?>:</td>
+            <td class="print-strong"><?= __('game.count') ?>:</td>
             <td><?= $category['game_count'] ?? count($games) ?> Spiele</td>
         </tr>
     </table>
@@ -17,15 +17,15 @@
     <div class="print-section-title"><?= __('nav.games') ?> (<?= count($games) ?>)</div>
 
     <?php if (empty($games)): ?>
-        <p style="font-style: italic; color: #666;">Keine Spiele in dieser Altersgruppe.</p>
+        <p class="print-empty">Keine Spiele in dieser Altersgruppe.</p>
     <?php else: ?>
-        <table class="print-table" style="width: 100%;">
+        <table class="print-table print-w-full">
             <thead>
                 <tr>
-                    <th style="width: 40%;"><?= __('form.name') ?></th>
-                    <th style="width: 20%;"><?= __('game.players') ?></th>
-                    <th style="width: 20%;"><?= __('game.duration') ?></th>
-                    <th style="width: 20%;">Spielort</th>
+                    <th class="print-col-40"><?= __('form.name') ?></th>
+                    <th class="print-col-20"><?= __('game.players') ?></th>
+                    <th class="print-col-20"><?= __('game.duration') ?></th>
+                    <th class="print-col-20">Spielort</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +34,7 @@
                     <td>
                         <strong><?= e($game['name']) ?></strong>
                         <?php if ($game['description']): ?>
-                            <br><span style="font-size: 0.85em; color: #666;"><?= e(truncate($game['description'], 80)) ?></span>
+                            <br><span class="print-desc"><?= e(truncate($game['description'], 80)) ?></span>
                         <?php endif; ?>
                     </td>
                     <td>

@@ -115,7 +115,6 @@ return [
     'GET /settings/language' => ['SettingsController', 'showLanguage'],
     'GET /settings/email' => ['SettingsController', 'showEmail'],
     'GET /settings/system' => ['SettingsController', 'showSystem'],
-    'GET /settings/debug' => ['SettingsController', 'showDebug'],
     'GET /settings/data' => ['SettingsController', 'showData'],
     'POST /settings/password' => ['SettingsController', 'updatePassword'],
     'POST /settings/email' => ['SettingsController', 'updateEmail'],

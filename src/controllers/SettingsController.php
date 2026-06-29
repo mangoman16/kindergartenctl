@@ -11,21 +11,12 @@ class SettingsController extends Controller
     }
 
     /**
-     * Show settings overview page with grouped settings
+     * /settings has no overview page; the settings sidebar provides all
+     * navigation (see CLAUDE.md §9), so redirect to the first sub-page.
      */
     public function index(): void
     {
-        $this->setTitle(__('settings.title'));
-        $this->addBreadcrumb(__('settings.title'));
-
-        $smtp = [];
-        if (file_exists(ROOT_PATH . '/storage/smtp.php')) {
-            $smtp = include ROOT_PATH . '/storage/smtp.php';
-        }
-
-        $this->render('settings/index', [
-            'smtp' => $smtp,
-        ]);
+        $this->redirect('/settings/customization');
     }
 
     /**
@@ -104,17 +95,15 @@ class SettingsController extends Controller
             $defaultView = 'grid';
         }
 
-        // Save preferences
-        $config = [
-            'items_per_page' => $itemsPerPage,
-            'default_view' => $defaultView,
-        ];
+        // Load existing preferences and merge so unrelated settings (language,
+        // theme color/pattern, dark mode, profile picture) are preserved rather
+        // than wiped by overwriting the whole file.
+        $preferences = $this->getUserPreferences();
+        $preferences['items_per_page'] = $itemsPerPage;
+        $preferences['default_view'] = $defaultView;
 
-        $configPath = STORAGE_PATH . '/preferences.php';
-        $content = "<?php\nreturn " . var_export($config, true) . ";\n";
-
-        if (file_put_contents($configPath, $content) === false) {
-            Logger::error('Failed to save preferences', ['path' => $configPath]);
+        if (!$this->savePreferences($preferences)) {
+            Logger::error('Failed to save preferences', ['path' => STORAGE_PATH . '/preferences.php']);
             Session::setFlash('error', __('settings.save_failed'));
             $this->redirect('/settings');
             return;
@@ -444,17 +433,6 @@ class SettingsController extends Controller
     }
 
     /**
-     * Show debug page
-     */
-    public function showDebug(): void
-    {
-        $this->setTitle(__('settings.debug'));
-        $this->addBreadcrumb(__('settings.title'), '/settings');
-        $this->addBreadcrumb(__('settings.debug'));
-
-        $this->render('settings/debug');
-    }
-
     /**
      * Show data management page
      */

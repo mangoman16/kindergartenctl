@@ -107,7 +107,17 @@ function url(string $path = '', array $params = []): string
  */
 function asset(string $path): string
 {
-    return '/assets/' . ltrim($path, '/');
+    $path = ltrim($path, '/');
+    $url = '/assets/' . $path;
+
+    // Cache-bust with the file's mtime so browsers pick up changed CSS/JS
+    // immediately (stale cached assets previously masked fixes, see BUG-20).
+    $file = PUBLIC_PATH . '/assets/' . $path;
+    if (is_file($file)) {
+        $url .= '?v=' . filemtime($file);
+    }
+
+    return $url;
 }
 
 /**

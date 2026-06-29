@@ -9,7 +9,7 @@
             <?= __('action.edit') ?>
         </a>
         <form action="<?= url('/locations/' . $location['id'] . '/delete') ?>" method="POST" style="display: inline;"
-              onsubmit="return confirm('<?= __('misc.confirm_delete') ?>')">
+              data-confirm="<?= e(__('misc.confirm_delete')) ?>">
             <?= csrfField() ?>
             <button type="submit" class="btn btn-danger">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -28,8 +28,8 @@
         <div class="card">
             <div class="card-body">
                 <div class="flex gap-6">
-                    <div style="width: 100px; flex-shrink: 0;">
-                        <div style="width: 100%; aspect-ratio: 1; background: var(--color-gray-100); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: var(--color-gray-400);">
+                    <div class="col-100px flex-shrink-0">
+                        <div class="square-placeholder">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>

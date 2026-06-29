@@ -100,7 +100,6 @@
     /* Layout */
     --rail-width: 60px;
     --ctx-sidebar-width: 240px;
-    --sidebar-width: 52px;
     --header-height: 60px;
     --container-max-width: 1400px;
 }
@@ -644,8 +643,8 @@ small {
 }
 
 .rail-btn {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -868,6 +867,17 @@ small {
     transform: scale(0.95);
 }
 
+/* Per-tile accent colors + stagger order. CSP-safe replacement for the inline
+   style="--qc-color/--qc-bg/--qc-delay" attributes that were stripped from the
+   tiles in sidebar.php (style-src has no 'unsafe-inline', so attribute styles
+   are blocked by the browser). */
+.qc-tile[data-key="1"] { --qc-color: #6366f1; --qc-bg: #eef2ff; --qc-delay: 0; }
+.qc-tile[data-key="2"] { --qc-color: #f59e0b; --qc-bg: #fffbeb; --qc-delay: 1; }
+.qc-tile[data-key="3"] { --qc-color: #10b981; --qc-bg: #ecfdf5; --qc-delay: 2; }
+.qc-tile[data-key="4"] { --qc-color: #ec4899; --qc-bg: #fdf2f8; --qc-delay: 3; }
+.qc-tile[data-key="5"] { --qc-color: #8b5cf6; --qc-bg: #f5f3ff; --qc-delay: 4; }
+.qc-tile[data-key="6"] { --qc-color: #3b82f6; --qc-bg: #eff6ff; --qc-delay: 5; }
+
 /* Tile icon circle */
 .qc-tile-icon {
     display: flex;
@@ -924,7 +934,7 @@ small {
 /* Main Content - dynamic margin */
 .main-content {
     flex: 1;
-    margin-left: var(--sidebar-width);
+    margin-left: var(--rail-width);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -937,11 +947,24 @@ small {
     margin-left: calc(var(--rail-width) + var(--ctx-sidebar-width));
 }
 
+/* Keep the fixed header aligned with the content area: when the sidebar is
+   open the header starts at its right edge, so the centered search pill is
+   centered in the visible space instead of partially under the sidebar. */
+.context-sidebar.open ~ .main-content .top-header {
+    left: calc(var(--rail-width) + var(--ctx-sidebar-width));
+}
+
+.sidebar-collapsed .context-sidebar.open ~ .main-content .top-header {
+    left: var(--rail-width);
+}
+
 .context-sidebar.open ~ .main-content .top-header::after {
     content: '';
     position: absolute;
     bottom: calc(-1 * var(--radius-xl));
-    left: var(--ctx-sidebar-width);
+    /* The header's left edge now sits at the sidebar's right edge, so the
+       inverse-radius corner anchors at 0 (same on-screen position as before). */
+    left: 0;
     width: var(--radius-xl);
     height: var(--radius-xl);
     background: radial-gradient(circle at 100% 100%, transparent var(--radius-xl), var(--color-white) var(--radius-xl));
@@ -949,7 +972,7 @@ small {
 }
 
 .sidebar-collapsed .context-sidebar.open ~ .main-content {
-    margin-left: var(--sidebar-width);
+    margin-left: var(--rail-width);
 }
 
 .sidebar-collapsed .context-sidebar.open ~ .main-content .top-header::after {
@@ -997,7 +1020,9 @@ small {
     color: var(--color-gray-500);
     cursor: pointer;
     font-size: var(--font-size-sm);
-    min-width: 400px;
+    /* Shrink on narrow viewports so the centered pill cannot collide with the
+       absolutely-positioned user menu in the ~769-1100px range. */
+    min-width: clamp(200px, 28vw, 400px);
     max-width: 600px;
     transition: all var(--transition-fast);
 }
@@ -1458,6 +1483,7 @@ small {
     z-index: 100;
     min-height: var(--header-height);
     box-sizing: border-box;
+    transition: left var(--transition-normal);
 }
 
 .top-header::before {
@@ -2087,12 +2113,12 @@ img.user-avatar-img {
 
 .btn-primary {
     background: var(--color-primary);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-primary:hover:not(:disabled) {
     background: var(--color-primary-dark);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-secondary {
@@ -2107,32 +2133,32 @@ img.user-avatar-img {
 
 .btn-success {
     background: var(--color-success);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-success:hover:not(:disabled) {
     background: var(--color-success-dark);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-danger {
     background: var(--color-danger);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-danger:hover:not(:disabled) {
     background: var(--color-danger-dark);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-warning {
     background: var(--color-warning);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-warning:hover:not(:disabled) {
     background: var(--color-warning-dark);
-    color: var(--color-white);
+    color: #fff;
 }
 
 .btn-outline {
@@ -2905,6 +2931,127 @@ select.form-control,
 .overflow-hidden { overflow: hidden; }
 .relative { position: relative; }
 
+/* CSP-safe replacements for former inline style="..." attributes (the CSP has
+   no 'unsafe-inline' in style-src, so the browser strips style attributes). */
+.m-0 { margin: 0; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.d-inline { display: inline; }
+.nowrap { white-space: nowrap; }
+.va-middle { vertical-align: middle; }
+.max-w-300 { max-width: 300px; }
+.max-w-600 { max-width: 600px; }
+.max-w-700 { max-width: 700px; }
+
+/* Table column widths (former style="width: ..." on th/td) */
+.col-20p { width: 20%; }
+.col-25p { width: 25%; }
+.col-30p { width: 30%; }
+.col-40p { width: 40%; }
+.col-50p { width: 50%; }
+.col-40px { width: 40px; }
+.col-50px { width: 50px; }
+.col-60px { width: 60px; }
+.col-80px { width: 80px; }
+.col-100px { width: 100px; }
+.col-120px { width: 120px; }
+.col-150px { width: 150px; }
+
+/* Image thumbnails and placeholders (list/table views) */
+.img-cover { width: 100%; height: 100%; object-fit: cover; }
+.thumb-40 {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+}
+.thumb-40-placeholder {
+    width: 40px;
+    height: 40px;
+    background: var(--color-gray-100);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+}
+.thumb-48-color {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+}
+.icon-tile-40 {
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary-bg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+}
+.square-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--color-gray-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+}
+.center-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+}
+.upload-dropzone {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+/* Dynamic per-element colors are declared as data-bg/data-fg and applied via
+   the CSSOM by App.applyDataStyles() in app.js (the style attribute itself is
+   CSP-blocked). Colored tag badges always get white text. */
+.tag-badge[data-bg],
+.tag-badge-sm[data-bg] { color: #fff; }
+
+/* Help wizard steps are hidden until the wizard JS shows them */
+.help-step { display: none; }
+
+/* Tinted icon badges (background + matching text color) */
+.tint-primary { background: var(--color-primary-bg); color: var(--color-primary); }
+.tint-success { background: var(--color-success-bg); color: var(--color-success); }
+.tint-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+.tint-info { background: var(--color-info-bg); color: var(--color-info); }
+.tint-danger { background: var(--color-danger-bg); color: var(--color-danger); }
+
+/* More inline-style-sweep replacements */
+.max-w-800 { max-width: 800px; }
+.p-8 { padding: var(--spacing-8); }
+.va-n2 { vertical-align: -2px; }
+.scroll-200 { max-height: 200px; overflow-y: auto; }
+.upload-dropzone-wide {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 2px dashed var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
 .hidden { display: none; }
 .d-inline { display: inline; }
 .d-inline-block { display: inline-block; }
@@ -3117,6 +3264,60 @@ select.form-control,
     max-height: 90vh;
     overflow: hidden;
     box-shadow: var(--shadow-xl);
+}
+
+/* Cropper dialog interior (markup built in app.js; inline style attributes
+   would be stripped by the CSP, so all styling lives here). */
+.cropper-dialog-header {
+    padding: var(--spacing-4) var(--spacing-5);
+    border-bottom: 1px solid var(--color-gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cropper-dialog-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+}
+
+.cropper-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-gray-400);
+    padding: var(--spacing-1);
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-md);
+}
+
+.cropper-modal-close:hover {
+    color: var(--color-gray-600);
+}
+
+.cropper-dialog-body {
+    padding: var(--spacing-5);
+    overflow-y: auto;
+    max-height: calc(90vh - 140px);
+}
+
+.cropper-dialog-stage {
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.cropper-dialog-stage img {
+    max-width: 100%;
+}
+
+.cropper-dialog-footer {
+    padding: var(--spacing-4) var(--spacing-5);
+    border-top: 1px solid var(--color-gray-200);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-3);
 }
 
 /* ============================================
@@ -3394,7 +3595,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 }
 .list-toolbar-label {
     font-size: var(--font-size-sm);
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
     white-space: nowrap;
     font-weight: var(--font-weight-medium);
     letter-spacing: -0.01em;
@@ -3427,7 +3628,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     color: var(--color-primary);
 }
 [data-theme="dark"] .toolbar-btn {
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
 }
 [data-theme="dark"] .toolbar-btn:hover {
     background: rgba(255, 255, 255, 0.08);
@@ -3457,7 +3658,7 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 /* Clear / reset link in toolbar */
 .toolbar-reset {
     font-size: var(--font-size-sm);
-    color: var(--color-gray-400);
+    color: var(--color-gray-600);
     text-decoration: none;
     padding: 4px 8px;
     border-radius: var(--radius-sm);
@@ -3469,6 +3670,19 @@ tr.selected td { background: var(--color-primary-bg) !important; }
 .toolbar-reset:hover {
     color: var(--color-danger);
     background: var(--color-danger-bg);
+}
+
+/* Keyboard focus indicators for the redesigned toolbar / filter / quick-create
+   controls (WCAG 2.4.7 — these previously had no visible focus ring). */
+.toolbar-btn:focus-visible,
+.toolbar-reset:focus-visible,
+.filter-chip:focus-visible,
+.segmented-control a:focus-visible,
+.segmented-control button:focus-visible,
+.qc-tile:focus-visible,
+.alert-close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 /* Toolbar divider */
@@ -4407,6 +4621,10 @@ tr.selected td { background: var(--color-primary-bg) !important; }
         margin-left: 44px;
     }
 
+    .context-sidebar.open ~ .main-content .top-header {
+        left: 44px;
+    }
+
     .context-sidebar.open {
         position: fixed;
         z-index: 115;
@@ -4589,11 +4807,11 @@ tr.selected td { background: var(--color-primary-bg) !important; }
     padding: var(--spacing-1) var(--spacing-3);
 }
 [data-compact-sidebar] .main-content {
-    margin-left: calc(56px + 160px);
+    margin-left: calc(var(--rail-width) + 160px);
 }
 @media (max-width: 992px) {
     [data-compact-sidebar] .main-content {
-        margin-left: 56px;
+        margin-left: var(--rail-width);
     }
 }
 

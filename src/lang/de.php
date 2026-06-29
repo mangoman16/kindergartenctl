@@ -799,7 +799,6 @@ return [
     'form.no_tags_exist' => 'Keine Themen vorhanden.',
 
     // Action extended
-    'action.remove' => 'Entfernen',
     'action.create_one' => 'Erstellen',
 
     // Group show
@@ -807,7 +806,6 @@ return [
     'group.no_materials' => 'Keine Materialien in dieser Gruppe.',
 
     // Misc extended
-    'misc.not_specified' => 'Nicht angegeben',
     'misc.printed_on' => 'Gedruckt am',
 
     // JavaScript strings (used in app.js via window.AppTranslations)

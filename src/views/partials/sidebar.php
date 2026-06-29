@@ -51,42 +51,42 @@ $hasContextSidebar = in_array($navSection, ['home', 'games', 'inventory', 'calen
 <!-- Quick Create Popup -->
 <div class="quick-create-overlay" id="quickCreateOverlay"></div>
 <div class="quick-create-popup" id="quickCreatePopup">
-    <a href="<?= url('/games/create') ?>" class="qc-tile" data-key="1" style="--qc-color: #6366f1; --qc-bg: #eef2ff; --qc-delay: 0">
+    <a href="<?= url('/games/create') ?>" class="qc-tile" data-key="1">
         <span class="qc-tile-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         </span>
         <span class="qc-tile-label"><?= __('nav.games') ?></span>
         <kbd class="qc-kbd">1</kbd>
     </a>
-    <a href="<?= url('/materials/create') ?>" class="qc-tile" data-key="2" style="--qc-color: #f59e0b; --qc-bg: #fffbeb; --qc-delay: 1">
+    <a href="<?= url('/materials/create') ?>" class="qc-tile" data-key="2">
         <span class="qc-tile-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
         </span>
         <span class="qc-tile-label"><?= __('nav.materials') ?></span>
         <kbd class="qc-kbd">2</kbd>
     </a>
-    <a href="<?= url('/boxes/create') ?>" class="qc-tile" data-key="3" style="--qc-color: #10b981; --qc-bg: #ecfdf5; --qc-delay: 2">
+    <a href="<?= url('/boxes/create') ?>" class="qc-tile" data-key="3">
         <span class="qc-tile-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="M3.3 7l8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
         </span>
         <span class="qc-tile-label"><?= __('nav.boxes') ?></span>
         <kbd class="qc-kbd">3</kbd>
     </a>
-    <a href="<?= url('/groups/create') ?>" class="qc-tile" data-key="4" style="--qc-color: #ec4899; --qc-bg: #fdf2f8; --qc-delay: 3">
+    <a href="<?= url('/groups/create') ?>" class="qc-tile" data-key="4">
         <span class="qc-tile-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
         </span>
         <span class="qc-tile-label"><?= __('nav.groups') ?></span>
         <kbd class="qc-kbd">4</kbd>
     </a>
-    <a href="<?= url('/tags/create') ?>" class="qc-tile" data-key="5" style="--qc-color: #8b5cf6; --qc-bg: #f5f3ff; --qc-delay: 4">
+    <a href="<?= url('/tags/create') ?>" class="qc-tile" data-key="5">
         <span class="qc-tile-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
         </span>
         <span class="qc-tile-label"><?= __('nav.tags') ?></span>
         <kbd class="qc-kbd">5</kbd>
     </a>
-    <a href="<?= url('/calendar?create=1') ?>" class="qc-tile" data-key="6" style="--qc-color: #3b82f6; --qc-bg: #eff6ff; --qc-delay: 5">
+    <a href="<?= url('/calendar?create=1') ?>" class="qc-tile" data-key="6">
         <span class="qc-tile-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
         </span>

@@ -113,6 +113,10 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 5. **`str_replace()` cascading** - Replacement text may contain the next search pattern
 6. **`random_bytes(float)`** - PHP 8.1+ deprecation warning; always pass int
 7. **Validation in update methods** - Must match create/store validation (don't skip)
+8. **Inline `on*=` / `style=` attributes are CSP-blocked** - The app's CSP (`public/index.php`) has no `'unsafe-inline'`, so the browser silently strips inline `onclick`/`onchange`/`onsubmit` handlers and `style="..."` attributes. Bind events in a nonce'd `<script><?= cspNonce() ?>>` via `addEventListener`, or use the reusable hooks in `app.js`: `data-confirm` (on a form/button), `.js-auto-submit` (submit form on change), `.js-file-trigger` (open a hidden file input). For styling use stylesheet/utility classes, a nonce'd `<style>` block, the `hidden` attribute instead of `style="display:none"`, and `data-bg`/`data-fg` attributes for dynamic per-element colors (applied via `App.applyDataStyles()`, since the CSSOM is CSP-exempt). Email templates under `src/views/auth/emails/` are the one exception — mail clients require inline styles. For fetch CSRF use `$csrfToken` / `Session::csrfToken()` / `fetchWithCsrf()` — never `Session::get('csrf_token')` (wrong key → null → 403). Enforced by `tests/Unit/ViewCspComplianceTest.php`.
+8b. **`asset()` appends `?v=<filemtime>`** - CSS/JS URLs are cache-busted automatically; never hand-write `/assets/...` paths in views, always use `asset()` so browsers pick up changes.
+9. **`INTERVAL :param DAY` fails under native prepares** - With emulated prepares off, a bound parameter inside an `INTERVAL ... DAY` expression throws a 1064 syntax error. Inline a validated `(int)` value instead (see `ChangelogService::cleanup()`).
+10. **Per-view modal `<style>` blocks** - The global stylesheet already styles `.modal` (hidden by default, shown via `.modal.active`). Do NOT redefine `.modal { display:flex }` in a view; it overrides the hide rule and the modal shows on page load.
 
 ### 9. Navigation Structure (Asana-style)
 - **Icon Rail** (56px fixed left): Sidebar toggle (hamburger) at top, then Home, Games, Inventory, Calendar buttons + Quick Create (plus) and Settings at bottom
@@ -157,7 +161,7 @@ Use `ImageProcessor` for uploading and deleting images. Do NOT use manual `unlin
 - 10 Models in `src/models/` (includes Location)
 - 16 Services in `src/services/` (4 original + 12 new entity services)
 - 3 Helpers in `src/helpers/`
-- 59 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages incl. system.php, locations/)
+- 57 Views in `src/views/` (including user.php, help.php, help-panel.php, settings sub-pages incl. system.php, locations/; the settings overview and debug views were removed — `/settings` redirects to `/settings/customization`)
 - 11 Core classes in `src/core/` (includes AppBoot, ServiceResult)
 - 2 Language files in `src/lang/`
 - 14 CLI command files in `src/cli/commands/`

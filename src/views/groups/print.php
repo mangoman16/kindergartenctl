@@ -2,14 +2,14 @@
     <div class="print-section-title"><?= __('group.title') ?>: <?= e($group['name']) ?></div>
 
     <?php if ($group['description']): ?>
-        <p style="margin-bottom: 1cm; color: #666;"><?= nl2br(e($group['description'])) ?></p>
+        <p class="print-lead"><?= nl2br(e($group['description'])) ?></p>
     <?php endif; ?>
 
-    <table style="width: 100%; margin-bottom: 0.5cm;">
+    <table class="print-kv">
         <tr>
-            <td style="font-weight: bold;"><?= __('nav.games') ?>:</td>
+            <td class="print-strong"><?= __('nav.games') ?>:</td>
             <td><?= $group['game_count'] ?? count($games) ?></td>
-            <td style="font-weight: bold;"><?= __('nav.materials') ?>:</td>
+            <td class="print-strong"><?= __('nav.materials') ?>:</td>
             <td><?= $group['material_count'] ?? count($materials) ?></td>
         </tr>
     </table>
@@ -19,13 +19,13 @@
 <div class="print-section">
     <div class="print-section-title"><?= __('nav.games') ?> (<?= count($games) ?>)</div>
 
-    <table class="print-table" style="width: 100%;">
+    <table class="print-table print-w-full">
         <thead>
             <tr>
-                <th style="width: 40%;"><?= __('form.name') ?></th>
-                <th style="width: 20%;"><?= __('game.players') ?></th>
-                <th style="width: 20%;"><?= __('game.duration') ?></th>
-                <th style="width: 20%;">Box</th>
+                <th class="print-col-40"><?= __('form.name') ?></th>
+                <th class="print-col-20"><?= __('game.players') ?></th>
+                <th class="print-col-20"><?= __('game.duration') ?></th>
+                <th class="print-col-20">Box</th>
             </tr>
         </thead>
         <tbody>
@@ -34,7 +34,7 @@
                 <td>
                     <strong><?= e($game['name']) ?></strong>
                     <?php if ($game['description']): ?>
-                        <br><span style="font-size: 0.85em; color: #666;"><?= e(truncate($game['description'], 80)) ?></span>
+                        <br><span class="print-desc"><?= e(truncate($game['description'], 80)) ?></span>
                     <?php endif; ?>
                 </td>
                 <td>
@@ -68,28 +68,28 @@
 <div class="print-section">
     <div class="print-section-title"><?= __('nav.materials') ?> (<?= count($materials) ?>)</div>
 
-    <table class="print-table" style="width: 100%;">
+    <table class="print-table print-w-full">
         <thead>
             <tr>
-                <th style="width: 15%;">Anzahl</th>
-                <th style="width: 35%;"><?= __('form.name') ?></th>
-                <th style="width: 25%;">Status</th>
-                <th style="width: 25%;">Box</th>
+                <th class="print-col-15">Anzahl</th>
+                <th class="print-col-35"><?= __('form.name') ?></th>
+                <th class="print-col-25">Status</th>
+                <th class="print-col-25">Box</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($materials as $material): ?>
             <tr>
-                <td style="text-align: center;"><?= $material['quantity'] ?>×</td>
+                <td class="print-center"><?= $material['quantity'] ?>×</td>
                 <td>
                     <strong><?= e($material['name']) ?></strong>
                     <?php if ($material['description']): ?>
-                        <br><span style="font-size: 0.85em; color: #666;"><?= e(truncate($material['description'], 60)) ?></span>
+                        <br><span class="print-desc"><?= e(truncate($material['description'], 60)) ?></span>
                     <?php endif; ?>
                 </td>
                 <td>
                     <?php if ($material['status'] !== 'complete'): ?>
-                        <span style="color: #c00;"><?= __('material.status.' . $material['status']) ?></span>
+                        <span class="print-danger"><?= __('material.status.' . $material['status']) ?></span>
                     <?php else: ?>
                         <?= __('material.status.complete') ?>
                     <?php endif; ?>
@@ -110,7 +110,7 @@
 
 <?php if (empty($games) && empty($materials)): ?>
 <div class="print-section">
-    <p style="font-style: italic; color: #666;">Diese Gruppe enthält keine Spiele oder Materialien.</p>
+    <p class="print-empty">Diese Gruppe enthält keine Spiele oder Materialien.</p>
 </div>
 <?php endif; ?>
 

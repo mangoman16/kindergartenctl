@@ -2,7 +2,7 @@
 
 **Application:** Kindergarten Spiele Organizer v1.0.0
 **Technology Stack:** PHP 8.0+, MySQL 8.x, Custom MVC Framework
-**Audit Date:** 2026-02-11
+**Audit Date:** 2026-02-11 (initial), 2026-05-30 (post-redesign pass)
 **Status:** All bugs fixed
 
 ---
@@ -11,11 +11,11 @@
 
 | Severity | Found | Fixed |
 |----------|-------|-------|
-| Critical | 10 | 10 |
-| High | 6 | 6 |
-| Medium | 30 | 30 |
-| Low | 14 | 14 |
-| **Total** | **60** | **60** |
+| Critical | 14 | 14 |
+| High | 10 | 10 |
+| Medium | 34 | 34 |
+| Low | 15 | 15 |
+| **Total** | **73** | **73** |
 
 ---
 
@@ -320,6 +320,130 @@
 - **File:** `src/views/locations/show.php:94`
 - **Problem:** Box view button used `btn btn-sm btn-outline` while all other table action buttons use `btn btn-sm btn-secondary`. Inconsistent button variant for same action type.
 - **Fix:** Changed to `btn btn-sm btn-secondary`.
+
+---
+
+## Post-Redesign Pass (2026-05-30)
+
+A wave of UI redesign work (toolbars, filter popovers, icon rail, settings
+reorg, quick-create) landed after the initial audit and introduced new bugs.
+The dominant root cause was the strict nonce-based CSP (no `'unsafe-inline'` in
+`script-src`/`style-src`, see `public/index.php:25`): the browser silently
+strips all inline `on*=` handlers and `style=` attributes, but the views still
+used them everywhere.
+
+### BUG-61 (Critical): Delete confirmations never fire — one-click data loss
+- **Files:** 11 views (`games/show.php`, `materials/show.php`, `materials/index.php`, `boxes/show.php`, `groups/show.php`, `groups/index.php`, `categories/index.php`, `tags/index.php`, `locations/show.php`, `changelog/index.php`, `settings/user.php`)
+- **Problem:** Delete forms used `onsubmit="return confirm(...)"`, blocked by the CSP, so every Delete button (including purge-changelog and delete-user) submitted immediately with no prompt.
+- **Fix:** Converted to the CSP-safe `data-confirm` pattern and extended `initConfirmDialogs()` in `app.js` to handle `form[data-confirm]` via the `submit` event.
+
+### BUG-62 (Critical): Bulk actions all 403 + dead modal buttons
+- **Files:** `src/views/games/index.php`, `src/views/materials/index.php`
+- **Problem:** Bulk favorite/group fetches sent `X-CSRF-Token: <?= Session::get('csrf_token') ?>`, but the token is stored under `_csrf_token`, so the header was empty and the server returned 403. The modal open/close/confirm buttons used CSP-blocked `onclick`.
+- **Fix:** Use `e($csrfToken)` for the token and wire the modal buttons via `addEventListener` (ids `bulk-group-modal-close/cancel/confirm`).
+
+### BUG-63 (Critical): Add-to-group / calendar modals render on page load
+- **Files:** `src/views/games/show.php`, `src/views/materials/show.php`, `src/views/calendar/index.php`
+- **Problem:** Per-view `<style>` blocks defined `.modal { display: flex }` (unscoped or with id-specificity), overriding the global `.modal { display: none }` so the modal + backdrop showed on top of the page on load. `materials/show.php` also hardcoded `background: white`, breaking dark mode.
+- **Fix:** Removed the redundant blocks (the global stylesheet already styles modals and gates display on `.active`); kept only a scoped `overflow:auto` override for the calendar modal body.
+
+### BUG-64 (High): List filters do nothing
+- **Files:** `src/views/games/index.php`, `src/views/materials/index.php`, `src/views/settings/index.php`, `src/views/settings/user.php`
+- **Problem:** Filter selects/checkboxes used `onchange="this.form.submit()"` (blocked), so selecting a filter never submitted; the debug toggle and profile-picture upload were similarly dead.
+- **Fix:** Added a reusable `.js-auto-submit` handler in `app.js` and applied the class to these controls.
+
+### BUG-65 (High): Quick-create tiles render colorless
+- **Files:** `src/views/partials/sidebar.php`, `public/assets/css/style.css`
+- **Problem:** Each tile's accent colors came from inline `style="--qc-color/--qc-bg/--qc-delay"` attributes, stripped by the CSP, so the icons lost their colored circles and the stagger animation.
+- **Fix:** Moved the per-tile colors into the stylesheet keyed by the tile's `data-key`.
+
+### BUG-66 (Medium): Image upload "choose file" buttons broken
+- **Files:** `materials/form.php`, `categories/form.php`, `boxes/form.php`, `tags/form.php`, `groups/form.php`, `games/form.php`
+- **Problem:** The proxy button used `onclick="this.previousElementSibling.click()"` (blocked) and the file input used `style="display:none"` (also blocked, so the raw input showed).
+- **Fix:** Switched the input to the `hidden` attribute and added a reusable `.js-file-trigger` handler in `app.js`.
+
+### BUG-67 (Critical): Changelog "Clear" / cleanup throws 500
+- **Files:** `src/services/ChangelogService.php:545`, `src/services/TransactionService.php:400`
+- **Problem:** `DATE_SUB(NOW(), INTERVAL :days DAY)` bound a parameter inside an `INTERVAL ... DAY` expression. With emulated prepares off, native prepares reject it (1064 syntax error), so clearing the changelog (web + `changelog:clear` CLI) crashed.
+- **Fix:** Inlined the validated integer (`max(0, $days)`) instead of binding it.
+
+### BUG-68 (Medium): updatePreferences() wipes unrelated settings
+- **File:** `src/controllers/SettingsController.php:88`
+- **Problem:** It wrote a fresh array containing only `items_per_page`/`default_view`, erasing `language`, `theme_color`, `theme_pattern`, `dark_mode_preference` and `profile_picture` (latent — no current view posts here, but inconsistent with every sibling save).
+- **Fix:** Load existing prefs and merge, then `savePreferences()` (matches `updateCustomization`/`updateLanguage`/`toggleDarkMode`).
+
+### BUG-69 (High): Page content clipped under the icon rail
+- **File:** `public/assets/css/style.css`
+- **Problem:** `.main-content` used a stale `--sidebar-width: 52px` while the rail is `--rail-width: 60px`; with the context sidebar collapsed (default) content sat 8px under the rail. `[data-compact-sidebar]` hardcoded the old `56px`.
+- **Fix:** Unified the margins and compact layout on `--rail-width` and removed the redundant `--sidebar-width` token.
+
+### BUG-70 (High): Dark-mode filled buttons unreadable
+- **File:** `public/assets/css/style.css` (`.btn-primary/success/danger/warning`)
+- **Problem:** Text color was `var(--color-white)`, which inverts to `#1a1a2e` in dark mode — near-black text on saturated buttons.
+- **Fix:** Hardcoded `#fff` (the backgrounds are identical in both themes).
+
+### BUG-71 (Medium): Duplicate translation keys
+- **Files:** `src/lang/de.php`, `src/lang/en.php`
+- **Problem:** `action.remove` and `misc.not_specified` were defined twice; the second silently shadowed the first.
+- **Fix:** Removed the duplicate entries. Added `TranslationIntegrityTest` to prevent regressions.
+
+### BUG-72 (Low): Low-contrast toolbar text + missing focus rings
+- **File:** `public/assets/css/style.css`
+- **Problem:** `.list-toolbar-label`, `.toolbar-reset` and dark `.toolbar-btn` used `gray-400` (below WCAG AA), and the new toolbar/filter/quick-create controls had no `:focus-visible` indicator.
+- **Fix:** Bumped to `gray-600` and added a `:focus-visible` ring rule.
+
+### BUG-73 (Medium): Calendar save/delete miss `response.ok` check
+- **File:** `src/views/calendar/index.php`
+- **Problem:** Both handlers called `response.json()` directly; a 4xx/5xx (HTML error page) threw an opaque parse error.
+- **Fix:** Added `if (!response.ok) throw ...` before parsing.
+
+### Regression guards added
+- `tests/Unit/ViewCspComplianceTest.php` — fails the build if any view reintroduces an inline `on*=` handler or reads the CSRF token from the wrong session key.
+- `tests/Unit/TranslationIntegrityTest.php` — fails on duplicate keys or de/en drift.
+
+### BUG-74 (High): Image-crop dialog rendered unstyled
+- **Files:** `public/assets/js/app.js`, `public/assets/css/style.css`
+- **Problem:** The cropper modal's interior was built via `innerHTML` with inline `style` attributes, which the CSP strips — the dialog appeared as unstyled stacked content. (The overlay itself used `style.cssText`, which is CSSOM and unaffected.)
+- **Fix:** Moved all dialog styling into `.cropper-dialog-*` rules in the stylesheet and removed the inline attributes from the JS template.
+
+### BUG-75 (High): Print pages rendered unstyled
+- **Files:** `src/views/{games,materials,boxes,categories,tags,groups}/print*.php`, `public/assets/css/print.css`
+- **Problem:** Print views carried all their table/typography styling as inline `style` attributes — stripped by the CSP, so printouts and the on-screen print preview lost their layout.
+- **Fix:** Added shared `.print-*` classes to `print.css` (outside `@media print` so the screen preview matches) and converted the views.
+
+### BUG-76 (Medium): Stale settings overview + debug leftovers
+- **Files:** `src/controllers/SettingsController.php`, `src/config/routes.php`, `src/views/settings/index.php` (deleted), `src/views/settings/debug.php` (deleted)
+- **Problem:** `GET /settings` rendered a pre-redesign overview page (duplicating email/debug settings), contradicting CLAUDE.md §9; `GET /settings/debug` + `showDebug()` + its view were orphaned (debug lives on `/settings/system`).
+- **Fix:** `/settings` now redirects to `/settings/customization`; removed the orphaned route, method, and both dead views. (`POST /settings/debug` remains — used by the system page.)
+
+### BUG-77 (Medium): No asset cache-busting — stale CSS/JS after deploys
+- **File:** `src/helpers/functions.php` (`asset()`)
+- **Problem:** Asset URLs had no version component, so browsers kept serving cached CSS/JS after changes (the effect previously misdiagnosed in BUG-20).
+- **Fix:** `asset()` appends `?v=<filemtime>` when the file exists.
+
+### BUG-78 (Medium): Fixed header ignored the open sidebar; search pill overlap
+- **File:** `public/assets/css/style.css`
+- **Problem:** `.top-header` spanned from the icon rail regardless of the 240px context sidebar, so the centered search pill sat visually off-center (partially under the sidebar); its `min-width: 400px` could also collide with the absolutely-positioned user menu around 769–1100px.
+- **Fix:** Header now starts at the sidebar's right edge when open (corner-curve `::after` re-anchored to 0, collapsed + mobile overrides added, `transition: left`); pill `min-width` is `clamp(200px, 28vw, 400px)`.
+
+### BUG-79 (Low): Rail buttons regressed below the 44px touch target
+- **File:** `public/assets/css/style.css`
+- **Problem:** `.rail-btn` was 36×36px — a regression of the BUG-46 fix (WCAG touch-target minimum is 44px; DESIGN_SYSTEM.md mandates it).
+- **Fix:** Restored 44×44px.
+
+### BUG-80 (Medium): Favorite toggle showed both icons at once
+- **Files:** `src/views/games/show.php`, `src/views/materials/show.php`
+- **Problem:** The filled/outline star icons were switched via conditional `style="display:none"` — stripped by the CSP, so both icons rendered simultaneously; the JS toggled `style.display` with an empty string, which cannot override the `hidden` attribute.
+- **Fix:** Conditional `hidden` attribute + `el.hidden` toggling in the JS.
+
+### BUG-81 (Medium): App-wide inline `style=` sweep + dynamic colors
+- **Files:** ~45 views, `public/assets/js/app.js`, `public/assets/css/style.css`
+- **Problem:** ~239 inline `style` attributes remained app-wide — all stripped by the CSP. Effects included colorless tag badges/search-result dots/calendar legend/theme swatches, visible elements that should be hidden, and collapsed table column widths.
+- **Fix:** Converted to utility classes (`.col-*`, `.thumb-*`, `.d-inline`, …), nonce'd per-view `<style>` blocks for one-offs, and `data-bg`/`data-fg` attributes applied via the new `App.applyDataStyles()` (CSSOM is CSP-exempt). Email templates under `views/auth/emails/` are exempt by design. Enforced by new `ViewCspComplianceTest` checks that ban `style=` in views and JS-built markup.
+
+### Known-remaining (not yet addressed)
+- Dead code: `Group::duplicate()` (implemented but unrouted; also omits `notes` when copying — fix or remove when groups duplication becomes a feature).
+- `.toolbar-btn` is ~30px tall (below the 44px touch-target guideline); left as-is to preserve the dense desktop toolbar design.
 
 ---
 
